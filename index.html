@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="DSM Project — Security & Industrial Cleaning Quotation Model (Tangier Free Zone, Morocco)" />
-  <title>DSM Project | Quotation Model — Tangier Free Zone</title>
+  <title>DSM Project | Security & Cleaning Quotation Model — Tangier Free Zone</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -15,14 +15,15 @@
         <img class="logo" src="assets/logo.png" alt="Design Studio Morocco Logo">
         <div class="brand-text">
           <div class="brand-title">DESIGN STUDIO MOROCCO</div>
-          <div class="brand-subtitle">Professional Quotation Builder — Security & Industrial Cleaning (Tangier Free Zone)</div>
+          <div class="brand-subtitle">Quotation Model — Security & Industrial Cleaning (Tangier Free Zone | NET – TVA Exempt)</div>
         </div>
       </div>
 
       <nav class="nav">
-        <a href="#model">Quotation Model</a>
-        <a href="#sources">Price Benchmark</a>
-        <a href="#evidence">Regulatory References</a>
+        <a href="#model">Model</a>
+        <a href="#breakdown">OPEX/CAPEX</a>
+        <a href="#sources">Price Sources</a>
+        <a href="#evidence">References</a>
       </nav>
     </div>
   </header>
@@ -30,30 +31,30 @@
   <main class="container" id="model">
     <section class="hero">
       <div class="hero-content">
-        <h1>Security & Industrial Cleaning — Cost Model (NET – TVA Exempt)</h1>
+        <h1>Security & Industrial Cleaning — Financial Model (NET – TVA Exempt)</h1>
         <p>
-          Reference case: <strong>5,000 m² industrial facility</strong> + <strong>24 sanitary units</strong>.
-          Outputs are presented as <strong>NET (TVA Exempt – Tangier Free Zone)</strong>.
+          Reference: <strong>5,000 m² industrial facility</strong> + <strong>24 sanitary units</strong>.
+          Includes staffing checks, overtime estimation, OPEX/CAPEX separation, and procurement links.
         </p>
 
         <div class="hero-badges">
-          <span class="badge">Auto-hours from sliders</span>
-          <span class="badge">Overtime check (+25%)</span>
-          <span class="badge">One-time CAPEX equipment</span>
-          <span class="badge">Direct market links (Jumia)</span>
+          <span class="badge">Sliders (agents/day/night)</span>
+          <span class="badge">Overtime check</span>
+          <span class="badge">OPEX vs CAPEX</span>
+          <span class="badge">NET (TVA Exempt)</span>
         </div>
       </div>
 
       <div class="hero-side">
         <div class="kpi">
-          <div class="kpi-label">Recurring Total / Month (NET – TVA Exempt)</div>
-          <div class="kpi-value" id="kpiMonthly">—</div>
-          <div class="kpi-foot">Operating cost excluding one-time CAPEX purchases</div>
+          <div class="kpi-label">OPEX / Month (NET)</div>
+          <div class="kpi-value" id="kpiOpexMonthly">—</div>
+          <div class="kpi-foot">Recurring: labor + consumables + other fixed</div>
         </div>
         <div class="kpi">
-          <div class="kpi-label">First Month Total (NET – TVA Exempt)</div>
-          <div class="kpi-value" id="kpiFirstMonth">—</div>
-          <div class="kpi-foot">Recurring month + one-time CAPEX (PPE + equipment)</div>
+          <div class="kpi-label">Month 1 Total (NET)</div>
+          <div class="kpi-value" id="kpiMonth1">—</div>
+          <div class="kpi-foot">OPEX + CAPEX (one-time purchases)</div>
         </div>
       </div>
     </section>
@@ -62,12 +63,12 @@
       <!-- LEFT: INPUTS -->
       <section class="panel">
         <div class="panel-title">
-          <h2>Quotation Inputs</h2>
-          <p>Adjust parameters to match your staffing plan, legal updates, and procurement assumptions.</p>
+          <h2>Inputs & Assumptions</h2>
+          <p>Use sliders for staffing and night allocation. Overtime is calculated automatically when capacity is insufficient.</p>
         </div>
 
         <div class="card">
-          <h3>1) Payroll Rates — Morocco (Employee vs Employer)</h3>
+          <h3>A) Payroll Rates (Morocco)</h3>
 
           <div class="grid">
             <label>
@@ -79,47 +80,47 @@
             <label>
               Employee deductions (%) — CNSS + AMO
               <input id="empDedRate" type="number" step="0.01" value="6.74">
-              <small class="hint">Paid by staff: CNSS 4.48% + AMO 2.26% = 6.74%</small>
+              <small class="hint">Paid by staff (deducted): CNSS 4.48% + AMO 2.26%.</small>
             </label>
 
             <label>
               Employer contributions (%) — Patronal (Company)
               <input id="employerRate" type="number" step="0.01" value="21.09">
-              <small class="hint">Paid by the company (patronal) — update from CNSS official table.</small>
+              <small class="hint">Paid by company (patronal). Confirm from CNSS table.</small>
             </label>
 
             <label>
-              Replacement coefficient (%) (leave/holidays/absences)
+              Replacement coefficient (%)
               <input id="replacement" type="number" step="0.01" value="8.50">
-              <small class="hint">Continuity factor for replacements and absences.</small>
+              <small class="hint">Continuity factor: leave/holidays/absences (service replacement).</small>
             </label>
 
             <label>
-              Legal standard hours / agent / month
+              Standard monthly hours per agent (capacity)
               <input id="legalMonthlyHours" type="number" step="1" value="191">
-              <small class="hint">Benchmark for capacity check (adjust if your policy differs).</small>
+              <small class="hint">Benchmark capacity per agent/month (adjust per your HR policy).</small>
             </label>
 
             <label>
-              Overtime premium (%)
-              <input id="otPremium" type="number" step="0.01" value="25">
-              <small class="hint">Moroccan overtime premium applied here: +25%.</small>
+              Night hours definition (hours/night per 24h)
+              <input id="nightHoursPerDay" type="number" step="1" value="9">
+              <small class="hint">Common definition: 21:00–06:00 = 9 hours (adjust if needed).</small>
+            </label>
+
+            <label>
+              Overtime premium — Day (%)
+              <input id="otDayPremium" type="number" step="0.01" value="25">
+              <small class="hint">Default: +25% (editable).</small>
+            </label>
+
+            <label>
+              Overtime premium — Night (%)
+              <input id="otNightPremium" type="number" step="0.01" value="50">
+              <small class="hint">Often higher at night. Set per your legal interpretation/contract.</small>
             </label>
           </div>
 
           <div class="mini-metrics">
-            <div class="metric">
-              <div class="metric-label">Gross hourly (MAD)</div>
-              <div class="metric-value" id="grossHourly">—</div>
-            </div>
-            <div class="metric">
-              <div class="metric-label">Employee deductions (MAD/h)</div>
-              <div class="metric-value" id="empDedHourly">—</div>
-            </div>
-            <div class="metric">
-              <div class="metric-label">Net hourly (MAD/h)</div>
-              <div class="metric-value" id="netHourly">—</div>
-            </div>
             <div class="metric">
               <div class="metric-label">Employer cost (MAD/h)</div>
               <div class="metric-value" id="employerHourly">—</div>
@@ -129,30 +130,47 @@
               <div class="metric-value accent" id="chargeableHourly">—</div>
             </div>
             <div class="metric">
-              <div class="metric-label">Overtime hourly (MAD/h)</div>
-              <div class="metric-value accent" id="otHourly">—</div>
+              <div class="metric-label">OT day hourly (MAD/h)</div>
+              <div class="metric-value accent" id="otDayHourly">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">OT night hourly (MAD/h)</div>
+              <div class="metric-value accent" id="otNightHourly">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">1 agent/month cost (MAD)</div>
+              <div class="metric-value" id="oneAgentMonthlyCost">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Net hourly (info) (MAD/h)</div>
+              <div class="metric-value" id="netHourly">—</div>
             </div>
           </div>
 
           <div class="note">
-            <strong>Tax note:</strong> This model is displayed as <strong>NET (TVA Exempt – Tangier Free Zone)</strong>.
-            Confirm eligibility and invoicing mentions with your finance/tax requirements.
+            <strong>NET – TVA Exempt:</strong> Tangier Free Zone scenario. Confirm exemption conditions and invoicing wording with your finance/tax rules.
           </div>
         </div>
 
         <div class="card">
-          <h3>2) Coverage, Staffing & Auto-Hours (Sliders)</h3>
+          <h3>B) Security — Coverage & Staffing (Sliders)</h3>
 
           <div class="grid">
+            <label>
+              Days per month (for 24/7 calculation)
+              <input id="daysInMonth" type="number" step="0.01" value="30.33">
+              <small class="hint">Average month = 30.33. You can use 30 or 31.</small>
+            </label>
+
             <div class="rangebox">
               <div class="rangetop">
                 <div>
                   <div class="rangetitle">Security coverage — 24/7 posts</div>
-                  <div class="rangehint">Required hours are calculated automatically: posts × 24 × days/month</div>
+                  <div class="rangehint">Required hours = posts × 24 × days/month</div>
                 </div>
                 <div class="pill"><span id="secPostsVal">2</span> posts</div>
               </div>
-              <input id="secPosts" type="range" min="1" max="6" step="1" value="2">
+              <input id="secPosts" type="range" min="1" max="8" step="1" value="2">
               <div class="rangefoot">
                 <span>Required security hours / month:</span>
                 <strong id="secReqHours">—</strong>
@@ -162,59 +180,88 @@
             <div class="rangebox">
               <div class="rangetop">
                 <div>
-                  <div class="rangetitle">Security staffing — number of agents</div>
-                  <div class="rangehint">Capacity check vs required hours (overtime if shortage).</div>
+                  <div class="rangetitle">Security team — total agents</div>
+                  <div class="rangehint">Capacity = agents × standard monthly hours</div>
                 </div>
                 <div class="pill"><span id="secAgentsVal">8</span> agents</div>
               </div>
-              <input id="secAgents" type="range" min="1" max="30" step="1" value="8">
+              <input id="secAgents" type="range" min="1" max="40" step="1" value="8">
               <div class="rangefoot">
-                <span>Overtime hours (Security):</span>
-                <strong id="secOtHours">—</strong>
+                <span>Team capacity (hours/month):</span>
+                <strong id="secCapacity">—</strong>
               </div>
             </div>
 
+            <div class="rangebox">
+              <div class="rangetop">
+                <div>
+                  <div class="rangetitle">Security night agents</div>
+                  <div class="rangehint">Night OT is calculated separately (based on night coverage hours)</div>
+                </div>
+                <div class="pill"><span id="secNightAgentsVal">4</span> night</div>
+              </div>
+              <input id="secNightAgents" type="range" min="0" max="40" step="1" value="4">
+              <div class="rangefoot">
+                <span>Day agents (auto):</span>
+                <strong id="secDayAgentsOut">—</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="note" id="secOtAlert">—</div>
+        </div>
+
+        <div class="card">
+          <h3>C) Cleaning — Staffing & Schedule (Sliders)</h3>
+
+          <div class="grid">
             <label>
-              Days per month (for 24/7 calculation)
-              <input id="daysInMonth" type="number" step="0.01" value="30.33">
-              <small class="hint">30.33 is an average month. You can set 30 or 31.</small>
+              Cleaning hours per agent / day
+              <input id="clnHoursPerDay" type="number" step="0.5" value="8">
+            </label>
+
+            <label>
+              Cleaning working days / month
+              <input id="clnDaysPerMonth" type="number" step="1" value="22">
+              <small class="hint">Example: 22 for Mon–Fri. Adjust if Saturdays are included.</small>
             </label>
 
             <div class="rangebox">
               <div class="rangetop">
                 <div>
-                  <div class="rangetitle">Cleaning staffing — number of agents</div>
-                  <div class="rangehint">Cleaning required hours: agents × hours/day × days/month</div>
+                  <div class="rangetitle">Cleaning team — total agents</div>
+                  <div class="rangehint">Required hours = agents × hours/day × days/month</div>
                 </div>
                 <div class="pill"><span id="clnAgentsVal">6</span> agents</div>
               </div>
-              <input id="clnAgents" type="range" min="1" max="30" step="1" value="6">
+              <input id="clnAgents" type="range" min="1" max="40" step="1" value="6">
               <div class="rangefoot">
                 <span>Required cleaning hours / month:</span>
                 <strong id="clnReqHours">—</strong>
               </div>
             </div>
 
-            <label>
-              Cleaning hours per agent / day
-              <input id="clnHoursPerDay" type="number" step="0.5" value="8">
-              <small class="hint">Example: 8 hours/day.</small>
-            </label>
-
-            <label>
-              Cleaning working days / month
-              <input id="clnDaysPerMonth" type="number" step="1" value="22">
-              <small class="hint">Example: 22 (Mon–Fri standard). Adjust if Saturdays are included.</small>
-            </label>
+            <div class="rangebox">
+              <div class="rangetop">
+                <div>
+                  <div class="rangetitle">Cleaning night agents</div>
+                  <div class="rangehint">Night OT estimated separately if capacity shortage on night allocation</div>
+                </div>
+                <div class="pill"><span id="clnNightAgentsVal">0</span> night</div>
+              </div>
+              <input id="clnNightAgents" type="range" min="0" max="40" step="1" value="0">
+              <div class="rangefoot">
+                <span>Day agents (auto):</span>
+                <strong id="clnDayAgentsOut">—</strong>
+              </div>
+            </div>
           </div>
 
-          <div class="note" id="otNote">
-            Overtime check: when required hours exceed agents’ legal capacity, overtime is applied at <strong>+25%</strong>.
-          </div>
+          <div class="note" id="clnOtAlert">—</div>
         </div>
 
         <div class="card">
-          <h3>3) One-time CAPEX (Purchased Once) & Recurring Consumables</h3>
+          <h3>D) CAPEX (One-time) & OPEX (Recurring)</h3>
 
           <div class="grid">
             <label>
@@ -233,74 +280,71 @@
             </label>
 
             <label>
-              Cleaning products & consumables — MAD/month
+              Cleaning consumables (OPEX) — MAD/month
               <input id="clnProducts" type="number" step="1" value="3040">
             </label>
 
             <label>
-              Other recurring fixed cost — MAD/month (optional)
+              Other fixed OPEX — MAD/month (optional)
               <input id="otherFixed" type="number" step="1" value="0">
             </label>
 
             <label class="toggle">
-              Include CAPEX in “First Month” total
+              Include CAPEX in Month 1 Total
               <input id="includeCapex" type="checkbox" checked>
               <span class="toggle-ui" aria-hidden="true"></span>
             </label>
           </div>
-        </div>
 
-        <div class="card">
-          <h3>Export / Internal Approval</h3>
-          <div class="actions">
-            <button id="printBtn">Print / Save PDF</button>
-            <button class="ghost" id="resetBtn">Reset to default</button>
+          <div class="actions" style="margin-top:12px;">
+            <button id="toggleBreakdownBtn" type="button">Show CAPEX & OPEX Breakdown</button>
+            <button class="ghost" id="printBtn" type="button">Print / Save PDF</button>
+            <button class="ghost" id="resetBtn" type="button">Reset</button>
           </div>
-          <p class="hint">Printing generates a clean PDF suitable for internal validation or client submission.</p>
+
+          <div class="hint" style="margin-top:10px;">
+            CAPEX = purchased once (PPE/equipment). OPEX = recurring monthly costs (labor + consumables + other fixed).
+          </div>
         </div>
       </section>
 
       <!-- RIGHT: SUMMARY -->
-      <aside class="summary panel" id="summary">
+      <aside class="summary panel">
         <div class="panel-title">
-          <h2>Commercial Summary (NET – TVA Exempt)</h2>
-          <p>Monthly recurring totals + overtime + one-time CAPEX view.</p>
+          <h2>Monthly Financial Summary (NET)</h2>
+          <p>Detailed view by service, overtime, consumables, and totals.</p>
         </div>
 
         <div class="card">
-          <h3>Monthly Financial Summary (NET)</h3>
-
           <div class="summary-grid">
             <div class="summary-box">
-              <div class="summary-label">Security (monthly)</div>
+              <div class="summary-label">Security — Total (Monthly)</div>
               <div class="summary-value" id="secTotal">—</div>
-              <div class="summary-sub" id="secLaborText">Labor: —</div>
-              <div class="summary-sub" id="secOtText">Overtime: —</div>
+              <div class="summary-sub" id="secDetailLine">—</div>
             </div>
 
             <div class="summary-box">
-              <div class="summary-label">Cleaning (monthly)</div>
+              <div class="summary-label">Cleaning — Total (Monthly)</div>
               <div class="summary-value" id="clnTotal">—</div>
-              <div class="summary-sub" id="clnLaborText">Labor: —</div>
-              <div class="summary-sub" id="clnOtText">Overtime: —</div>
+              <div class="summary-sub" id="clnDetailLine">—</div>
             </div>
 
             <div class="summary-box">
-              <div class="summary-label">Consumables / Other (monthly)</div>
-              <div class="summary-value" id="otherRecurring">—</div>
-              <div class="summary-sub">Consumables + other recurring fixed costs</div>
+              <div class="summary-label">Consumables + Other OPEX</div>
+              <div class="summary-value" id="opexOther">—</div>
+              <div class="summary-sub">Consumables + other fixed</div>
             </div>
 
             <div class="summary-box accent-box">
-              <div class="summary-label">Recurring Total / Month (NET)</div>
-              <div class="summary-value" id="grandTotal">—</div>
-              <div class="summary-sub" id="annualText">Annual: —</div>
+              <div class="summary-label">OPEX Total / Month (NET)</div>
+              <div class="summary-value" id="opexTotal">—</div>
+              <div class="summary-sub" id="opexAnnual">—</div>
             </div>
           </div>
 
           <div class="split">
             <div class="donut-wrap">
-              <div class="donut" id="donut" aria-label="Cost breakdown chart"></div>
+              <div class="donut" id="donut" aria-label="OPEX breakdown chart"></div>
               <div class="donut-legend">
                 <div class="leg"><span class="dot s1"></span>Security</div>
                 <div class="leg"><span class="dot s2"></span>Cleaning</div>
@@ -309,16 +353,16 @@
             </div>
 
             <div class="capex-box">
-              <h4>One-time CAPEX (Purchased Once)</h4>
+              <h4>CAPEX (One-time) + Month 1</h4>
               <div class="capex-line"><span>Security PPE</span><strong id="capexSec">—</strong></div>
               <div class="capex-line"><span>Cleaning PPE</span><strong id="capexCln">—</strong></div>
               <div class="capex-line"><span>Cleaning equipment</span><strong id="capexEq">—</strong></div>
               <div class="capex-line total"><span>Total CAPEX</span><strong id="capexTotal">—</strong></div>
 
               <div class="capex-first">
-                <div class="capex-first-label">First Month Total (NET)</div>
-                <div class="capex-first-value" id="firstMonthTotal">—</div>
-                <div class="capex-first-sub">Incl. CAPEX: <span id="capexIncludedText">Yes</span></div>
+                <div class="capex-first-label">Month 1 Total (NET)</div>
+                <div class="capex-first-value" id="month1Total">—</div>
+                <div class="capex-first-sub">CAPEX included: <span id="capexIncludedText">Yes</span></div>
               </div>
             </div>
           </div>
@@ -326,28 +370,71 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Cost line</th>
-                <th class="num">Monthly (MAD)</th>
+                <th>Line item</th>
+                <th class="num">MAD / Month</th>
               </tr>
             </thead>
             <tbody>
-              <tr><td>Security labor (normal)</td><td class="num" id="secLaborNormal">—</td></tr>
-              <tr><td>Security labor (overtime +25%)</td><td class="num" id="secLaborOt">—</td></tr>
-              <tr><td>Cleaning labor (normal)</td><td class="num" id="clnLaborNormal">—</td></tr>
-              <tr><td>Cleaning labor (overtime +25%)</td><td class="num" id="clnLaborOt">—</td></tr>
-              <tr><td>Cleaning consumables</td><td class="num" id="consumables">—</td></tr>
-              <tr><td>Other recurring fixed cost</td><td class="num" id="otherFixedOut">—</td></tr>
+              <tr><td>Security normal hours cost</td><td class="num" id="secCostNormal">—</td></tr>
+              <tr><td>Security overtime (day) cost</td><td class="num" id="secCostOtDay">—</td></tr>
+              <tr><td>Security overtime (night) cost</td><td class="num" id="secCostOtNight">—</td></tr>
+
+              <tr><td>Cleaning normal hours cost</td><td class="num" id="clnCostNormal">—</td></tr>
+              <tr><td>Cleaning overtime (day) cost</td><td class="num" id="clnCostOtDay">—</td></tr>
+              <tr><td>Cleaning overtime (night) cost</td><td class="num" id="clnCostOtNight">—</td></tr>
+
+              <tr><td>Consumables (Cleaning)</td><td class="num" id="consumables">—</td></tr>
+              <tr><td>Other fixed OPEX</td><td class="num" id="otherFixedOut">—</td></tr>
             </tbody>
           </table>
+
+          <div class="note subtle">
+            “Night agents” is used to allocate capacity into day/night pools to estimate day vs night overtime.
+            If your real planning differs (12h shifts, rotation, weekly rest), adjust capacity hours and night allocation accordingly.
+          </div>
         </div>
+
+        <!-- Collapsible breakdown -->
+        <section class="card hidden" id="breakdown">
+          <h3>CAPEX & OPEX Breakdown (Explanation)</h3>
+
+          <div class="twoCols">
+            <div class="infoBox">
+              <h4>OPEX (Recurring)</h4>
+              <ul>
+                <li>Security labor (normal + OT)</li>
+                <li>Cleaning labor (normal + OT)</li>
+                <li>Consumables (monthly)</li>
+                <li>Other recurring fixed costs (supervision, admin, transport, etc.)</li>
+              </ul>
+              <div class="infoLine"><span>OPEX / Month (NET)</span><strong id="opexExplainMonthly">—</strong></div>
+              <div class="infoLine"><span>OPEX / Year (NET)</span><strong id="opexExplainAnnual">—</strong></div>
+            </div>
+
+            <div class="infoBox">
+              <h4>CAPEX (One-time)</h4>
+              <ul>
+                <li>PPE for Security team (uniforms, safety shoes, accessories)</li>
+                <li>PPE for Cleaning team</li>
+                <li>Cleaning equipment (trolleys, vacuum, scrubber, tools)</li>
+              </ul>
+              <div class="infoLine"><span>Total CAPEX (one time)</span><strong id="capexExplainTotal">—</strong></div>
+              <div class="infoLine"><span>Month 1 Total (NET)</span><strong id="month1ExplainTotal">—</strong></div>
+            </div>
+          </div>
+
+          <div class="note">
+            Overtime is charged only when required hours exceed available capacity.
+            OT premiums are configurable: Day default +25%, Night default +50%.
+          </div>
+        </section>
+
       </aside>
     </section>
 
     <section class="wide card" id="sources">
-      <h2>Market Price Benchmark (Direct Links — Jumia Morocco)</h2>
-      <p class="muted">
-        Direct search links to real listings. For procurement evidence, select the exact item and archive the product page/proforma.
-      </p>
+      <h2>Market Price Sources (Direct Links — Jumia Morocco)</h2>
+      <p class="muted">Direct search links to real listings. For procurement evidence, select exact items and archive product pages/proformas.</p>
 
       <div class="sources">
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chariot+de+menage+professionnel">
@@ -388,7 +475,7 @@
     </section>
 
     <footer class="footer">
-      <small>© DSM Project — Quotation Model (Tangier Free Zone). Version 3.0</small>
+      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 4.0</small>
     </footer>
   </main>
 
