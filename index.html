@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="DSM Project — Creative Quotation Calculator for Security & Cleaning Services (Morocco)" />
-  <title>DSM Project | Security & Cleaning Quotation Calculator</title>
+  <meta name="description" content="DSM Project — Security & Industrial Cleaning Quotation Model (Tangier Free Zone, Morocco)" />
+  <title>DSM Project | Security & Cleaning Quotation Model — Tangier Free Zone</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -15,14 +15,14 @@
         <img class="logo" src="assets/logo.png" alt="Design Studio Morocco Logo">
         <div class="brand-text">
           <div class="brand-title">DESIGN STUDIO MOROCCO</div>
-          <div class="brand-subtitle">Security & Industrial Cleaning — Quotation Calculator (Morocco)</div>
+          <div class="brand-subtitle">Professional Quotation Builder — Security & Industrial Cleaning (Morocco)</div>
         </div>
       </div>
 
       <nav class="nav">
-        <a href="#model">Model</a>
-        <a href="#sources">Price Sources</a>
-        <a href="#evidence">Official Evidence</a>
+        <a href="#model">Quotation Model</a>
+        <a href="#sources">Price Benchmark</a>
+        <a href="#evidence">Regulatory References</a>
       </nav>
     </div>
   </header>
@@ -30,28 +30,28 @@
   <main class="container" id="model">
     <section class="hero">
       <div class="hero-content">
-        <h1>Quotation Model — Tangier Industrial Site</h1>
+        <h1>Security & Industrial Cleaning — Cost Model (Tangier Free Zone)</h1>
         <p>
-          <strong>5,000 m²</strong> industrial facility + <strong>24 sanitary units</strong>.
-          Outputs are <strong>Excluding VAT</strong> (with optional VAT view).
+          Reference case: <strong>5,000 m² industrial facility</strong> + <strong>24 sanitary units</strong>.
+          All outputs are presented as <strong>NET (TVA Exempt – Tangier Free Zone)</strong>.
         </p>
 
         <div class="hero-badges">
-          <span class="badge">Creative UI</span>
-          <span class="badge">Morocco payroll logic</span>
+          <span class="badge">Payroll compliance view</span>
+          <span class="badge">Employer vs employee charges</span>
           <span class="badge">One-time CAPEX equipment</span>
-          <span class="badge">Direct Jumia price links</span>
+          <span class="badge">Direct market links (Jumia)</span>
         </div>
       </div>
 
       <div class="hero-side">
         <div class="kpi">
-          <div class="kpi-label">Recurring Total / Month (Ex VAT)</div>
+          <div class="kpi-label">Recurring Total / Month (NET – TVA Exempt)</div>
           <div class="kpi-value" id="kpiMonthly">—</div>
-          <div class="kpi-foot">Service operating cost excluding one-time equipment purchases</div>
+          <div class="kpi-foot">Operating cost excluding one-time CAPEX purchases</div>
         </div>
         <div class="kpi">
-          <div class="kpi-label">First Month Total (Ex VAT)</div>
+          <div class="kpi-label">First Month Total (NET – TVA Exempt)</div>
           <div class="kpi-value" id="kpiFirstMonth">—</div>
           <div class="kpi-foot">Recurring month + one-time CAPEX (PPE + equipment)</div>
         </div>
@@ -62,42 +62,36 @@
       <!-- LEFT: INPUTS -->
       <section class="panel">
         <div class="panel-title">
-          <h2>Inputs</h2>
-          <p>Adjust values to your contract. All rates are editable for compliance updates.</p>
+          <h2>Quotation Inputs</h2>
+          <p>Adjust parameters to match your staffing plan, legal updates, and procurement assumptions.</p>
         </div>
 
         <div class="card">
-          <h3>1) Payroll & Legal Rates (Morocco)</h3>
+          <h3>1) Payroll Rates — Morocco (Employee vs Employer)</h3>
 
           <div class="grid">
             <label>
               Gross hourly wage (SMIG) — MAD/h
               <input id="smig" type="number" step="0.01" value="17.92">
-              <small class="hint">Set to the applicable SMIG hourly at contract start.</small>
+              <small class="hint">Update to the applicable SMIG hourly at contract start date.</small>
             </label>
 
             <label>
               Employee deductions (%) — CNSS + AMO
               <input id="empDedRate" type="number" step="0.01" value="6.74">
-              <small class="hint">Employee paid (deducted): CNSS 4.48% + AMO 2.26% = 6.74%</small>
+              <small class="hint">Paid by agents: CNSS 4.48% + AMO 2.26% = 6.74%</small>
             </label>
 
             <label>
-              Employer contributions (%) — Patronal
+              Employer contributions (%) — Patronal (Company)
               <input id="employerRate" type="number" step="0.01" value="21.09">
-              <small class="hint">Paid by the company (patronal) — update from CNSS table.</small>
+              <small class="hint">Paid by the company (patronal) — update from CNSS official table.</small>
             </label>
 
             <label>
               Replacement coefficient (%) (leave/holidays/absences)
               <input id="replacement" type="number" step="0.01" value="8.50">
-              <small class="hint">Recommended for service continuity (esp. 24/7 security).</small>
-            </label>
-
-            <label>
-              VAT (TVA) % (optional display)
-              <input id="vat" type="number" step="0.01" value="20">
-              <small class="hint">Used only for “incl. VAT” view in summary.</small>
+              <small class="hint">Recommended for service continuity (especially 24/7 security).</small>
             </label>
           </div>
 
@@ -129,14 +123,13 @@
           </div>
 
           <div class="note">
-            <strong>Clarification used in this model:</strong>
-            Employee CNSS/AMO rates are shown as deductions (paid by agents).
-            Employer rate is added on top of gross wage to compute employer cost.
+            <strong>Tax note (Tangier Free Zone):</strong> This model is displayed as
+            <strong>NET (TVA Exempt)</strong>. Confirm exemption conditions and invoicing mentions with your tax advisor / client status.
           </div>
         </div>
 
         <div class="card">
-          <h3>2) Monthly Workload (Hours)</h3>
+          <h3>2) Operational Workload (Monthly Hours)</h3>
           <div class="grid">
             <label>
               Security hours / month
@@ -147,18 +140,17 @@
             <label>
               Cleaning hours / month
               <input id="clnHours" type="number" step="1" value="1056">
-              <small class="hint">Adjust according to your staffing plan.</small>
+              <small class="hint">Adjust to your staffing plan and service days.</small>
             </label>
           </div>
 
           <div class="note">
-            If your staffing headcount cannot cover these hours under legal weekly rest and leave,
-            the quotation must include replacements and/or overtime explicitly.
+            If headcount cannot cover hours under weekly rest and leave, include replacements and/or overtime explicitly in the offer.
           </div>
         </div>
 
         <div class="card">
-          <h3>3) CAPEX (One-time purchases) & Monthly Consumables</h3>
+          <h3>3) One-time CAPEX (Purchased Once) & Recurring Consumables</h3>
 
           <div class="grid">
             <label>
@@ -200,26 +192,24 @@
         </div>
 
         <div class="card">
-          <h3>Export</h3>
+          <h3>Export / Internal Approval</h3>
           <div class="actions">
             <button id="printBtn">Print / Save PDF</button>
             <button class="ghost" id="resetBtn">Reset to default</button>
           </div>
-          <p class="hint">
-            Tip: Printing creates a clean PDF for internal approval / tender annex.
-          </p>
+          <p class="hint">Printing generates a clean PDF suitable for internal validation or client submission.</p>
         </div>
       </section>
 
       <!-- RIGHT: SUMMARY -->
       <aside class="summary panel" id="summary">
         <div class="panel-title">
-          <h2>Summary</h2>
-          <p>Live totals with visual breakdown.</p>
+          <h2>Commercial Summary (NET – TVA Exempt)</h2>
+          <p>Monthly recurring totals + one-time CAPEX view.</p>
         </div>
 
         <div class="card">
-          <h3>Monthly Financial Summary (Ex VAT)</h3>
+          <h3>Monthly Financial Summary (NET)</h3>
 
           <div class="summary-grid">
             <div class="summary-box">
@@ -233,12 +223,12 @@
               <div class="summary-sub" id="clnLaborText">Labor: —</div>
             </div>
             <div class="summary-box">
-              <div class="summary-label">Recurring Other (monthly)</div>
+              <div class="summary-label">Consumables / Other (monthly)</div>
               <div class="summary-value" id="otherRecurring">—</div>
-              <div class="summary-sub">Consumables + other fixed costs</div>
+              <div class="summary-sub">Consumables + other recurring fixed costs</div>
             </div>
             <div class="summary-box accent-box">
-              <div class="summary-label">Recurring Total / Month (Ex VAT)</div>
+              <div class="summary-label">Recurring Total / Month (NET)</div>
               <div class="summary-value" id="grandTotal">—</div>
               <div class="summary-sub" id="annualText">Annual: —</div>
             </div>
@@ -255,25 +245,16 @@
             </div>
 
             <div class="capex-box">
-              <h4>One-time CAPEX</h4>
+              <h4>One-time CAPEX (Purchased Once)</h4>
               <div class="capex-line"><span>Security PPE</span><strong id="capexSec">—</strong></div>
               <div class="capex-line"><span>Cleaning PPE</span><strong id="capexCln">—</strong></div>
               <div class="capex-line"><span>Cleaning equipment</span><strong id="capexEq">—</strong></div>
               <div class="capex-line total"><span>Total CAPEX</span><strong id="capexTotal">—</strong></div>
 
-              <div class="note subtle">
-                CAPEX is included only in the “First Month” view if enabled.
-              </div>
-
               <div class="capex-first">
-                <div class="capex-first-label">First Month Total (Ex VAT)</div>
+                <div class="capex-first-label">First Month Total (NET)</div>
                 <div class="capex-first-value" id="firstMonthTotal">—</div>
                 <div class="capex-first-sub">Incl. CAPEX: <span id="capexIncludedText">Yes</span></div>
-              </div>
-
-              <div class="vat-box">
-                <div class="vat-line"><span>Recurring Total (Incl. VAT)</span><strong id="grandTotalVat">—</strong></div>
-                <div class="vat-line"><span>First Month (Incl. VAT)</span><strong id="firstMonthVat">—</strong></div>
               </div>
             </div>
           </div>
@@ -281,7 +262,7 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Line</th>
+                <th>Cost line</th>
                 <th class="num">Monthly (MAD)</th>
               </tr>
             </thead>
@@ -289,19 +270,19 @@
               <tr><td>Security labor</td><td class="num" id="secLabor">—</td></tr>
               <tr><td>Cleaning labor</td><td class="num" id="clnLabor">—</td></tr>
               <tr><td>Cleaning consumables</td><td class="num" id="consumables">—</td></tr>
-              <tr><td>Other fixed (recurring)</td><td class="num" id="otherFixedOut">—</td></tr>
+              <tr><td>Other recurring fixed cost</td><td class="num" id="otherFixedOut">—</td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="card fineprint">
-          <h3>Assumptions</h3>
+          <h3>Model Notes</h3>
           <ul>
-            <li>Gross wage input is used as the base (SMIG).</li>
-            <li>Employee CNSS/AMO is shown as deductions (paid by agents).</li>
-            <li>Employer (patronal) contributions are added to gross to compute employer cost.</li>
-            <li>Replacement coefficient applies to employer cost for service continuity.</li>
-            <li>Equipment & PPE are treated as one-time CAPEX purchases (not amortized).</li>
+            <li>Employee CNSS/AMO rates are shown as deductions (paid by staff).</li>
+            <li>Employer (patronal) contributions are added to gross wage to compute employer cost.</li>
+            <li>Replacement coefficient applies to employer cost for continuity.</li>
+            <li>PPE & equipment are treated as one-time CAPEX (purchased once).</li>
+            <li>Tax display: NET (TVA Exempt – Tangier Free Zone), subject to eligibility/conditions.</li>
           </ul>
         </div>
       </aside>
@@ -309,10 +290,9 @@
 
     <!-- PRICE SOURCES -->
     <section class="wide card" id="sources">
-      <h2>Equipment Price Sources (Direct Jumia search links)</h2>
+      <h2>Market Price Benchmark (Direct Links — Jumia Morocco)</h2>
       <p class="muted">
-        These are direct Jumia Morocco search links (real listings). For audit-proof procurement files,
-        open the search link, select the exact product, and save the product page URL / screenshot / supplier proforma.
+        Direct search links to real listings. For procurement evidence, select the exact item and archive the product page/proforma.
       </p>
 
       <div class="sources">
@@ -350,17 +330,17 @@
 
     <!-- OFFICIAL EVIDENCE -->
     <section class="wide card" id="evidence">
-      <h2>Official Evidence (Morocco)</h2>
+      <h2>Regulatory References (Official Websites)</h2>
       <ul class="evidence">
         <li><strong>Bulletin Officiel (BO):</strong> <a target="_blank" rel="noreferrer" href="https://www.sgg.gov.ma/BO/">https://www.sgg.gov.ma/BO/</a></li>
         <li><strong>CNSS:</strong> <a target="_blank" rel="noreferrer" href="https://www.cnss.ma/">https://www.cnss.ma/</a></li>
         <li><strong>ANAM (AMO):</strong> <a target="_blank" rel="noreferrer" href="https://www.anam.ma/">https://www.anam.ma/</a></li>
-        <li><strong>Ministry portal (employment/SMIG publications):</strong> <a target="_blank" rel="noreferrer" href="https://www.miepeec.gov.ma/">https://www.miepeec.gov.ma/</a></li>
+        <li><strong>Ministry portal:</strong> <a target="_blank" rel="noreferrer" href="https://www.miepeec.gov.ma/">https://www.miepeec.gov.ma/</a></li>
       </ul>
     </section>
 
     <footer class="footer">
-      <small>© DSM Project — Creative Procurement Calculator (static site). Version 2.0</small>
+      <small>© DSM Project — Quotation Model (Tangier Free Zone). Version 2.1</small>
     </footer>
   </main>
 
