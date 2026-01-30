@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="DSM Project — Security & Industrial Cleaning Quotation Model (Tangier Free Zone, Morocco)" />
-  <title>DSM Project | Security & Cleaning Quotation Model — Tangier Free Zone</title>
+  <title>DSM Project | Quotation Model — Tangier Free Zone</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -15,7 +15,7 @@
         <img class="logo" src="assets/logo.png" alt="Design Studio Morocco Logo">
         <div class="brand-text">
           <div class="brand-title">DESIGN STUDIO MOROCCO</div>
-          <div class="brand-subtitle">Professional Quotation Builder — Security & Industrial Cleaning (Morocco)</div>
+          <div class="brand-subtitle">Professional Quotation Builder — Security & Industrial Cleaning (Tangier Free Zone)</div>
         </div>
       </div>
 
@@ -30,15 +30,15 @@
   <main class="container" id="model">
     <section class="hero">
       <div class="hero-content">
-        <h1>Security & Industrial Cleaning — Cost Model (Tangier Free Zone)</h1>
+        <h1>Security & Industrial Cleaning — Cost Model (NET – TVA Exempt)</h1>
         <p>
           Reference case: <strong>5,000 m² industrial facility</strong> + <strong>24 sanitary units</strong>.
-          All outputs are presented as <strong>NET (TVA Exempt – Tangier Free Zone)</strong>.
+          Outputs are presented as <strong>NET (TVA Exempt – Tangier Free Zone)</strong>.
         </p>
 
         <div class="hero-badges">
-          <span class="badge">Payroll compliance view</span>
-          <span class="badge">Employer vs employee charges</span>
+          <span class="badge">Auto-hours from sliders</span>
+          <span class="badge">Overtime check (+25%)</span>
           <span class="badge">One-time CAPEX equipment</span>
           <span class="badge">Direct market links (Jumia)</span>
         </div>
@@ -79,7 +79,7 @@
             <label>
               Employee deductions (%) — CNSS + AMO
               <input id="empDedRate" type="number" step="0.01" value="6.74">
-              <small class="hint">Paid by agents: CNSS 4.48% + AMO 2.26% = 6.74%</small>
+              <small class="hint">Paid by staff: CNSS 4.48% + AMO 2.26% = 6.74%</small>
             </label>
 
             <label>
@@ -91,7 +91,19 @@
             <label>
               Replacement coefficient (%) (leave/holidays/absences)
               <input id="replacement" type="number" step="0.01" value="8.50">
-              <small class="hint">Recommended for service continuity (especially 24/7 security).</small>
+              <small class="hint">Continuity factor for replacements and absences.</small>
+            </label>
+
+            <label>
+              Legal standard hours / agent / month
+              <input id="legalMonthlyHours" type="number" step="1" value="191">
+              <small class="hint">Benchmark for capacity check (adjust if your policy differs).</small>
+            </label>
+
+            <label>
+              Overtime premium (%)
+              <input id="otPremium" type="number" step="0.01" value="25">
+              <small class="hint">Moroccan overtime premium applied here: +25%.</small>
             </label>
           </div>
 
@@ -109,10 +121,6 @@
               <div class="metric-value" id="netHourly">—</div>
             </div>
             <div class="metric">
-              <div class="metric-label">Employer contrib. (MAD/h)</div>
-              <div class="metric-value" id="employerContribHourly">—</div>
-            </div>
-            <div class="metric">
               <div class="metric-label">Employer cost (MAD/h)</div>
               <div class="metric-value" id="employerHourly">—</div>
             </div>
@@ -120,32 +128,88 @@
               <div class="metric-label">Chargeable hourly (MAD/h)</div>
               <div class="metric-value accent" id="chargeableHourly">—</div>
             </div>
+            <div class="metric">
+              <div class="metric-label">Overtime hourly (MAD/h)</div>
+              <div class="metric-value accent" id="otHourly">—</div>
+            </div>
           </div>
 
           <div class="note">
-            <strong>Tax note (Tangier Free Zone):</strong> This model is displayed as
-            <strong>NET (TVA Exempt)</strong>. Confirm exemption conditions and invoicing mentions with your tax advisor / client status.
+            <strong>Tax note:</strong> This model is displayed as <strong>NET (TVA Exempt – Tangier Free Zone)</strong>.
+            Confirm eligibility and invoicing mentions with your finance/tax requirements.
           </div>
         </div>
 
         <div class="card">
-          <h3>2) Operational Workload (Monthly Hours)</h3>
+          <h3>2) Coverage, Staffing & Auto-Hours (Sliders)</h3>
+
           <div class="grid">
+            <div class="rangebox">
+              <div class="rangetop">
+                <div>
+                  <div class="rangetitle">Security coverage — 24/7 posts</div>
+                  <div class="rangehint">Required hours are calculated automatically: posts × 24 × days/month</div>
+                </div>
+                <div class="pill"><span id="secPostsVal">2</span> posts</div>
+              </div>
+              <input id="secPosts" type="range" min="1" max="6" step="1" value="2">
+              <div class="rangefoot">
+                <span>Required security hours / month:</span>
+                <strong id="secReqHours">—</strong>
+              </div>
+            </div>
+
+            <div class="rangebox">
+              <div class="rangetop">
+                <div>
+                  <div class="rangetitle">Security staffing — number of agents</div>
+                  <div class="rangehint">Capacity check vs required hours (overtime if shortage).</div>
+                </div>
+                <div class="pill"><span id="secAgentsVal">8</span> agents</div>
+              </div>
+              <input id="secAgents" type="range" min="1" max="30" step="1" value="8">
+              <div class="rangefoot">
+                <span>Overtime hours (Security):</span>
+                <strong id="secOtHours">—</strong>
+              </div>
+            </div>
+
             <label>
-              Security hours / month
-              <input id="secHours" type="number" step="1" value="1456">
-              <small class="hint">≈ 2 posts 24/7 (728 h/post/month)</small>
+              Days per month (for 24/7 calculation)
+              <input id="daysInMonth" type="number" step="0.01" value="30.33">
+              <small class="hint">30.33 is an average month. You can set 30 or 31.</small>
+            </label>
+
+            <div class="rangebox">
+              <div class="rangetop">
+                <div>
+                  <div class="rangetitle">Cleaning staffing — number of agents</div>
+                  <div class="rangehint">Cleaning required hours: agents × hours/day × days/month</div>
+                </div>
+                <div class="pill"><span id="clnAgentsVal">6</span> agents</div>
+              </div>
+              <input id="clnAgents" type="range" min="1" max="30" step="1" value="6">
+              <div class="rangefoot">
+                <span>Required cleaning hours / month:</span>
+                <strong id="clnReqHours">—</strong>
+              </div>
+            </div>
+
+            <label>
+              Cleaning hours per agent / day
+              <input id="clnHoursPerDay" type="number" step="0.5" value="8">
+              <small class="hint">Example: 8 hours/day.</small>
             </label>
 
             <label>
-              Cleaning hours / month
-              <input id="clnHours" type="number" step="1" value="1056">
-              <small class="hint">Adjust to your staffing plan and service days.</small>
+              Cleaning working days / month
+              <input id="clnDaysPerMonth" type="number" step="1" value="22">
+              <small class="hint">Example: 22 (Mon–Fri standard). Adjust if Saturdays are included.</small>
             </label>
           </div>
 
-          <div class="note">
-            If headcount cannot cover hours under weekly rest and leave, include replacements and/or overtime explicitly in the offer.
+          <div class="note" id="otNote">
+            Overtime check: when required hours exceed agents’ legal capacity, overtime is applied at <strong>+25%</strong>.
           </div>
         </div>
 
@@ -156,31 +220,26 @@
             <label>
               Security PPE CAPEX (one time) — MAD
               <input id="secPpeCapex" type="number" step="1" value="6090">
-              <small class="hint">Uniforms + safety shoes + accessories</small>
             </label>
 
             <label>
               Cleaning PPE CAPEX (one time) — MAD
               <input id="clnPpeCapex" type="number" step="1" value="3600">
-              <small class="hint">Uniforms + shoes + gloves/PPE</small>
             </label>
 
             <label>
               Cleaning equipment CAPEX (one time) — MAD
               <input id="equipCapex" type="number" step="1" value="29000">
-              <small class="hint">Trolleys + vacuum + scrubber + tools</small>
             </label>
 
             <label>
               Cleaning products & consumables — MAD/month
               <input id="clnProducts" type="number" step="1" value="3040">
-              <small class="hint">Detergents, disinfectants, bags, paper/wipes etc.</small>
             </label>
 
             <label>
               Other recurring fixed cost — MAD/month (optional)
               <input id="otherFixed" type="number" step="1" value="0">
-              <small class="hint">Supervision, transport, insurance, admin, etc.</small>
             </label>
 
             <label class="toggle">
@@ -205,7 +264,7 @@
       <aside class="summary panel" id="summary">
         <div class="panel-title">
           <h2>Commercial Summary (NET – TVA Exempt)</h2>
-          <p>Monthly recurring totals + one-time CAPEX view.</p>
+          <p>Monthly recurring totals + overtime + one-time CAPEX view.</p>
         </div>
 
         <div class="card">
@@ -216,17 +275,22 @@
               <div class="summary-label">Security (monthly)</div>
               <div class="summary-value" id="secTotal">—</div>
               <div class="summary-sub" id="secLaborText">Labor: —</div>
+              <div class="summary-sub" id="secOtText">Overtime: —</div>
             </div>
+
             <div class="summary-box">
               <div class="summary-label">Cleaning (monthly)</div>
               <div class="summary-value" id="clnTotal">—</div>
               <div class="summary-sub" id="clnLaborText">Labor: —</div>
+              <div class="summary-sub" id="clnOtText">Overtime: —</div>
             </div>
+
             <div class="summary-box">
               <div class="summary-label">Consumables / Other (monthly)</div>
               <div class="summary-value" id="otherRecurring">—</div>
               <div class="summary-sub">Consumables + other recurring fixed costs</div>
             </div>
+
             <div class="summary-box accent-box">
               <div class="summary-label">Recurring Total / Month (NET)</div>
               <div class="summary-value" id="grandTotal">—</div>
@@ -267,28 +331,18 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td>Security labor</td><td class="num" id="secLabor">—</td></tr>
-              <tr><td>Cleaning labor</td><td class="num" id="clnLabor">—</td></tr>
+              <tr><td>Security labor (normal)</td><td class="num" id="secLaborNormal">—</td></tr>
+              <tr><td>Security labor (overtime +25%)</td><td class="num" id="secLaborOt">—</td></tr>
+              <tr><td>Cleaning labor (normal)</td><td class="num" id="clnLaborNormal">—</td></tr>
+              <tr><td>Cleaning labor (overtime +25%)</td><td class="num" id="clnLaborOt">—</td></tr>
               <tr><td>Cleaning consumables</td><td class="num" id="consumables">—</td></tr>
               <tr><td>Other recurring fixed cost</td><td class="num" id="otherFixedOut">—</td></tr>
             </tbody>
           </table>
         </div>
-
-        <div class="card fineprint">
-          <h3>Model Notes</h3>
-          <ul>
-            <li>Employee CNSS/AMO rates are shown as deductions (paid by staff).</li>
-            <li>Employer (patronal) contributions are added to gross wage to compute employer cost.</li>
-            <li>Replacement coefficient applies to employer cost for continuity.</li>
-            <li>PPE & equipment are treated as one-time CAPEX (purchased once).</li>
-            <li>Tax display: NET (TVA Exempt – Tangier Free Zone), subject to eligibility/conditions.</li>
-          </ul>
-        </div>
       </aside>
     </section>
 
-    <!-- PRICE SOURCES -->
     <section class="wide card" id="sources">
       <h2>Market Price Benchmark (Direct Links — Jumia Morocco)</h2>
       <p class="muted">
@@ -300,27 +354,22 @@
           <span class="src-title">Industrial trolley (chariot de ménage)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=chariot+de+menage+professionnel</span>
         </a>
-
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur+professionnel">
           <span class="src-title">Professional vacuum (aspirateur professionnel)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=aspirateur+professionnel</span>
         </a>
-
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=autolaveuse">
           <span class="src-title">Scrubber dryer (autolaveuse)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=autolaveuse</span>
         </a>
-
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chaussures+de+securite">
           <span class="src-title">Safety shoes (chaussures de sécurité)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=chaussures+de+securite</span>
         </a>
-
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=vetement+de+travail">
           <span class="src-title">Workwear / Uniforms (vêtement de travail)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=vetement+de+travail</span>
         </a>
-
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=sacs+poubelle">
           <span class="src-title">Trash bags / consumables (sacs poubelle)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=sacs+poubelle</span>
@@ -328,7 +377,6 @@
       </div>
     </section>
 
-    <!-- OFFICIAL EVIDENCE -->
     <section class="wide card" id="evidence">
       <h2>Regulatory References (Official Websites)</h2>
       <ul class="evidence">
@@ -340,7 +388,7 @@
     </section>
 
     <footer class="footer">
-      <small>© DSM Project — Quotation Model (Tangier Free Zone). Version 2.1</small>
+      <small>© DSM Project — Quotation Model (Tangier Free Zone). Version 3.0</small>
     </footer>
   </main>
 
