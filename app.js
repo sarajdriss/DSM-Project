@@ -34,6 +34,8 @@ const DEFAULTS = {
 
 const IDS = Object.keys(DEFAULTS);
 
+function $(id){ return document.getElementById(id); }
+
 function moneyMAD(n, decimals = 0) {
   return new Intl.NumberFormat('fr-MA', {
     style: 'currency',
@@ -41,25 +43,22 @@ function moneyMAD(n, decimals = 0) {
     maximumFractionDigits: decimals
   }).format(isFinite(n) ? n : 0);
 }
-function round2(n){ return Math.round((n + Number.EPSILON) * 100) / 100; }
+function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
-function el(id){ return document.getElementById(id); }
-function num(id){
-  const e = el(id);
+function readNum(id){
+  const e = $(id);
   if (!e) return 0;
   const v = parseFloat(e.value);
-  return isFinite(v) ? v : 0;
+  return Number.isFinite(v) ? v : 0;
 }
-function bool(id){
-  const e = el(id);
+function readBool(id){
+  const e = $(id);
   return !!(e && e.checked);
 }
 function setText(id, value){
-  const e = el(id);
+  const e = $(id);
   if (e) e.textContent = value;
 }
-
-function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
 function setDonut(sec, cln, other) {
   const total = sec + cln + other;
@@ -67,40 +66,11 @@ function setDonut(sec, cln, other) {
   const s2 = total > 0 ? (cln / total) : 0;
   const p1 = (s1 * 100).toFixed(2) + '%';
   const p2 = ((s1 + s2) * 100).toFixed(2) + '%';
-  const d = el('donut');
+  const d = $('donut');
   if (d) {
     d.style.setProperty('--p1', p1);
     d.style.setProperty('--p2', p2);
   }
-}
-
-function loadSaved() {
-  IDS.forEach(id => {
-    const e = el(id);
-    if (!e) return;
-    const saved = localStorage.getItem('DSM_' + id);
-    if (saved === null) return;
-    if (e.type === 'checkbox') e.checked = saved === 'true';
-    else e.value = saved;
-  });
-}
-function saveAll(){
-  IDS.forEach(id => {
-    const e = el(id);
-    if (!e) return;
-    if (e.type === 'checkbox') localStorage.setItem('DSM_' + id, e.checked ? 'true' : 'false');
-    else localStorage.setItem('DSM_' + id, e.value);
-  });
-}
-function resetDefaults(){
-  IDS.forEach(id => {
-    const e = el(id);
-    if (!e) return;
-    if (e.type === 'checkbox') e.checked = DEFAULTS[id];
-    else e.value = DEFAULTS[id];
-    localStorage.removeItem('DSM_' + id);
-  });
-  calc();
 }
 
 function computeLaborCost({ reqDay, reqNight, dayAgents, nightAgents, legalMonthlyHours, rateNormal, rateOtDay, rateOtNight }) {
@@ -117,36 +87,76 @@ function computeLaborCost({ reqDay, reqNight, dayAgents, nightAgents, legalMonth
   const costOtDay = otDayHours * rateOtDay;
   const costOtNight = otNightHours * rateOtNight;
 
-  const totalHours = reqDay + reqNight;
-  const totalCost = costNormal + costOtDay + costOtNight;
-
   return {
     capDay, capNight,
-    normalDayHours, normalNightHours,
     otDayHours, otNightHours,
     costNormal, costOtDay, costOtNight,
-    totalHours, totalCost
+    totalCost: costNormal + costOtDay + costOtNight
   };
 }
 
-function calc() {
-  // payroll
-  const smig = num('smig');
-  const empDedRate = num('empDedRate') / 100;
-  const employerRate = num('employerRate') / 100;
-  const replacement = num('replacement') / 100;
+function saveAll(){
+  IDS.forEach(id => {
+    const e = $(id);
+    if (!e) return;
+    const key = 'DSM_' + id;
+    if (e.type === 'checkbox') localStorage.setItem(key, e.checked ? 'true' : 'false');
+    else localStorage.setItem(key, e.value);
+  });
+}
 
-  const legalMonthlyHours = num('legalMonthlyHours');
-  const nightHoursPerDay = clamp(num('nightHoursPerDay'), 0, 24);
+function loadSaved(){
+  IDS.forEach(id => {
+    const e = $(id);
+    if (!e) return;
+    const key = 'DSM_' + id;
+    const saved = localStorage.getItem(key);
+    if (saved === null) return;
+    if (e.type === 'checkbox') e.checked = (saved === 'true');
+    else e.value = saved;
+  });
+}
+
+function resetDefaults(){
+  IDS.forEach(id => {
+    const e = $(id);
+    if (!e) return;
+    if (e.type === 'checkbox') e.checked = DEFAULTS[id];
+    else e.value = DEFAULTS[id];
+    localStorage.removeItem('DSM_' + id);
+  });
+  calc();
+}
+
+function syncSliderConstraints(){
+  // Keep night agents <= total agents and set max dynamically (best practice UX)
+  const secAgents = Math.round(readNum('secAgents'));
+  const secNight = $('secNightAgents');
+  if (secNight) secNight.max = String(Math.max(0, secAgents));
+
+  const clnAgents = Math.round(readNum('clnAgents'));
+  const clnNight = $('clnNightAgents');
+  if (clnNight) clnNight.max = String(Math.max(0, clnAgents));
+}
+
+function calc(){
+  syncSliderConstraints();
+
+  // payroll
+  const smig = readNum('smig');
+  const empDedRate = readNum('empDedRate') / 100;
+  const employerRate = readNum('employerRate') / 100;
+  const replacement = readNum('replacement') / 100;
+
+  const legalMonthlyHours = readNum('legalMonthlyHours');
+  const nightHoursPerDay = clamp(readNum('nightHoursPerDay'), 0, 24);
   const dayHoursPerDay = 24 - nightHoursPerDay;
 
-  const otDayPremium = num('otDayPremium') / 100;
-  const otNightPremium = num('otNightPremium') / 100;
+  const otDayPremium = readNum('otDayPremium') / 100;
+  const otNightPremium = readNum('otNightPremium') / 100;
 
-  // base rates
   const grossHourly = smig;
-  const empDedHourly = grossHourly * empDedRate;
-  const netHourly = grossHourly - empDedHourly;
+  const netHourly = grossHourly * (1 - empDedRate);
 
   const employerHourly = grossHourly * (1 + employerRate);
   const chargeableHourly = employerHourly * (1 + replacement);
@@ -160,25 +170,24 @@ function calc() {
   setText('otNightHourly', moneyMAD(otNightHourly, 2));
   setText('netHourly', moneyMAD(netHourly, 2));
 
-  // 1 agent/month cost (standard capacity)
-  const oneAgentMonthlyCost = legalMonthlyHours * chargeableHourly;
-  setText('oneAgentMonthlyCost', moneyMAD(oneAgentMonthlyCost, 0));
+  setText('oneAgentMonthlyCost', moneyMAD(legalMonthlyHours * chargeableHourly, 0));
 
-  // SECURITY inputs
-  const daysInMonth = num('daysInMonth');
-  const secPosts = Math.round(num('secPosts'));
-  const secAgents = Math.round(num('secAgents'));
-  let secNightAgents = Math.round(num('secNightAgents'));
+  // SECURITY
+  const daysInMonth = readNum('daysInMonth');
+  const secPosts = Math.round(readNum('secPosts'));
+  const secAgents = Math.round(readNum('secAgents'));
+  let secNightAgents = Math.round(readNum('secNightAgents'));
   secNightAgents = clamp(secNightAgents, 0, secAgents);
   const secDayAgents = secAgents - secNightAgents;
 
-  // output slider values
+  // keep slider value synced after clamp
+  if ($('secNightAgents')) $('secNightAgents').value = String(secNightAgents);
+
   setText('secPostsVal', secPosts);
   setText('secAgentsVal', secAgents);
   setText('secNightAgentsVal', secNightAgents);
   setText('secDayAgentsOut', `${secDayAgents} day`);
 
-  // Security required hours (24/7 posts)
   const secReqTotal = secPosts * 24 * daysInMonth;
   const secReqNight = secReqTotal * (nightHoursPerDay / 24);
   const secReqDay = secReqTotal * (dayHoursPerDay / 24);
@@ -187,104 +196,89 @@ function calc() {
   setText('secCapacity', `${Math.round(secAgents * legalMonthlyHours)} h`);
 
   const secRes = computeLaborCost({
-    reqDay: secReqDay,
-    reqNight: secReqNight,
-    dayAgents: secDayAgents,
-    nightAgents: secNightAgents,
+    reqDay: secReqDay, reqNight: secReqNight,
+    dayAgents: secDayAgents, nightAgents: secNightAgents,
     legalMonthlyHours,
     rateNormal: chargeableHourly,
     rateOtDay: otDayHourly,
     rateOtNight: otNightHourly
   });
 
-  // SECURITY alert
-  const secShortage = secRes.otDayHours + secRes.otNightHours;
-  const secAlert = secShortage > 0
-    ? `Security staffing shortage: OT required = ${Math.round(secShortage)} h (Day OT: ${Math.round(secRes.otDayHours)} h | Night OT: ${Math.round(secRes.otNightHours)} h).`
-    : `Security staffing OK: no overtime required (capacity covers required hours).`;
-  const secAlertEl = el('secOtAlert');
-  if (secAlertEl) secAlertEl.textContent = secAlert;
+  const secShort = secRes.otDayHours + secRes.otNightHours;
+  setText('secOtAlert',
+    secShort > 0
+      ? `Security OT required: ${Math.round(secShort)} h (Day: ${Math.round(secRes.otDayHours)} h | Night: ${Math.round(secRes.otNightHours)} h).`
+      : `Security staffing OK: no overtime required.`
+  );
 
-  // CLEANING inputs
-  const clnHoursPerDay = num('clnHoursPerDay');
-  const clnDaysPerMonth = num('clnDaysPerMonth');
-  const clnAgents = Math.round(num('clnAgents'));
-  let clnNightAgents = Math.round(num('clnNightAgents'));
+  // CLEANING
+  const clnHoursPerDay = readNum('clnHoursPerDay');
+  const clnDaysPerMonth = readNum('clnDaysPerMonth');
+  const clnAgents = Math.round(readNum('clnAgents'));
+  let clnNightAgents = Math.round(readNum('clnNightAgents'));
   clnNightAgents = clamp(clnNightAgents, 0, clnAgents);
   const clnDayAgents = clnAgents - clnNightAgents;
+
+  if ($('clnNightAgents')) $('clnNightAgents').value = String(clnNightAgents);
 
   setText('clnAgentsVal', clnAgents);
   setText('clnNightAgentsVal', clnNightAgents);
   setText('clnDayAgentsOut', `${clnDayAgents} day`);
 
-  // Cleaning required hours based on team plan
   const clnReqTotal = clnAgents * clnHoursPerDay * clnDaysPerMonth;
-
-  // Allocate required hours into day/night by agent split
   const clnReqNight = (clnAgents > 0) ? (clnReqTotal * (clnNightAgents / clnAgents)) : 0;
   const clnReqDay = clnReqTotal - clnReqNight;
 
   setText('clnReqHours', `${Math.round(clnReqTotal)} h`);
 
   const clnRes = computeLaborCost({
-    reqDay: clnReqDay,
-    reqNight: clnReqNight,
-    dayAgents: clnDayAgents,
-    nightAgents: clnNightAgents,
+    reqDay: clnReqDay, reqNight: clnReqNight,
+    dayAgents: clnDayAgents, nightAgents: clnNightAgents,
     legalMonthlyHours,
     rateNormal: chargeableHourly,
     rateOtDay: otDayHourly,
     rateOtNight: otNightHourly
   });
 
-  const clnShortage = clnRes.otDayHours + clnRes.otNightHours;
-  const clnAlert = clnShortage > 0
-    ? `Cleaning staffing shortage: OT required = ${Math.round(clnShortage)} h (Day OT: ${Math.round(clnRes.otDayHours)} h | Night OT: ${Math.round(clnRes.otNightHours)} h).`
-    : `Cleaning staffing OK: no overtime required (capacity covers required hours).`;
-  const clnAlertEl = el('clnOtAlert');
-  if (clnAlertEl) clnAlertEl.textContent = clnAlert;
+  const clnShort = clnRes.otDayHours + clnRes.otNightHours;
+  setText('clnOtAlert',
+    clnShort > 0
+      ? `Cleaning OT required: ${Math.round(clnShort)} h (Day: ${Math.round(clnRes.otDayHours)} h | Night: ${Math.round(clnRes.otNightHours)} h).`
+      : `Cleaning staffing OK: no overtime required.`
+  );
 
-  // OPEX inputs
-  const clnProducts = num('clnProducts');
-  const otherFixed = num('otherFixed');
+  // OPEX & CAPEX
+  const clnProducts = readNum('clnProducts');
+  const otherFixed = readNum('otherFixed');
 
-  // CAPEX inputs
-  const secPpeCapex = num('secPpeCapex');
-  const clnPpeCapex = num('clnPpeCapex');
-  const equipCapex = num('equipCapex');
-  const includeCapex = bool('includeCapex');
+  const secPpeCapex = readNum('secPpeCapex');
+  const clnPpeCapex = readNum('clnPpeCapex');
+  const equipCapex = readNum('equipCapex');
+  const includeCapex = readBool('includeCapex');
 
   const capexTotal = secPpeCapex + clnPpeCapex + equipCapex;
 
-  // Monthly totals
   const secTotal = secRes.totalCost;
   const clnTotal = clnRes.totalCost;
   const opexOther = clnProducts + otherFixed;
 
   const opexTotal = secTotal + clnTotal + opexOther;
   const opexAnnual = opexTotal * 12;
-
   const month1Total = includeCapex ? (opexTotal + capexTotal) : opexTotal;
 
-  // Update right summary
+  // Summary outputs (same ids as your page)
   setText('secTotal', moneyMAD(secTotal, 0));
   setText('clnTotal', moneyMAD(clnTotal, 0));
   setText('opexOther', moneyMAD(opexOther, 0));
   setText('opexTotal', moneyMAD(opexTotal, 0));
   setText('opexAnnual', `Annual OPEX (NET): ${moneyMAD(opexAnnual, 0)}`);
 
-  setText('secDetailLine',
-    `Normal: ${moneyMAD(secRes.costNormal,0)} | OT day: ${moneyMAD(secRes.costOtDay,0)} | OT night: ${moneyMAD(secRes.costOtNight,0)}`
-  );
-  setText('clnDetailLine',
-    `Normal: ${moneyMAD(clnRes.costNormal,0)} | OT day: ${moneyMAD(clnRes.costOtDay,0)} | OT night: ${moneyMAD(clnRes.costOtNight,0)}`
-  );
+  setText('secDetailLine', `Normal: ${moneyMAD(secRes.costNormal,0)} | OT day: ${moneyMAD(secRes.costOtDay,0)} | OT night: ${moneyMAD(secRes.costOtNight,0)}`);
+  setText('clnDetailLine', `Normal: ${moneyMAD(clnRes.costNormal,0)} | OT day: ${moneyMAD(clnRes.costOtDay,0)} | OT night: ${moneyMAD(clnRes.costOtNight,0)}`);
 
-  // KPI
   setText('kpiOpexMonthly', moneyMAD(opexTotal, 0));
   setText('kpiMonth1', moneyMAD(month1Total, 0));
 
-  // CAPEX box
   setText('capexSec', moneyMAD(secPpeCapex, 0));
   setText('capexCln', moneyMAD(clnPpeCapex, 0));
   setText('capexEq', moneyMAD(equipCapex, 0));
@@ -292,7 +286,6 @@ function calc() {
   setText('month1Total', moneyMAD(month1Total, 0));
   setText('capexIncludedText', includeCapex ? 'Yes' : 'No');
 
-  // Detailed table
   setText('secCostNormal', moneyMAD(secRes.costNormal, 0));
   setText('secCostOtDay', moneyMAD(secRes.costOtDay, 0));
   setText('secCostOtNight', moneyMAD(secRes.costOtNight, 0));
@@ -304,32 +297,27 @@ function calc() {
   setText('consumables', moneyMAD(clnProducts, 0));
   setText('otherFixedOut', moneyMAD(otherFixed, 0));
 
-  // Breakdown section outputs
   setText('opexExplainMonthly', moneyMAD(opexTotal, 0));
   setText('opexExplainAnnual', moneyMAD(opexAnnual, 0));
   setText('capexExplainTotal', moneyMAD(capexTotal, 0));
   setText('month1ExplainTotal', moneyMAD(month1Total, 0));
 
-  // Donut: OPEX breakdown
   setDonut(secTotal, clnTotal, opexOther);
-
-  // keep night agents sliders consistent (clamped)
-  if (el('secNightAgents')) el('secNightAgents').value = secNightAgents;
-  if (el('clnNightAgents')) el('clnNightAgents').value = clnNightAgents;
 
   saveAll();
 }
 
 function bind(){
-  IDS.forEach(id => {
-    const e = el(id);
-    if (!e) return;
-    e.addEventListener('input', () => { calc(); });
-    e.addEventListener('change', () => { calc(); });
+  // Best practice: event delegation — any input change triggers calc
+  document.addEventListener('input', (e) => {
+    if (e.target && e.target.matches('input')) calc();
+  });
+  document.addEventListener('change', (e) => {
+    if (e.target && e.target.matches('input')) calc();
   });
 
-  const toggleBtn = el('toggleBreakdownBtn');
-  const breakdown = el('breakdown');
+  const toggleBtn = $('toggleBreakdownBtn');
+  const breakdown = $('breakdown');
   if (toggleBtn && breakdown) {
     toggleBtn.addEventListener('click', () => {
       breakdown.classList.toggle('hidden');
@@ -340,13 +328,15 @@ function bind(){
     });
   }
 
-  const printBtn = el('printBtn');
+  const printBtn = $('printBtn');
   if (printBtn) printBtn.addEventListener('click', () => window.print());
 
-  const resetBtn = el('resetBtn');
+  const resetBtn = $('resetBtn');
   if (resetBtn) resetBtn.addEventListener('click', resetDefaults);
 }
 
-loadSaved();
-bind();
-calc();
+window.addEventListener('DOMContentLoaded', () => {
+  loadSaved();
+  bind();
+  calc();
+});
