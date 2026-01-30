@@ -1,3 +1,21 @@
+const DEFAULTS = {
+  smig: 17.92,
+  empDedRate: 6.74,      // employee paid (deducted): CNSS 4.48 + AMO 2.26
+  employerRate: 21.09,   // patronal paid by company
+  replacement: 8.50,
+  vat: 20,
+  secHours: 1456,
+  clnHours: 1056,
+  secPpeCapex: 6090,
+  clnPpeCapex: 3600,
+  equipCapex: 29000,
+  clnProducts: 3040,
+  otherFixed: 0,
+  includeCapex: true
+};
+
+const IDS = Object.keys(DEFAULTS);
+
 function moneyMAD(n, decimals = 0) {
   return new Intl.NumberFormat('fr-MA', {
     style: 'currency',
@@ -7,96 +25,190 @@ function moneyMAD(n, decimals = 0) {
 }
 
 function num(id) {
-  const v = parseFloat(document.getElementById(id).value);
+  const el = document.getElementById(id);
+  if (!el) return 0;
+  const v = parseFloat(el.value);
   return isFinite(v) ? v : 0;
 }
 
-function safeDiv(a, b) {
-  if (!isFinite(a) || !isFinite(b) || b <= 0) return 0;
-  return a / b;
+function bool(id) {
+  const el = document.getElementById(id);
+  return !!(el && el.checked);
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function setDonut(sec, cln, other) {
+  const total = sec + cln + other;
+  const s1 = total > 0 ? (sec / total) : 0;
+  const s2 = total > 0 ? (cln / total) : 0;
+
+  // Conic-gradient stops require cumulative percentages
+  const p1 = (s1 * 100).toFixed(2) + '%';
+  const p2 = ((s1 + s2) * 100).toFixed(2) + '%';
+
+  const donut = document.getElementById('donut');
+  if (donut) {
+    donut.style.setProperty('--p1', p1);
+    donut.style.setProperty('--p2', p2);
+  }
+}
+
+function loadSaved() {
+  IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const saved = localStorage.getItem('DSM_' + id);
+    if (saved === null) return;
+
+    if (el.type === 'checkbox') {
+      el.checked = saved === 'true';
+    } else {
+      el.value = saved;
+    }
+  });
+}
+
+function saveAll() {
+  IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.type === 'checkbox') {
+      localStorage.setItem('DSM_' + id, el.checked ? 'true' : 'false');
+    } else {
+      localStorage.setItem('DSM_' + id, el.value);
+    }
+  });
+}
+
+function resetDefaults() {
+  IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = DEFAULTS[id];
+    else el.value = DEFAULTS[id];
+    localStorage.removeItem('DSM_' + id);
+  });
+  calc();
 }
 
 function calc() {
-  const smig = num('smig');
-  const employerCharges = num('employerCharges') / 100;
+  const smig = num('smig'); // gross hourly
+  const empDedRate = num('empDedRate') / 100;
+  const employerRate = num('employerRate') / 100;
   const replacement = num('replacement') / 100;
   const vat = num('vat') / 100;
 
   const secHours = num('secHours');
   const clnHours = num('clnHours');
 
-  const secPpeInv = num('secPpeInv');
-  const secPpeMonths = num('secPpeMonths');
-
-  const clnPpeInv = num('clnPpeInv');
-  const clnPpeMonths = num('clnPpeMonths');
-
-  const equipInv = num('equipInv');
-  const equipMonths = num('equipMonths');
+  const secPpeCapex = num('secPpeCapex');
+  const clnPpeCapex = num('clnPpeCapex');
+  const equipCapex = num('equipCapex');
 
   const clnProducts = num('clnProducts');
   const otherFixed = num('otherFixed');
 
-  // Corrected logic:
-  // Employer hourly cost uses EMPLOYER charges only (starting from gross SMIG).
-  // Replacement coefficient is applied for service continuity (leave/holidays/absences).
-  const employerHourly = smig * (1 + employerCharges);
+  const includeCapex = bool('includeCapex');
+
+  // Payroll logic per your note:
+  // Employee deductions are paid by employees (deducted from gross).
+  // Employer contributions (patronal) are paid by the company and added on top of gross.
+  const grossHourly = smig;
+  const empDedHourly = grossHourly * empDedRate;
+  const netHourly = grossHourly - empDedHourly;
+
+  const employerContribHourly = grossHourly * employerRate;
+  const employerHourly = grossHourly + employerContribHourly;
+
+  // Chargeable hourly (for service pricing) including replacement coefficient:
   const chargeableHourly = employerHourly * (1 + replacement);
 
-  // Monthly amortization
-  const secPpeMonthly = safeDiv(secPpeInv, secPpeMonths);
-  const clnPpeMonthly = safeDiv(clnPpeInv, clnPpeMonths);
-  const equipMonthly = safeDiv(equipInv, equipMonths);
-
-  // Labor
+  // Labor monthly costs
   const secLabor = chargeableHourly * secHours;
   const clnLabor = chargeableHourly * clnHours;
 
-  // Other costs
-  const secOther = secPpeMonthly;
-  const clnOther = clnPpeMonthly + equipMonthly + clnProducts;
+  // Recurring monthly other
+  const otherRecurring = clnProducts + otherFixed;
 
-  const secTotal = secLabor + secOther;
-  const clnTotal = clnLabor + clnOther;
-
-  const grandTotal = secTotal + clnTotal + otherFixed;
+  // Monthly totals (recurring)
+  const secTotal = secLabor;
+  const clnTotal = clnLabor;
+  const grandTotal = secTotal + clnTotal + otherRecurring;
   const annualTotal = grandTotal * 12;
 
+  // One-time CAPEX
+  const capexTotal = secPpeCapex + clnPpeCapex + equipCapex;
+
+  const firstMonthTotal = includeCapex ? (grandTotal + capexTotal) : grandTotal;
+
+  // VAT views
   const grandTotalVat = grandTotal * (1 + vat);
-  const annualTotalVat = annualTotal * (1 + vat);
+  const firstMonthVat = firstMonthTotal * (1 + vat);
 
-  // Display
-  document.getElementById('employerHourly').textContent = moneyMAD(employerHourly, 2);
-  document.getElementById('chargeableHourly').textContent = moneyMAD(chargeableHourly, 2);
+  // Outputs (hourly)
+  setText('grossHourly', moneyMAD(grossHourly, 2));
+  setText('empDedHourly', moneyMAD(empDedHourly, 2));
+  setText('netHourly', moneyMAD(netHourly, 2));
+  setText('employerContribHourly', moneyMAD(employerContribHourly, 2));
+  setText('employerHourly', moneyMAD(employerHourly, 2));
+  setText('chargeableHourly', moneyMAD(chargeableHourly, 2));
 
-  document.getElementById('secPpeMonthly').textContent = moneyMAD(secPpeMonthly, 0);
-  document.getElementById('clnPpeMonthly').textContent = moneyMAD(clnPpeMonthly, 0);
-  document.getElementById('equipMonthly').textContent = moneyMAD(equipMonthly, 0);
+  // Outputs (monthly)
+  setText('secLabor', moneyMAD(secLabor, 0));
+  setText('clnLabor', moneyMAD(clnLabor, 0));
+  setText('consumables', moneyMAD(clnProducts, 0));
+  setText('otherFixedOut', moneyMAD(otherFixed, 0));
 
-  document.getElementById('secLabor').textContent = moneyMAD(secLabor, 0);
-  document.getElementById('secOther').textContent = moneyMAD(secOther, 0);
-  document.getElementById('secTotal').textContent = moneyMAD(secTotal, 0);
+  setText('secTotal', moneyMAD(secTotal, 0));
+  setText('clnTotal', moneyMAD(clnTotal, 0));
+  setText('otherRecurring', moneyMAD(otherRecurring, 0));
+  setText('grandTotal', moneyMAD(grandTotal, 0));
+  setText('annualText', 'Annual: ' + moneyMAD(annualTotal, 0));
 
-  document.getElementById('clnLabor').textContent = moneyMAD(clnLabor, 0);
-  document.getElementById('clnOther').textContent = moneyMAD(clnOther, 0);
-  document.getElementById('clnTotal').textContent = moneyMAD(clnTotal, 0);
+  setText('secLaborText', 'Labor: ' + moneyMAD(secLabor, 0));
+  setText('clnLaborText', 'Labor: ' + moneyMAD(clnLabor, 0));
 
-  document.getElementById('grandTotal').textContent = moneyMAD(grandTotal, 0);
-  document.getElementById('annualTotal').textContent = moneyMAD(annualTotal, 0);
+  // KPI cards
+  setText('kpiMonthly', moneyMAD(grandTotal, 0));
+  setText('kpiFirstMonth', moneyMAD(firstMonthTotal, 0));
 
-  document.getElementById('grandTotalVat').textContent = moneyMAD(grandTotalVat, 0);
-  document.getElementById('annualTotalVat').textContent = moneyMAD(annualTotalVat, 0);
+  // CAPEX
+  setText('capexSec', moneyMAD(secPpeCapex, 0));
+  setText('capexCln', moneyMAD(clnPpeCapex, 0));
+  setText('capexEq', moneyMAD(equipCapex, 0));
+  setText('capexTotal', moneyMAD(capexTotal, 0));
+  setText('firstMonthTotal', moneyMAD(firstMonthTotal, 0));
+  setText('capexIncludedText', includeCapex ? 'Yes' : 'No');
+
+  // VAT
+  setText('grandTotalVat', moneyMAD(grandTotalVat, 0));
+  setText('firstMonthVat', moneyMAD(firstMonthVat, 0));
+
+  // Donut breakdown on recurring monthly only
+  setDonut(secTotal, clnTotal, otherRecurring);
+
+  saveAll();
 }
 
-[
-  'smig','employerCharges','replacement','vat',
-  'secHours','clnHours',
-  'secPpeInv','secPpeMonths',
-  'clnPpeInv','clnPpeMonths',
-  'equipInv','equipMonths',
-  'clnProducts','otherFixed'
-].forEach(id => document.getElementById(id).addEventListener('input', calc));
+function bind() {
+  IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', calc);
+    el.addEventListener('change', calc);
+  });
 
-document.getElementById('printBtn').addEventListener('click', () => window.print());
+  const printBtn = document.getElementById('printBtn');
+  if (printBtn) printBtn.addEventListener('click', () => window.print());
 
+  const resetBtn = document.getElementById('resetBtn');
+  if (resetBtn) resetBtn.addEventListener('click', resetDefaults);
+}
+
+loadSaved();
+bind();
 calc();
