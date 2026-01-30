@@ -3,309 +3,366 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="DSM Project — Security & Cleaning Services Quotation Calculator (Morocco)" />
-  <title>DSM Project | Quotation Calculator</title>
+  <meta name="description" content="DSM Project — Creative Quotation Calculator for Security & Cleaning Services (Morocco)" />
+  <title>DSM Project | Security & Cleaning Quotation Calculator</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <div class="container">
-
-    <!-- Header / Branding -->
-    <header class="topbar">
+  <header class="header">
+    <div class="header-inner">
       <div class="brand">
         <img class="logo" src="assets/logo.png" alt="Design Studio Morocco Logo">
         <div class="brand-text">
-          <div class="brand-name">DESIGN STUDIO MOROCCO</div>
-          <div class="brand-sub">Security & Cleaning Services — Quotation Calculator (Morocco)</div>
+          <div class="brand-title">DESIGN STUDIO MOROCCO</div>
+          <div class="brand-subtitle">Security & Industrial Cleaning — Quotation Calculator (Morocco)</div>
         </div>
       </div>
 
       <nav class="nav">
-        <a href="#inputs">Inputs</a>
-        <a href="#summary">Summary</a>
+        <a href="#model">Model</a>
         <a href="#sources">Price Sources</a>
         <a href="#evidence">Official Evidence</a>
       </nav>
-    </header>
+    </div>
+  </header>
 
+  <main class="container" id="model">
     <section class="hero">
-      <h1>Security & Industrial Cleaning (Tangier) — Financial Model</h1>
-      <p>
-        Model for <strong>5,000 m² industrial facility</strong> + <strong>24 sanitary units</strong>.
-        Outputs are <strong>Excluding VAT</strong>. Update SMIG/CNSS and supplier prices at contract start.
-      </p>
-    </section>
+      <div class="hero-content">
+        <h1>Quotation Model — Tangier Industrial Site</h1>
+        <p>
+          <strong>5,000 m²</strong> industrial facility + <strong>24 sanitary units</strong>.
+          Outputs are <strong>Excluding VAT</strong> (with optional VAT view).
+        </p>
 
-    <!-- Inputs -->
-    <section id="inputs" class="card">
-      <h2>1) Legal & Costing Inputs</h2>
-      <div class="grid">
-        <label>
-          SMIG hourly (MAD/h)
-          <input id="smig" type="number" step="0.01" value="17.92">
-          <small class="hint">Update from Bulletin Officiel (BO) / Ministry portal.</small>
-        </label>
-
-        <label>
-          Employer social charges (%) (CNSS+AMO+AF+TFP)
-          <input id="employerCharges" type="number" step="0.01" value="21.09">
-          <small class="hint">Use the CNSS official contribution table at bid date.</small>
-        </label>
-
-        <label>
-          Replacement coefficient (%) (leave/holidays/absences)
-          <input id="replacement" type="number" step="0.01" value="8.50">
-          <small class="hint">Recommended for 24/7 service continuity.</small>
-        </label>
-
-        <label>
-          VAT (TVA) % (optional display)
-          <input id="vat" type="number" step="0.01" value="20">
-          <small class="hint">Shows totals incl. VAT for budgeting.</small>
-        </label>
+        <div class="hero-badges">
+          <span class="badge">Creative UI</span>
+          <span class="badge">Morocco payroll logic</span>
+          <span class="badge">One-time CAPEX equipment</span>
+          <span class="badge">Direct Jumia price links</span>
+        </div>
       </div>
 
-      <div class="results">
-        <div class="result-line">
-          <span>Employer hourly cost (MAD/h):</span>
-          <strong id="employerHourly">—</strong>
+      <div class="hero-side">
+        <div class="kpi">
+          <div class="kpi-label">Recurring Total / Month (Ex VAT)</div>
+          <div class="kpi-value" id="kpiMonthly">—</div>
+          <div class="kpi-foot">Service operating cost excluding one-time equipment purchases</div>
         </div>
-        <div class="result-line">
-          <span>Chargeable hourly cost (MAD/h):</span>
-          <strong id="chargeableHourly">—</strong>
+        <div class="kpi">
+          <div class="kpi-label">First Month Total (Ex VAT)</div>
+          <div class="kpi-value" id="kpiFirstMonth">—</div>
+          <div class="kpi-foot">Recurring month + one-time CAPEX (PPE + equipment)</div>
         </div>
       </div>
     </section>
 
-    <section class="card">
-      <h2>2) Monthly Hours (per scope)</h2>
-      <div class="grid">
-        <label>
-          Security hours / month
-          <input id="secHours" type="number" step="1" value="1456">
-          <small class="hint">≈ 2 posts 24/7 (728 h/post/month).</small>
-        </label>
+    <section class="layout">
+      <!-- LEFT: INPUTS -->
+      <section class="panel">
+        <div class="panel-title">
+          <h2>Inputs</h2>
+          <p>Adjust values to your contract. All rates are editable for compliance updates.</p>
+        </div>
 
-        <label>
-          Cleaning hours / month
-          <input id="clnHours" type="number" step="1" value="1056">
-          <small class="hint">Adjust by staffing plan (Mon–Fri + rotation Saturday).</small>
-        </label>
-      </div>
+        <div class="card">
+          <h3>1) Payroll & Legal Rates (Morocco)</h3>
 
-      <div class="note">
-        <strong>Procurement note:</strong> If the client requires 24/7 security, ensure the contract specifies
-        rotation, weekly rest and overtime handling. Headcount must realistically cover leave/absence.
-      </div>
+          <div class="grid">
+            <label>
+              Gross hourly wage (SMIG) — MAD/h
+              <input id="smig" type="number" step="0.01" value="17.92">
+              <small class="hint">Set to the applicable SMIG hourly at contract start.</small>
+            </label>
+
+            <label>
+              Employee deductions (%) — CNSS + AMO
+              <input id="empDedRate" type="number" step="0.01" value="6.74">
+              <small class="hint">Employee paid (deducted): CNSS 4.48% + AMO 2.26% = 6.74%</small>
+            </label>
+
+            <label>
+              Employer contributions (%) — Patronal
+              <input id="employerRate" type="number" step="0.01" value="21.09">
+              <small class="hint">Paid by the company (patronal) — update from CNSS table.</small>
+            </label>
+
+            <label>
+              Replacement coefficient (%) (leave/holidays/absences)
+              <input id="replacement" type="number" step="0.01" value="8.50">
+              <small class="hint">Recommended for service continuity (esp. 24/7 security).</small>
+            </label>
+
+            <label>
+              VAT (TVA) % (optional display)
+              <input id="vat" type="number" step="0.01" value="20">
+              <small class="hint">Used only for “incl. VAT” view in summary.</small>
+            </label>
+          </div>
+
+          <div class="mini-metrics">
+            <div class="metric">
+              <div class="metric-label">Gross hourly (MAD)</div>
+              <div class="metric-value" id="grossHourly">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Employee deductions (MAD/h)</div>
+              <div class="metric-value" id="empDedHourly">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Net hourly (MAD/h)</div>
+              <div class="metric-value" id="netHourly">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Employer contrib. (MAD/h)</div>
+              <div class="metric-value" id="employerContribHourly">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Employer cost (MAD/h)</div>
+              <div class="metric-value" id="employerHourly">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Chargeable hourly (MAD/h)</div>
+              <div class="metric-value accent" id="chargeableHourly">—</div>
+            </div>
+          </div>
+
+          <div class="note">
+            <strong>Clarification used in this model:</strong>
+            Employee CNSS/AMO rates are shown as deductions (paid by agents).
+            Employer rate is added on top of gross wage to compute employer cost.
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>2) Monthly Workload (Hours)</h3>
+          <div class="grid">
+            <label>
+              Security hours / month
+              <input id="secHours" type="number" step="1" value="1456">
+              <small class="hint">≈ 2 posts 24/7 (728 h/post/month)</small>
+            </label>
+
+            <label>
+              Cleaning hours / month
+              <input id="clnHours" type="number" step="1" value="1056">
+              <small class="hint">Adjust according to your staffing plan.</small>
+            </label>
+          </div>
+
+          <div class="note">
+            If your staffing headcount cannot cover these hours under legal weekly rest and leave,
+            the quotation must include replacements and/or overtime explicitly.
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>3) CAPEX (One-time purchases) & Monthly Consumables</h3>
+
+          <div class="grid">
+            <label>
+              Security PPE CAPEX (one time) — MAD
+              <input id="secPpeCapex" type="number" step="1" value="6090">
+              <small class="hint">Uniforms + safety shoes + accessories</small>
+            </label>
+
+            <label>
+              Cleaning PPE CAPEX (one time) — MAD
+              <input id="clnPpeCapex" type="number" step="1" value="3600">
+              <small class="hint">Uniforms + shoes + gloves/PPE</small>
+            </label>
+
+            <label>
+              Cleaning equipment CAPEX (one time) — MAD
+              <input id="equipCapex" type="number" step="1" value="29000">
+              <small class="hint">Trolleys + vacuum + scrubber + tools</small>
+            </label>
+
+            <label>
+              Cleaning products & consumables — MAD/month
+              <input id="clnProducts" type="number" step="1" value="3040">
+              <small class="hint">Detergents, disinfectants, bags, paper/wipes etc.</small>
+            </label>
+
+            <label>
+              Other recurring fixed cost — MAD/month (optional)
+              <input id="otherFixed" type="number" step="1" value="0">
+              <small class="hint">Supervision, transport, insurance, admin, etc.</small>
+            </label>
+
+            <label class="toggle">
+              Include CAPEX in “First Month” total
+              <input id="includeCapex" type="checkbox" checked>
+              <span class="toggle-ui" aria-hidden="true"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Export</h3>
+          <div class="actions">
+            <button id="printBtn">Print / Save PDF</button>
+            <button class="ghost" id="resetBtn">Reset to default</button>
+          </div>
+          <p class="hint">
+            Tip: Printing creates a clean PDF for internal approval / tender annex.
+          </p>
+        </div>
+      </section>
+
+      <!-- RIGHT: SUMMARY -->
+      <aside class="summary panel" id="summary">
+        <div class="panel-title">
+          <h2>Summary</h2>
+          <p>Live totals with visual breakdown.</p>
+        </div>
+
+        <div class="card">
+          <h3>Monthly Financial Summary (Ex VAT)</h3>
+
+          <div class="summary-grid">
+            <div class="summary-box">
+              <div class="summary-label">Security (monthly)</div>
+              <div class="summary-value" id="secTotal">—</div>
+              <div class="summary-sub" id="secLaborText">Labor: —</div>
+            </div>
+            <div class="summary-box">
+              <div class="summary-label">Cleaning (monthly)</div>
+              <div class="summary-value" id="clnTotal">—</div>
+              <div class="summary-sub" id="clnLaborText">Labor: —</div>
+            </div>
+            <div class="summary-box">
+              <div class="summary-label">Recurring Other (monthly)</div>
+              <div class="summary-value" id="otherRecurring">—</div>
+              <div class="summary-sub">Consumables + other fixed costs</div>
+            </div>
+            <div class="summary-box accent-box">
+              <div class="summary-label">Recurring Total / Month (Ex VAT)</div>
+              <div class="summary-value" id="grandTotal">—</div>
+              <div class="summary-sub" id="annualText">Annual: —</div>
+            </div>
+          </div>
+
+          <div class="split">
+            <div class="donut-wrap">
+              <div class="donut" id="donut" aria-label="Cost breakdown chart"></div>
+              <div class="donut-legend">
+                <div class="leg"><span class="dot s1"></span>Security</div>
+                <div class="leg"><span class="dot s2"></span>Cleaning</div>
+                <div class="leg"><span class="dot s3"></span>Consumables/Other</div>
+              </div>
+            </div>
+
+            <div class="capex-box">
+              <h4>One-time CAPEX</h4>
+              <div class="capex-line"><span>Security PPE</span><strong id="capexSec">—</strong></div>
+              <div class="capex-line"><span>Cleaning PPE</span><strong id="capexCln">—</strong></div>
+              <div class="capex-line"><span>Cleaning equipment</span><strong id="capexEq">—</strong></div>
+              <div class="capex-line total"><span>Total CAPEX</span><strong id="capexTotal">—</strong></div>
+
+              <div class="note subtle">
+                CAPEX is included only in the “First Month” view if enabled.
+              </div>
+
+              <div class="capex-first">
+                <div class="capex-first-label">First Month Total (Ex VAT)</div>
+                <div class="capex-first-value" id="firstMonthTotal">—</div>
+                <div class="capex-first-sub">Incl. CAPEX: <span id="capexIncludedText">Yes</span></div>
+              </div>
+
+              <div class="vat-box">
+                <div class="vat-line"><span>Recurring Total (Incl. VAT)</span><strong id="grandTotalVat">—</strong></div>
+                <div class="vat-line"><span>First Month (Incl. VAT)</span><strong id="firstMonthVat">—</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Line</th>
+                <th class="num">Monthly (MAD)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Security labor</td><td class="num" id="secLabor">—</td></tr>
+              <tr><td>Cleaning labor</td><td class="num" id="clnLabor">—</td></tr>
+              <tr><td>Cleaning consumables</td><td class="num" id="consumables">—</td></tr>
+              <tr><td>Other fixed (recurring)</td><td class="num" id="otherFixedOut">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card fineprint">
+          <h3>Assumptions</h3>
+          <ul>
+            <li>Gross wage input is used as the base (SMIG).</li>
+            <li>Employee CNSS/AMO is shown as deductions (paid by agents).</li>
+            <li>Employer (patronal) contributions are added to gross to compute employer cost.</li>
+            <li>Replacement coefficient applies to employer cost for service continuity.</li>
+            <li>Equipment & PPE are treated as one-time CAPEX purchases (not amortized).</li>
+          </ul>
+        </div>
+      </aside>
     </section>
 
-    <!-- Cost build-up with amortization -->
-    <section class="card">
-      <h2>3) Monthly Fixed Costs (amortization & consumables)</h2>
-
-      <div class="grid">
-        <label>
-          Security PPE investment (MAD)
-          <input id="secPpeInv" type="number" step="1" value="6090">
-          <small class="hint">Uniforms + safety shoes + accessories (total).</small>
-        </label>
-
-        <label>
-          Security PPE amortization (months)
-          <input id="secPpeMonths" type="number" step="1" value="12">
-          <small class="hint">Typical 12 months.</small>
-        </label>
-
-        <label>
-          Cleaning PPE investment (MAD)
-          <input id="clnPpeInv" type="number" step="1" value="3600">
-          <small class="hint">Uniforms + safety shoes + gloves/PPE (total).</small>
-        </label>
-
-        <label>
-          Cleaning PPE amortization (months)
-          <input id="clnPpeMonths" type="number" step="1" value="12">
-          <small class="hint">Typical 12 months.</small>
-        </label>
-
-        <label>
-          Cleaning equipment investment (MAD)
-          <input id="equipInv" type="number" step="1" value="29000">
-          <small class="hint">Trolleys + vacuum + scrubber + tools.</small>
-        </label>
-
-        <label>
-          Cleaning equipment amortization (months)
-          <input id="equipMonths" type="number" step="1" value="36">
-          <small class="hint">Typical 36 months for equipment.</small>
-        </label>
-
-        <label>
-          Cleaning products & consumables (MAD/month)
-          <input id="clnProducts" type="number" step="1" value="3040">
-          <small class="hint">Detergents, disinfectants, bags, paper/wipes etc.</small>
-        </label>
-
-        <label>
-          Other fixed cost (MAD/month) (optional)
-          <input id="otherFixed" type="number" step="1" value="0">
-          <small class="hint">Supervision, transport, insurance, admin, etc.</small>
-        </label>
-      </div>
-
-      <div class="results">
-        <div class="result-line">
-          <span>Security PPE amortization / month:</span>
-          <strong id="secPpeMonthly">—</strong>
-        </div>
-        <div class="result-line">
-          <span>Cleaning PPE amortization / month:</span>
-          <strong id="clnPpeMonthly">—</strong>
-        </div>
-        <div class="result-line">
-          <span>Equipment amortization / month:</span>
-          <strong id="equipMonthly">—</strong>
-        </div>
-      </div>
-    </section>
-
-    <!-- Summary -->
-    <section id="summary" class="card">
-      <h2>4) Financial Summary (Monthly)</h2>
-
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Service</th>
-            <th class="num">Labor (MAD)</th>
-            <th class="num">Other costs (MAD)</th>
-            <th class="num">Total (MAD)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Security</td>
-            <td class="num" id="secLabor">—</td>
-            <td class="num" id="secOther">—</td>
-            <td class="num strong" id="secTotal">—</td>
-          </tr>
-          <tr>
-            <td>Cleaning</td>
-            <td class="num" id="clnLabor">—</td>
-            <td class="num" id="clnOther">—</td>
-            <td class="num strong" id="clnTotal">—</td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="3" class="strong">Grand Total / Month (Ex VAT)</td>
-            <td class="num strong" id="grandTotal">—</td>
-          </tr>
-          <tr>
-            <td colspan="3">Annual Projection (Ex VAT)</td>
-            <td class="num" id="annualTotal">—</td>
-          </tr>
-          <tr>
-            <td colspan="3" class="strong">Grand Total / Month (Incl. VAT)</td>
-            <td class="num strong" id="grandTotalVat">—</td>
-          </tr>
-          <tr>
-            <td colspan="3">Annual Projection (Incl. VAT)</td>
-            <td class="num" id="annualTotalVat">—</td>
-          </tr>
-        </tfoot>
-      </table>
-
-      <div class="actions">
-        <button id="printBtn">Print / Save PDF</button>
-      </div>
-
-      <p class="note">
-        This is a procurement model. For award/contract, attach CNSS/SMIG proof + supplier quotations (proformas)
-        as annexes.
-      </p>
-    </section>
-
-    <!-- Equipment Price Sources (Jumia search links) -->
-    <section id="sources" class="card">
-      <h2>5) Equipment Price Sources (Direct links)</h2>
+    <!-- PRICE SOURCES -->
+    <section class="wide card" id="sources">
+      <h2>Equipment Price Sources (Direct Jumia search links)</h2>
       <p class="muted">
-        These are direct Jumia Morocco search links (real listings). For “more accurate” evidence, open the link,
-        select the exact product, then save the product URL and/or proforma to your procurement file.
+        These are direct Jumia Morocco search links (real listings). For audit-proof procurement files,
+        open the search link, select the exact product, and save the product page URL / screenshot / supplier proforma.
       </p>
 
-      <div class="sources-grid">
-        <div class="source-card">
-          <h3>Industrial trolley (chariot de ménage)</h3>
-          <a class="link" target="_blank" rel="noreferrer"
-             href="https://www.jumia.ma/catalog/?q=chariot+de+menage+professionnel">
-            https://www.jumia.ma/catalog/?q=chariot+de+menage+professionnel
-          </a>
-        </div>
+      <div class="sources">
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chariot+de+menage+professionnel">
+          <span class="src-title">Industrial trolley (chariot de ménage)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=chariot+de+menage+professionnel</span>
+        </a>
 
-        <div class="source-card">
-          <h3>Professional vacuum (aspirateur professionnel)</h3>
-          <a class="link" target="_blank" rel="noreferrer"
-             href="https://www.jumia.ma/catalog/?q=aspirateur+professionnel">
-            https://www.jumia.ma/catalog/?q=aspirateur+professionnel
-          </a>
-        </div>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur+professionnel">
+          <span class="src-title">Professional vacuum (aspirateur professionnel)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=aspirateur+professionnel</span>
+        </a>
 
-        <div class="source-card">
-          <h3>Scrubber dryer (autolaveuse)</h3>
-          <a class="link" target="_blank" rel="noreferrer"
-             href="https://www.jumia.ma/catalog/?q=autolaveuse">
-            https://www.jumia.ma/catalog/?q=autolaveuse
-          </a>
-        </div>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=autolaveuse">
+          <span class="src-title">Scrubber dryer (autolaveuse)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=autolaveuse</span>
+        </a>
 
-        <div class="source-card">
-          <h3>Safety shoes (chaussures de sécurité)</h3>
-          <a class="link" target="_blank" rel="noreferrer"
-             href="https://www.jumia.ma/catalog/?q=chaussures+de+securite">
-            https://www.jumia.ma/catalog/?q=chaussures+de+securite
-          </a>
-        </div>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chaussures+de+securite">
+          <span class="src-title">Safety shoes (chaussures de sécurité)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=chaussures+de+securite</span>
+        </a>
 
-        <div class="source-card">
-          <h3>Workwear / Uniforms (vêtement de travail)</h3>
-          <a class="link" target="_blank" rel="noreferrer"
-             href="https://www.jumia.ma/catalog/?q=vetement+de+travail">
-            https://www.jumia.ma/catalog/?q=vetement+de+travail
-          </a>
-        </div>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=vetement+de+travail">
+          <span class="src-title">Workwear / Uniforms (vêtement de travail)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=vetement+de+travail</span>
+        </a>
 
-        <div class="source-card">
-          <h3>Trash bags / consumables (sacs poubelle)</h3>
-          <a class="link" target="_blank" rel="noreferrer"
-             href="https://www.jumia.ma/catalog/?q=sacs+poubelle">
-            https://www.jumia.ma/catalog/?q=sacs+poubelle
-          </a>
-        </div>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=sacs+poubelle">
+          <span class="src-title">Trash bags / consumables (sacs poubelle)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=sacs+poubelle</span>
+        </a>
       </div>
     </section>
 
-    <!-- Official Evidence -->
-    <section id="evidence" class="card">
-      <h2>6) Official Evidence (Morocco)</h2>
+    <!-- OFFICIAL EVIDENCE -->
+    <section class="wide card" id="evidence">
+      <h2>Official Evidence (Morocco)</h2>
       <ul class="evidence">
         <li><strong>Bulletin Officiel (BO):</strong> <a target="_blank" rel="noreferrer" href="https://www.sgg.gov.ma/BO/">https://www.sgg.gov.ma/BO/</a></li>
         <li><strong>CNSS:</strong> <a target="_blank" rel="noreferrer" href="https://www.cnss.ma/">https://www.cnss.ma/</a></li>
         <li><strong>ANAM (AMO):</strong> <a target="_blank" rel="noreferrer" href="https://www.anam.ma/">https://www.anam.ma/</a></li>
         <li><strong>Ministry portal (employment/SMIG publications):</strong> <a target="_blank" rel="noreferrer" href="https://www.miepeec.gov.ma/">https://www.miepeec.gov.ma/</a></li>
       </ul>
-
-      <p class="muted">
-        For procurement files: attach the latest SMIG decree extract from BO and CNSS contribution rate evidence valid on bid/award date.
-      </p>
     </section>
 
     <footer class="footer">
-      <small>© DSM Project — Procurement Calculator (static site). Version 1.2</small>
+      <small>© DSM Project — Creative Procurement Calculator (static site). Version 2.0</small>
     </footer>
-
-  </div>
+  </main>
 
   <script src="app.js"></script>
 </body>
