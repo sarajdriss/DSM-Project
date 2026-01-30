@@ -3,7 +3,6 @@ const DEFAULTS = {
   empDedRate: 6.74,      // employee paid (deducted): CNSS 4.48 + AMO 2.26
   employerRate: 21.09,   // patronal paid by company
   replacement: 8.50,
-  vat: 20,
   secHours: 1456,
   clnHours: 1056,
   secPpeCapex: 6090,
@@ -46,7 +45,6 @@ function setDonut(sec, cln, other) {
   const s1 = total > 0 ? (sec / total) : 0;
   const s2 = total > 0 ? (cln / total) : 0;
 
-  // Conic-gradient stops require cumulative percentages
   const p1 = (s1 * 100).toFixed(2) + '%';
   const p2 = ((s1 + s2) * 100).toFixed(2) + '%';
 
@@ -64,11 +62,8 @@ function loadSaved() {
     const saved = localStorage.getItem('DSM_' + id);
     if (saved === null) return;
 
-    if (el.type === 'checkbox') {
-      el.checked = saved === 'true';
-    } else {
-      el.value = saved;
-    }
+    if (el.type === 'checkbox') el.checked = saved === 'true';
+    else el.value = saved;
   });
 }
 
@@ -76,11 +71,8 @@ function saveAll() {
   IDS.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
-    if (el.type === 'checkbox') {
-      localStorage.setItem('DSM_' + id, el.checked ? 'true' : 'false');
-    } else {
-      localStorage.setItem('DSM_' + id, el.value);
-    }
+    if (el.type === 'checkbox') localStorage.setItem('DSM_' + id, el.checked ? 'true' : 'false');
+    else localStorage.setItem('DSM_' + id, el.value);
   });
 }
 
@@ -100,7 +92,6 @@ function calc() {
   const empDedRate = num('empDedRate') / 100;
   const employerRate = num('employerRate') / 100;
   const replacement = num('replacement') / 100;
-  const vat = num('vat') / 100;
 
   const secHours = num('secHours');
   const clnHours = num('clnHours');
@@ -114,27 +105,25 @@ function calc() {
 
   const includeCapex = bool('includeCapex');
 
-  // Payroll logic per your note:
-  // Employee deductions are paid by employees (deducted from gross).
-  // Employer contributions (patronal) are paid by the company and added on top of gross.
+  // Employee vs employer:
   const grossHourly = smig;
-  const empDedHourly = grossHourly * empDedRate;
-  const netHourly = grossHourly - empDedHourly;
+  const empDedHourly = grossHourly * empDedRate;      // paid by employee (deducted)
+  const netHourly = grossHourly - empDedHourly;        // informational
 
-  const employerContribHourly = grossHourly * employerRate;
+  const employerContribHourly = grossHourly * employerRate; // paid by company
   const employerHourly = grossHourly + employerContribHourly;
 
-  // Chargeable hourly (for service pricing) including replacement coefficient:
+  // Chargeable hourly with replacement
   const chargeableHourly = employerHourly * (1 + replacement);
 
-  // Labor monthly costs
+  // Monthly labor (recurring)
   const secLabor = chargeableHourly * secHours;
   const clnLabor = chargeableHourly * clnHours;
 
-  // Recurring monthly other
+  // Recurring other costs
   const otherRecurring = clnProducts + otherFixed;
 
-  // Monthly totals (recurring)
+  // Recurring totals (NET – TVA Exempt)
   const secTotal = secLabor;
   const clnTotal = clnLabor;
   const grandTotal = secTotal + clnTotal + otherRecurring;
@@ -142,14 +131,9 @@ function calc() {
 
   // One-time CAPEX
   const capexTotal = secPpeCapex + clnPpeCapex + equipCapex;
-
   const firstMonthTotal = includeCapex ? (grandTotal + capexTotal) : grandTotal;
 
-  // VAT views
-  const grandTotalVat = grandTotal * (1 + vat);
-  const firstMonthVat = firstMonthTotal * (1 + vat);
-
-  // Outputs (hourly)
+  // Hourly outputs
   setText('grossHourly', moneyMAD(grossHourly, 2));
   setText('empDedHourly', moneyMAD(empDedHourly, 2));
   setText('netHourly', moneyMAD(netHourly, 2));
@@ -157,12 +141,13 @@ function calc() {
   setText('employerHourly', moneyMAD(employerHourly, 2));
   setText('chargeableHourly', moneyMAD(chargeableHourly, 2));
 
-  // Outputs (monthly)
+  // Monthly breakdown table
   setText('secLabor', moneyMAD(secLabor, 0));
   setText('clnLabor', moneyMAD(clnLabor, 0));
   setText('consumables', moneyMAD(clnProducts, 0));
   setText('otherFixedOut', moneyMAD(otherFixed, 0));
 
+  // Summary cards
   setText('secTotal', moneyMAD(secTotal, 0));
   setText('clnTotal', moneyMAD(clnTotal, 0));
   setText('otherRecurring', moneyMAD(otherRecurring, 0));
@@ -172,11 +157,11 @@ function calc() {
   setText('secLaborText', 'Labor: ' + moneyMAD(secLabor, 0));
   setText('clnLaborText', 'Labor: ' + moneyMAD(clnLabor, 0));
 
-  // KPI cards
+  // KPI
   setText('kpiMonthly', moneyMAD(grandTotal, 0));
   setText('kpiFirstMonth', moneyMAD(firstMonthTotal, 0));
 
-  // CAPEX
+  // CAPEX box
   setText('capexSec', moneyMAD(secPpeCapex, 0));
   setText('capexCln', moneyMAD(clnPpeCapex, 0));
   setText('capexEq', moneyMAD(equipCapex, 0));
@@ -184,11 +169,7 @@ function calc() {
   setText('firstMonthTotal', moneyMAD(firstMonthTotal, 0));
   setText('capexIncludedText', includeCapex ? 'Yes' : 'No');
 
-  // VAT
-  setText('grandTotalVat', moneyMAD(grandTotalVat, 0));
-  setText('firstMonthVat', moneyMAD(firstMonthVat, 0));
-
-  // Donut breakdown on recurring monthly only
+  // Donut chart on recurring totals
   setDonut(secTotal, clnTotal, otherRecurring);
 
   saveAll();
