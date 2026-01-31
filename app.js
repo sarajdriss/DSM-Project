@@ -1,18 +1,36 @@
-/* DSM Project — app.js (v4.8)
-   Monthly Summary simplified:
-   - Shows only: Security Team (monthly), Cleaning Team (monthly), Cleaning Consumables (monthly), OPEX total + annual
-   - Button to reveal CAPEX (PPE + Equipment)
+/* DSM Project — app.js (v4.9)
+   UPDATED per your rules (Primak client code):
 
-   Pricing method:
-   - Security: headcount-based (Day + Night)
-   - Cleaning: headcount-based (Total agents)
+   1) Security Day vs Night agents:
+      - SAME cost basis (night agent is priced like day agent).
+      - No night premium on normal hours.
+
+   2) Overtime:
+      - OT premium is ALWAYS +25% (1.25 multiplier).
+      - OT applies ONLY to hours above 48 hours/week.
+      - This is implemented by converting the 48h/week threshold into a monthly threshold:
+          monthlyLimit = 48 * (52/12) ≈ 208 hours/month per agent
+      - Any planned monthly hours per agent above this threshold are priced at OT rate.
+
+   3) Pricing method (headcount-based for both Security & Cleaning):
+      - Team monthly = Σ(regular hours × rate) + Σ(OT hours × rate × 1.25)
+      - Planned monthly hours per agent = the input "legalMonthlyHours"
+        (you can set it to match your planning; e.g., if 10h/day × 5 days/week => ~216.7h/month)
+
+   Compatibility:
+   - Works with your current index.html IDs (secTotal/clnTotal/opexOther/etc).
+   - Also writes the newer IDs if they exist (secTeamMonthly/clnTeamMonthly/etc).
 */
 
 const DEFAULTS = {
   // Payroll
   smig: 17.92,
-  empDedRate: 6.74,
-  employerRate: 21.09,
+  empDedRate: 6.74,        // employee CNSS+AMO (deduction)
+  employerRate: 21.09,     // employer patronal
+
+  // IMPORTANT:
+  // In this version, "legalMonthlyHours" is used as the PLANNED paid hours per agent per month.
+  // OT is computed only if this exceeds the 48h/week threshold converted to monthly.
   legalMonthlyHours: 191,
 
   // Replacement coefficient toggle + value
@@ -25,20 +43,20 @@ const DEFAULTS = {
   weeklyRestDaysPerYear: 52,
   sickAbsenceBufferPercent: 2.0,
 
-  // OT premiums (kept for display only)
+  // OT premium display inputs (kept in UI, but OT premium is forced to +25% by rule)
   otDayPremium: 25,
-  otNightPremium: 50,
+  otNightPremium: 50, // ignored for pricing (night treated as day)
 
-  // Security headcount
+  // SECURITY headcount
   secDayAgents: 5,
   secNightAgents: 2,
-  secPaidHoursPerShift: 10,
+  secPaidHoursPerShift: 10, // info/explanation (8h work + 2h break)
 
-  // Cleaning headcount (+ planning info kept)
-  clnHoursPerDay: 8,
-  clnDaysPerMonth: 22,
+  // CLEANING headcount (night allocation informational)
   clnAgents: 5,
   clnNightAgents: 0,
+  clnHoursPerDay: 8,     // informational/planning only
+  clnDaysPerMonth: 22,   // informational/planning only
 
   // CAPEX & OPEX
   secPpeCapex: 6090,
@@ -50,6 +68,9 @@ const DEFAULTS = {
 };
 
 const STORAGE_PREFIX = "DSM_";
+const WEEKS_PER_MONTH = 52 / 12;     // ≈ 4.3333
+const WEEKLY_OT_LIMIT = 48;          // per your rule
+const OT_PREMIUM = 0.25;             // ALWAYS +25%
 
 function $(id) { return document.getElementById(id); }
 function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
@@ -129,15 +150,33 @@ function computeReplacementPercentFromComponents() {
   return replTotal * 100;
 }
 
-function syncCleaningNightMax() {
-  const clnAgents = Math.max(0, Math.round(readNum("clnAgents")));
-  const clnNightEl = $("clnNightAgents");
-  if (clnNightEl) clnNightEl.max = String(clnAgents);
+function setDonut(sec, cln, other) {
+  const total = sec + cln + other;
+  const s1 = total > 0 ? (sec / total) : 0;
+  const s2 = total > 0 ? (cln / total) : 0;
+
+  const p1 = (s1 * 100).toFixed(2) + "%";
+  const p2 = ((s1 + s2) * 100).toFixed(2) + "%";
+
+  const d = $("donut");
+  if (d) {
+    d.style.setProperty("--p1", p1);
+    d.style.setProperty("--p2", p2);
+  }
+}
+
+/**
+ * Computes regular vs overtime hours based on 48h/week rule.
+ * plannedMonthlyHoursPerAgent: the planned paid hours per agent in the month (input legalMonthlyHours).
+ */
+function splitRegularOvertimeHours(plannedMonthlyHoursPerAgent) {
+  const monthlyLimit = WEEKLY_OT_LIMIT * WEEKS_PER_MONTH; // ≈ 208h/month
+  const regular = Math.max(0, Math.min(plannedMonthlyHoursPerAgent, monthlyLimit));
+  const overtime = Math.max(0, plannedMonthlyHoursPerAgent - monthlyLimit);
+  return { monthlyLimit, regular, overtime };
 }
 
 function calc() {
-  syncCleaningNightMax();
-
   // Replacement computed display (if present)
   const replComputed = computeReplacementPercentFromComponents();
   setText("replacementComputedDisplay", `${replComputed.toFixed(2)}%`);
@@ -146,14 +185,17 @@ function calc() {
   const smig = readNum("smig");
   const empDedRate = readNum("empDedRate") / 100;
   const employerRate = readNum("employerRate") / 100;
-  const legalMonthlyHours = readNum("legalMonthlyHours");
+
+  // Planned paid hours per agent per month (used for OT check)
+  const plannedMonthlyHoursPerAgent = readNum("legalMonthlyHours");
 
   const replacementEnabled = readBool("replacementEnabled");
   const replacementPercent = readNum("replacement") / 100;
 
-  const otDayPremium = readNum("otDayPremium") / 100;
-  const otNightPremium = readNum("otNightPremium") / 100;
+  // OT premium fixed by rule
+  const otMultiplier = 1 + OT_PREMIUM;
 
+  // Hourly rates
   const netHourly = smig * (1 - empDedRate);
   const employerHourly = smig * (1 + employerRate);
 
@@ -161,20 +203,20 @@ function calc() {
     ? employerHourly * (1 + replacementPercent)
     : employerHourly;
 
-  // OT hourly shown in metrics (not used in pricing here)
-  const otDayHourly = chargeableHourly * (1 + otDayPremium);
-  const otNightHourly = chargeableHourly * (1 + otNightPremium);
+  // OT hourly shown (forced +25% rule)
+  const overtimeHourly = chargeableHourly * otMultiplier;
 
+  // Update payroll metrics (if present on page)
   setText("netHourly", moneyMAD(netHourly, 2));
   setText("employerHourly", moneyMAD(employerHourly, 2));
   setText("chargeableHourly", moneyMAD(chargeableHourly, 2));
-  setText("otDayHourly", moneyMAD(otDayHourly, 2));
-  setText("otNightHourly", moneyMAD(otNightHourly, 2));
-  setText("oneAgentMonthlyCost", moneyMAD(legalMonthlyHours * chargeableHourly, 0));
+  setText("otDayHourly", moneyMAD(overtimeHourly, 2));
+  setText("otNightHourly", moneyMAD(overtimeHourly, 2)); // same as day by rule
+  setText("oneAgentMonthlyCost", moneyMAD(plannedMonthlyHoursPerAgent * chargeableHourly, 0)); // planned (before OT split)
 
-  // -------------------------
-  // SECURITY (headcount-based)
-  // -------------------------
+  // ==========
+  // SECURITY
+  // ==========
   const secDay = Math.max(0, Math.round(readNum("secDayAgents")));
   const secNight = Math.max(0, Math.round(readNum("secNightAgents")));
   const secTotalAgents = secDay + secNight;
@@ -182,13 +224,38 @@ function calc() {
   setText("secDayAgentsVal", secDay);
   setText("secNightAgentsVal", secNight);
   setText("secAgentsVal", secTotalAgents);
-  setText("secCapacity", `${Math.round(secTotalAgents * legalMonthlyHours)} h`);
 
-  const secTeamMonthly = secTotalAgents * legalMonthlyHours * chargeableHourly;
+  // Split regular/OT hours per agent based on 48h/week rule
+  const split = splitRegularOvertimeHours(plannedMonthlyHoursPerAgent);
+  const regularHoursTeamSec = secTotalAgents * split.regular;
+  const overtimeHoursTeamSec = secTotalAgents * split.overtime;
 
-  // -------------------------
-  // CLEANING (headcount-based)
-  // -------------------------
+  // Security monthly cost (night = day)
+  const secCostNormal = regularHoursTeamSec * chargeableHourly;
+  const secCostOT = overtimeHoursTeamSec * overtimeHourly;
+  const secTotal = secCostNormal + secCostOT;
+
+  // Capacity display (uses planned monthly hours, not legal cap)
+  if ($("secCapacity")) {
+    $("secCapacity").textContent = `${Math.round(secTotalAgents * plannedMonthlyHoursPerAgent)} h`;
+  }
+
+  const secPaidHoursPerShift = readNum("secPaidHoursPerShift");
+  const impliedWeekly = plannedMonthlyHoursPerAgent / WEEKS_PER_MONTH;
+  const eqShiftsPerAgent = secPaidHoursPerShift > 0 ? (plannedMonthlyHoursPerAgent / secPaidHoursPerShift) : 0;
+
+  setText(
+    "secOtAlert",
+    `Security pricing rule: Night = Day (no premium). OT +25% applies only above 48h/week. `
+    + `Planned hours/agent/month = ${plannedMonthlyHoursPerAgent.toFixed(1)}h ⇒ ~${impliedWeekly.toFixed(1)}h/week. `
+    + `OT threshold ≈ ${split.monthlyLimit.toFixed(1)}h/month. `
+    + `Per-agent OT ≈ ${split.overtime.toFixed(1)}h/month. `
+    + `Equiv. shifts/agent ≈ ${eqShiftsPerAgent.toFixed(1)} (at ${secPaidHoursPerShift}h/shift).`
+  );
+
+  // ==========
+  // CLEANING (same pricing method: headcount-based + OT only if >48h/week)
+  // ==========
   const clnAgents = Math.max(0, Math.round(readNum("clnAgents")));
   let clnNightAgents = Math.round(readNum("clnNightAgents"));
   clnNightAgents = clamp(clnNightAgents, 0, clnAgents);
@@ -200,17 +267,28 @@ function calc() {
   setText("clnNightAgentsVal", clnNightAgents);
   setText("clnDayAgentsOut", `${clnDayAgents} day`);
 
-  // planning info (still shown in the left side)
+  // planned-hours display (informational only)
   const clnHoursPerDay = readNum("clnHoursPerDay");
   const clnDaysPerMonth = readNum("clnDaysPerMonth");
-  const clnPlannedHours = clnAgents * clnHoursPerDay * clnDaysPerMonth;
-  setText("clnReqHours", `${Math.round(clnPlannedHours)} h`);
+  const clnPlannedHoursInfo = clnAgents * clnHoursPerDay * clnDaysPerMonth;
+  setText("clnReqHours", `${Math.round(clnPlannedHoursInfo)} h`);
 
-  const clnTeamMonthly = clnAgents * legalMonthlyHours * chargeableHourly;
+  const regularHoursTeamCln = clnAgents * split.regular;
+  const overtimeHoursTeamCln = clnAgents * split.overtime;
 
-  // -------------------------
-  // Consumables / OPEX / CAPEX
-  // -------------------------
+  const clnCostNormal = regularHoursTeamCln * chargeableHourly;
+  const clnCostOT = overtimeHoursTeamCln * overtimeHourly;
+  const clnTotal = clnCostNormal + clnCostOT;
+
+  setText(
+    "clnOtAlert",
+    `Cleaning pricing rule: OT +25% applies only above 48h/week. `
+    + `Using planned hours/agent/month = ${plannedMonthlyHoursPerAgent.toFixed(1)}h (same basis as Security).`
+  );
+
+  // ==========
+  // OPEX & CAPEX
+  // ==========
   const clnProducts = readNum("clnProducts"); // monthly consumables
   const otherFixed = readNum("otherFixed");
 
@@ -222,28 +300,35 @@ function calc() {
   const capexTotal = secPpeCapex + clnPpeCapex + equipCapex;
 
   const opexOther = clnProducts + otherFixed;
-  const opexTotal = secTeamMonthly + clnTeamMonthly + opexOther;
+  const opexTotal = secTotal + clnTotal + opexOther;
   const opexAnnual = opexTotal * 12;
 
   const month1Total = includeCapex ? (opexTotal + capexTotal) : opexTotal;
 
-  // HERO KPIs
+  // HERO KPI
   setText("kpiOpexMonthly", moneyMAD(opexTotal, 0));
   setText("kpiMonth1", moneyMAD(month1Total, 0));
 
-  // MONTHLY FINANCIAL SUMMARY (NEW)
-  setText("secTeamMonthly", moneyMAD(secTeamMonthly, 0));
-  setText("secTeamInfo", `Day: ${secDay} | Night: ${secNight} | Total: ${secTotalAgents}`);
-
-  setText("clnTeamMonthly", moneyMAD(clnTeamMonthly, 0));
-  setText("clnTeamInfo", `Total: ${clnAgents} | Night/Evening: ${clnNightAgents}`);
-
-  setText("clnConsumablesMonthly", moneyMAD(clnProducts, 0));
-
+  // ===== Summary outputs (support both summary layouts) =====
+  // Old summary IDs
+  setText("secTotal", moneyMAD(secTotal, 0));
+  setText("clnTotal", moneyMAD(clnTotal, 0));
+  setText("opexOther", moneyMAD(opexOther, 0));
   setText("opexTotal", moneyMAD(opexTotal, 0));
   setText("opexAnnual", `Annual OPEX (NET): ${moneyMAD(opexAnnual, 0)}`);
 
-  // CAPEX PANEL
+  // If you use the simplified summary IDs (new layout)
+  setText("secTeamMonthly", moneyMAD(secTotal, 0));
+  setText("secTeamInfo", `Day: ${secDay} | Night: ${secNight} | Total: ${secTotalAgents}`);
+  setText("clnTeamMonthly", moneyMAD(clnTotal, 0));
+  setText("clnTeamInfo", `Total: ${clnAgents} | Night/Evening: ${clnNightAgents}`);
+  setText("clnConsumablesMonthly", moneyMAD(clnProducts, 0));
+
+  // Detail lines (if present)
+  setText("secDetailLine", `Normal: ${moneyMAD(secCostNormal,0)} | OT (+25%): ${moneyMAD(secCostOT,0)}`);
+  setText("clnDetailLine", `Normal: ${moneyMAD(clnCostNormal,0)} | OT (+25%): ${moneyMAD(clnCostOT,0)}`);
+
+  // CAPEX outputs
   setText("capexSec", moneyMAD(secPpeCapex, 0));
   setText("capexCln", moneyMAD(clnPpeCapex, 0));
   setText("capexEq", moneyMAD(equipCapex, 0));
@@ -251,22 +336,32 @@ function calc() {
   setText("month1Total", moneyMAD(month1Total, 0));
   setText("capexIncludedText", includeCapex ? "Yes" : "No");
 
-  // Keep old fields safe (if they still exist somewhere)
-  setText("secTotal", moneyMAD(secTeamMonthly, 0));
-  setText("clnTotal", moneyMAD(clnTeamMonthly, 0));
+  // Old detail table IDs (if present)
+  setText("secCostNormal", moneyMAD(secCostNormal, 0));
+  setText("secCostOtDay", moneyMAD(secCostOT, 0));
+  setText("secCostOtNight", moneyMAD(0, 0)); // not used (night=day; OT not split by time)
+
+  setText("clnCostNormal", moneyMAD(clnCostNormal, 0));
+  setText("clnCostOtDay", moneyMAD(clnCostOT, 0));
+  setText("clnCostOtNight", moneyMAD(0, 0)); // not split by time
+
   setText("consumables", moneyMAD(clnProducts, 0));
   setText("otherFixedOut", moneyMAD(otherFixed, 0));
-  setText("opexOther", moneyMAD(opexOther, 0));
+
+  // Donut (if exists)
+  setDonut(secTotal, clnTotal, opexOther);
+
+  // Optional CAPEX panel IDs (if using simplified summary)
+  setText("capexExplainTotal", moneyMAD(capexTotal, 0));
   setText("opexExplainMonthly", moneyMAD(opexTotal, 0));
   setText("opexExplainAnnual", moneyMAD(opexAnnual, 0));
-  setText("capexExplainTotal", moneyMAD(capexTotal, 0));
   setText("month1ExplainTotal", moneyMAD(month1Total, 0));
 
   saveAll();
 }
 
 function bind() {
-  // any input change triggers calc
+  // Any input change triggers calc
   document.addEventListener("input", (e) => {
     if (e.target && e.target.matches("input")) calc();
   });
@@ -288,7 +383,7 @@ function bind() {
     });
   }
 
-  // CAPEX toggle button (NEW)
+  // CAPEX toggle button (if using simplified summary)
   const capexBtn = $("toggleCapexBtn");
   const capexPanel = $("capexPanel");
   if (capexBtn && capexPanel) {
