@@ -407,38 +407,64 @@
       </section>
 
       <!-- RIGHT: SUMMARY -->
-      <aside class="summary panel">
-        <div class="panel-title">
-          <h2>Monthly Financial Summary (NET)</h2>
-          <p>Detailed costs by Security, Cleaning, Consumables/Other, plus CAPEX view.</p>
-        </div>
+<aside class="summary panel">
+  <div class="panel-title">
+    <h2>Monthly Financial Summary (NET)</h2>
+    <p>Security Team + Cleaning Team + Cleaning Consumables (CAPEX shown on demand).</p>
+  </div>
 
-        <div class="card">
-          <div class="summary-grid">
-            <div class="summary-box">
-              <div class="summary-label">Security — Total (Monthly)</div>
-              <div class="summary-value" id="secTotal">—</div>
-              <div class="summary-sub" id="secDetailLine">—</div>
-            </div>
+  <div class="card">
+    <div class="summary-grid">
+      <div class="summary-box">
+        <div class="summary-label">Security Team (Monthly)</div>
+        <div class="summary-value" id="secTeamMonthly">—</div>
+        <div class="summary-sub" id="secTeamInfo">Day: — | Night: — | Total: —</div>
+      </div>
 
-            <div class="summary-box">
-              <div class="summary-label">Cleaning — Total (Monthly)</div>
-              <div class="summary-value" id="clnTotal">—</div>
-              <div class="summary-sub" id="clnDetailLine">—</div>
-            </div>
+      <div class="summary-box">
+        <div class="summary-label">Cleaning Team (Monthly)</div>
+        <div class="summary-value" id="clnTeamMonthly">—</div>
+        <div class="summary-sub" id="clnTeamInfo">Total: — | Night/Evening: —</div>
+      </div>
 
-            <div class="summary-box">
-              <div class="summary-label">Consumables + Other OPEX</div>
-              <div class="summary-value" id="opexOther">—</div>
-              <div class="summary-sub">Consumables + other fixed</div>
-            </div>
+      <div class="summary-box">
+        <div class="summary-label">Cleaning Consumables (Monthly)</div>
+        <div class="summary-value" id="clnConsumablesMonthly">—</div>
+        <div class="summary-sub">Detergents, disinfectants, bags, wipes/paper (as defined in scope)</div>
+      </div>
 
-            <div class="summary-box accent-box">
-              <div class="summary-label">OPEX Total / Month (NET)</div>
-              <div class="summary-value" id="opexTotal">—</div>
-              <div class="summary-sub" id="opexAnnual">—</div>
-            </div>
-          </div>
+      <div class="summary-box accent-box">
+        <div class="summary-label">OPEX Total / Month (NET)</div>
+        <div class="summary-value" id="opexTotal">—</div>
+        <div class="summary-sub" id="opexAnnual">—</div>
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:12px;">
+      <button id="toggleCapexBtn" type="button">Show PPE & Equipment (CAPEX)</button>
+    </div>
+
+    <!-- CAPEX (hidden by default) -->
+    <div id="capexPanel" class="capex-box hidden" style="margin-top:12px;">
+      <h4>PPE & Equipment (CAPEX — One-time purchases)</h4>
+
+      <div class="capex-line"><span>Security PPE (one-time)</span><strong id="capexSec">—</strong></div>
+      <div class="capex-line"><span>Cleaning PPE (one-time)</span><strong id="capexCln">—</strong></div>
+      <div class="capex-line"><span>Cleaning Equipment (one-time)</span><strong id="capexEq">—</strong></div>
+      <div class="capex-line total"><span>Total CAPEX</span><strong id="capexTotal">—</strong></div>
+
+      <div class="capex-first">
+        <div class="capex-first-label">Month 1 Total (NET)</div>
+        <div class="capex-first-value" id="month1Total">—</div>
+        <div class="capex-first-sub">CAPEX included: <span id="capexIncludedText">Yes</span></div>
+      </div>
+
+      <div class="note subtle" style="margin-top:12px;">
+        CAPEX is not part of recurring monthly charges (OPEX). It is a one-time procurement cost.
+      </div>
+    </div>
+  </div>
+</aside>
 
           <div class="split">
             <div class="donut-wrap">
@@ -619,3 +645,4 @@
   <script src="app.js?v=4.5"></script>
 </body>
 </html>
+
