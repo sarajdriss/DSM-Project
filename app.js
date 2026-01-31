@@ -6,8 +6,7 @@ const DEFAULTS = {
   replacement: 8.50,
 
   legalMonthlyHours: 191,
-  nightHoursPerDay: 9,
-
+  nightHoursPerDay: 12,     // because your security “night shift” is 19:00–07:00 (12h)
   otDayPremium: 25,
   otNightPremium: 50,
 
@@ -16,8 +15,10 @@ const DEFAULTS = {
   secPosts: 2,
   secAgents: 8,
   secNightAgents: 4,
+  secPaidHoursPerShift: 10, // 8h work + 2h break
+  autoSizeSecurity: true,
 
-  // cleaning
+  // cleaning (kept as before)
   clnHoursPerDay: 8,
   clnDaysPerMonth: 22,
   clnAgents: 6,
@@ -35,6 +36,7 @@ const DEFAULTS = {
 const IDS = Object.keys(DEFAULTS);
 
 function $(id){ return document.getElementById(id); }
+function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
 function moneyMAD(n, decimals = 0) {
   return new Intl.NumberFormat('fr-MA', {
@@ -43,7 +45,6 @@ function moneyMAD(n, decimals = 0) {
     maximumFractionDigits: decimals
   }).format(isFinite(n) ? n : 0);
 }
-function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
 function readNum(id){
   const e = $(id);
@@ -58,41 +59,6 @@ function readBool(id){
 function setText(id, value){
   const e = $(id);
   if (e) e.textContent = value;
-}
-
-function setDonut(sec, cln, other) {
-  const total = sec + cln + other;
-  const s1 = total > 0 ? (sec / total) : 0;
-  const s2 = total > 0 ? (cln / total) : 0;
-  const p1 = (s1 * 100).toFixed(2) + '%';
-  const p2 = ((s1 + s2) * 100).toFixed(2) + '%';
-  const d = $('donut');
-  if (d) {
-    d.style.setProperty('--p1', p1);
-    d.style.setProperty('--p2', p2);
-  }
-}
-
-function computeLaborCost({ reqDay, reqNight, dayAgents, nightAgents, legalMonthlyHours, rateNormal, rateOtDay, rateOtNight }) {
-  const capDay = dayAgents * legalMonthlyHours;
-  const capNight = nightAgents * legalMonthlyHours;
-
-  const normalDayHours = Math.min(reqDay, capDay);
-  const normalNightHours = Math.min(reqNight, capNight);
-
-  const otDayHours = Math.max(0, reqDay - capDay);
-  const otNightHours = Math.max(0, reqNight - capNight);
-
-  const costNormal = (normalDayHours + normalNightHours) * rateNormal;
-  const costOtDay = otDayHours * rateOtDay;
-  const costOtNight = otNightHours * rateOtNight;
-
-  return {
-    capDay, capNight,
-    otDayHours, otNightHours,
-    costNormal, costOtDay, costOtNight,
-    totalCost: costNormal + costOtDay + costOtNight
-  };
 }
 
 function saveAll(){
@@ -128,76 +94,134 @@ function resetDefaults(){
   calc();
 }
 
-function syncSliderConstraints(){
-  // Keep night agents <= total agents and set max dynamically (best practice UX)
+function setDonut(sec, cln, other) {
+  const total = sec + cln + other;
+  const s1 = total > 0 ? (sec / total) : 0;
+  const s2 = total > 0 ? (cln / total) : 0;
+  const p1 = (s1 * 100).toFixed(2) + '%';
+  const p2 = ((s1 + s2) * 100).toFixed(2) + '%';
+  const d = $('donut');
+  if (d) {
+    d.style.setProperty('--p1', p1);
+    d.style.setProperty('--p2', p2);
+  }
+}
+
+function computeLaborCost({ reqDay, reqNight, dayAgents, nightAgents, legalMonthlyHours, rateNormal, rateOtDay, rateOtNight }) {
+  const capDay = dayAgents * legalMonthlyHours;
+  const capNight = nightAgents * legalMonthlyHours;
+
+  const normalDay = Math.min(reqDay, capDay);
+  const normalNight = Math.min(reqNight, capNight);
+
+  const otDay = Math.max(0, reqDay - capDay);
+  const otNight = Math.max(0, reqNight - capNight);
+
+  const costNormal = (normalDay + normalNight) * rateNormal;
+  const costOtDay = otDay * rateOtDay;
+  const costOtNight = otNight * rateOtNight;
+
+  return {
+    capDay, capNight,
+    otDayHours: otDay, otNightHours: otNight,
+    costNormal, costOtDay, costOtNight,
+    totalCost: costNormal + costOtDay + costOtNight
+  };
+}
+
+function syncAgentLinkages(){
+  // Security linkage: night <= total, and dynamic max
   const secAgents = Math.round(readNum('secAgents'));
   const secNight = $('secNightAgents');
   if (secNight) secNight.max = String(Math.max(0, secAgents));
 
+  // Cleaning linkage: night <= total, and dynamic max
   const clnAgents = Math.round(readNum('clnAgents'));
   const clnNight = $('clnNightAgents');
   if (clnNight) clnNight.max = String(Math.max(0, clnAgents));
 }
 
 function calc(){
-  syncSliderConstraints();
+  syncAgentLinkages();
 
-  // payroll
+  // Payroll
   const smig = readNum('smig');
   const empDedRate = readNum('empDedRate') / 100;
   const employerRate = readNum('employerRate') / 100;
   const replacement = readNum('replacement') / 100;
 
   const legalMonthlyHours = readNum('legalMonthlyHours');
-  const nightHoursPerDay = clamp(readNum('nightHoursPerDay'), 0, 24);
-  const dayHoursPerDay = 24 - nightHoursPerDay;
 
   const otDayPremium = readNum('otDayPremium') / 100;
   const otNightPremium = readNum('otNightPremium') / 100;
 
-  const grossHourly = smig;
-  const netHourly = grossHourly * (1 - empDedRate);
-
-  const employerHourly = grossHourly * (1 + employerRate);
+  const netHourly = smig * (1 - empDedRate);
+  const employerHourly = smig * (1 + employerRate);
   const chargeableHourly = employerHourly * (1 + replacement);
 
   const otDayHourly = chargeableHourly * (1 + otDayPremium);
   const otNightHourly = chargeableHourly * (1 + otNightPremium);
 
+  setText('netHourly', moneyMAD(netHourly, 2));
   setText('employerHourly', moneyMAD(employerHourly, 2));
   setText('chargeableHourly', moneyMAD(chargeableHourly, 2));
   setText('otDayHourly', moneyMAD(otDayHourly, 2));
   setText('otNightHourly', moneyMAD(otNightHourly, 2));
-  setText('netHourly', moneyMAD(netHourly, 2));
-
   setText('oneAgentMonthlyCost', moneyMAD(legalMonthlyHours * chargeableHourly, 0));
 
   // SECURITY
   const daysInMonth = readNum('daysInMonth');
   const secPosts = Math.round(readNum('secPosts'));
-  const secAgents = Math.round(readNum('secAgents'));
+  const secPaidHoursPerShift = readNum('secPaidHoursPerShift'); // 10 by default
+  const autoSizeSecurity = readBool('autoSizeSecurity');
+
+  // Required hours:
+  // Coverage hours (true 24/7 SLA) vs Billable hours (your “8h work + 2h break” rule)
+  const secCoverageHours = secPosts * 24 * daysInMonth;
+  const secBillableHours = secPosts * 2 * secPaidHoursPerShift * daysInMonth; // 2 shifts/day
+
+  setText('secPostsVal', secPosts);
+  setText('secCoverageHours', `${Math.round(secCoverageHours)} h`);
+  setText('secBillableHours', `${Math.round(secBillableHours)} h`);
+
+  // Auto-size total security agents based on BILLABLE hours (your costing basis)
+  // Best practice: we size using the same hour basis used for costing and overtime check.
+  if (autoSizeSecurity && $('secAgents')) {
+    const currentTotal = Math.round(readNum('secAgents'));
+    const currentNight = Math.round(readNum('secNightAgents'));
+    const nightShare = currentTotal > 0 ? (currentNight / currentTotal) : 0.5;
+
+    const needed = Math.max(1, Math.ceil(secBillableHours / Math.max(1, legalMonthlyHours)));
+    $('secAgents').value = String(needed);
+
+    // Keep night ratio when autosizing
+    if ($('secNightAgents')) {
+      const newNight = Math.round(needed * nightShare);
+      $('secNightAgents').value = String(clamp(newNight, 0, needed));
+    }
+  }
+
+  let secAgents = Math.round(readNum('secAgents'));
   let secNightAgents = Math.round(readNum('secNightAgents'));
   secNightAgents = clamp(secNightAgents, 0, secAgents);
   const secDayAgents = secAgents - secNightAgents;
 
-  // keep slider value synced after clamp
   if ($('secNightAgents')) $('secNightAgents').value = String(secNightAgents);
 
-  setText('secPostsVal', secPosts);
   setText('secAgentsVal', secAgents);
   setText('secNightAgentsVal', secNightAgents);
   setText('secDayAgentsOut', `${secDayAgents} day`);
-
-  const secReqTotal = secPosts * 24 * daysInMonth;
-  const secReqNight = secReqTotal * (nightHoursPerDay / 24);
-  const secReqDay = secReqTotal * (dayHoursPerDay / 24);
-
-  setText('secReqHours', `${Math.round(secReqTotal)} h`);
   setText('secCapacity', `${Math.round(secAgents * legalMonthlyHours)} h`);
 
+  // Allocate billable required hours into Day/Night (50/50 because two equal shifts)
+  const secReqDay = secBillableHours / 2;
+  const secReqNight = secBillableHours / 2;
+
   const secRes = computeLaborCost({
-    reqDay: secReqDay, reqNight: secReqNight,
-    dayAgents: secDayAgents, nightAgents: secNightAgents,
+    reqDay: secReqDay,
+    reqNight: secReqNight,
+    dayAgents: secDayAgents,
+    nightAgents: secNightAgents,
     legalMonthlyHours,
     rateNormal: chargeableHourly,
     rateOtDay: otDayHourly,
@@ -208,13 +232,14 @@ function calc(){
   setText('secOtAlert',
     secShort > 0
       ? `Security OT required: ${Math.round(secShort)} h (Day: ${Math.round(secRes.otDayHours)} h | Night: ${Math.round(secRes.otNightHours)} h).`
-      : `Security staffing OK: no overtime required.`
+      : `Security staffing OK: no overtime required on the billable-hours basis.`
   );
 
-  // CLEANING
+  // CLEANING (keep your previous logic: required hours from plan)
   const clnHoursPerDay = readNum('clnHoursPerDay');
   const clnDaysPerMonth = readNum('clnDaysPerMonth');
   const clnAgents = Math.round(readNum('clnAgents'));
+
   let clnNightAgents = Math.round(readNum('clnNightAgents'));
   clnNightAgents = clamp(clnNightAgents, 0, clnAgents);
   const clnDayAgents = clnAgents - clnNightAgents;
@@ -226,14 +251,17 @@ function calc(){
   setText('clnDayAgentsOut', `${clnDayAgents} day`);
 
   const clnReqTotal = clnAgents * clnHoursPerDay * clnDaysPerMonth;
+  setText('clnReqHours', `${Math.round(clnReqTotal)} h`);
+
+  // Allocate cleaning required hours to day/night by staffing split
   const clnReqNight = (clnAgents > 0) ? (clnReqTotal * (clnNightAgents / clnAgents)) : 0;
   const clnReqDay = clnReqTotal - clnReqNight;
 
-  setText('clnReqHours', `${Math.round(clnReqTotal)} h`);
-
   const clnRes = computeLaborCost({
-    reqDay: clnReqDay, reqNight: clnReqNight,
-    dayAgents: clnDayAgents, nightAgents: clnNightAgents,
+    reqDay: clnReqDay,
+    reqNight: clnReqNight,
+    dayAgents: clnDayAgents,
+    nightAgents: clnNightAgents,
     legalMonthlyHours,
     rateNormal: chargeableHourly,
     rateOtDay: otDayHourly,
@@ -247,7 +275,7 @@ function calc(){
       : `Cleaning staffing OK: no overtime required.`
   );
 
-  // OPEX & CAPEX
+  // OPEX/CAPEX totals
   const clnProducts = readNum('clnProducts');
   const otherFixed = readNum('otherFixed');
 
@@ -266,7 +294,7 @@ function calc(){
   const opexAnnual = opexTotal * 12;
   const month1Total = includeCapex ? (opexTotal + capexTotal) : opexTotal;
 
-  // Summary outputs (same ids as your page)
+  // Summary outputs (match your existing IDs)
   setText('secTotal', moneyMAD(secTotal, 0));
   setText('clnTotal', moneyMAD(clnTotal, 0));
   setText('opexOther', moneyMAD(opexOther, 0));
@@ -308,7 +336,7 @@ function calc(){
 }
 
 function bind(){
-  // Best practice: event delegation — any input change triggers calc
+  // Best practice: any input change recalculates (prevents “no update” issues)
   document.addEventListener('input', (e) => {
     if (e.target && e.target.matches('input')) calc();
   });
