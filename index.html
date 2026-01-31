@@ -73,7 +73,19 @@
         <!-- A) PAYROLL -->
         <div class="card">
           <h3>A) Payroll Parameters (Morocco)</h3>
+<div class="card">
+  <h3>A0) Pricing Mode (Best Practice)</h3>
 
+  <div class="grid">
+    <label class="toggle">
+      Pricing mode: <strong>Headcount-based</strong> (OFF = Coverage-based)
+      <input id="pricingModeHeadcount" type="checkbox" checked>
+      <span class="toggle-ui" aria-hidden="true"></span>
+    </label>
+  </div>
+
+  <div class="note subtle" id="pricingModeNote">—</div>
+</div>
           <div class="grid">
             <label>
               Gross hourly wage (SMIG) — MAD/h
@@ -445,7 +457,7 @@
       <aside class="summary panel">
         <div class="panel-title">
           <h2>Monthly Financial Summary (NET)</h2>
-          <p>Detailed costs by Security, Cleaning, Consumables/Other, plus CAPEX view.</p>
+          <p><strong id="pricingModeOut">—</strong> — Detailed costs by Security, Cleaning, Consumables/Other, plus CAPEX view.</p>
         </div>
 
         <div class="card">
@@ -667,3 +679,4 @@
   <script src="app.js?v=4.2"></script>
 </body>
 </html>
+
