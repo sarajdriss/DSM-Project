@@ -329,7 +329,7 @@
             <label>
               Cleaning hours per agent / day (info)
               <input id="clnHoursPerDay" type="number" step="0.5" value="8">
-              <small class="hint">Planning info only (pricing is headcount-based in this version).</small>
+              <small class="hint">Planning info only.</small>
             </label>
 
             <label>
@@ -393,13 +393,72 @@
             </label>
 
             <label>
-              Cleaning consumables (OPEX) — MAD/month
-              <input id="clnProducts" type="number" step="1" value="3040">
-            </label>
-
-            <label>
               Other fixed OPEX — MAD/month (optional)
               <input id="otherFixed" type="number" step="1" value="0">
+            </label>
+
+            <!-- NEW: Consumables (Liters breakdown) -->
+            <div class="consumablesBox" style="grid-column: 1 / -1;">
+              <h4 style="margin:0 0 8px;">Cleaning Consumables (OPEX) — Monthly Quantities (Liters)</h4>
+
+              <label class="toggle" style="margin-bottom:6px;">
+                Use liters breakdown to calculate monthly consumables
+                <input id="useConsumablesBreakdown" type="checkbox" checked>
+                <span class="toggle-ui" aria-hidden="true"></span>
+              </label>
+
+              <table class="schedTable">
+                <thead>
+                  <tr>
+                    <th style="text-align:left;">Product</th>
+                    <th>Qty (L/month)</th>
+                    <th>Unit price (MAD/L)</th>
+                    <th>Total (MAD)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="left">Floor detergent / degreaser</td>
+                    <td><input id="floorDegreaserQtyL" type="number" step="1" value="80"></td>
+                    <td><input id="floorDegreaserPricePerL" type="number" step="0.1" value="15"></td>
+                    <td><strong id="floorDegreaserTotal">—</strong></td>
+                  </tr>
+                  <tr>
+                    <td class="left">Surface disinfectant</td>
+                    <td><input id="disinfectantQtyL" type="number" step="1" value="40"></td>
+                    <td><input id="disinfectantPricePerL" type="number" step="0.1" value="18"></td>
+                    <td><strong id="disinfectantTotal">—</strong></td>
+                  </tr>
+                  <tr>
+                    <td class="left">Toilet cleaner / descaler</td>
+                    <td><input id="toiletCleanerQtyL" type="number" step="1" value="30"></td>
+                    <td><input id="toiletCleanerPricePerL" type="number" step="0.1" value="18"></td>
+                    <td><strong id="toiletCleanerTotal">—</strong></td>
+                  </tr>
+                  <tr>
+                    <td class="left">Glass cleaner</td>
+                    <td><input id="glassCleanerQtyL" type="number" step="1" value="10"></td>
+                    <td><input id="glassCleanerPricePerL" type="number" step="0.1" value="20"></td>
+                    <td><strong id="glassCleanerTotal">—</strong></td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td class="left" colspan="3">Total consumables (MAD/month)</td>
+                    <td><strong id="consumablesTotalOut">—</strong></td>
+                  </tr>
+                </tfoot>
+              </table>
+
+              <div class="hint" style="margin-top:8px;">
+                Non-liquid items (bags, paper, wipes) are not in liters; you can include them in “Other fixed OPEX” or add another line later.
+              </div>
+            </div>
+
+            <!-- Manual fallback (only used if liters breakdown is OFF) -->
+            <label style="grid-column: 1 / -1;">
+              Manual consumables total (MAD/month) — used only if liters breakdown is OFF
+              <input id="clnProducts" type="number" step="1" value="3040">
             </label>
 
             <label class="toggle">
@@ -445,7 +504,7 @@
             <div class="summary-box">
               <div class="summary-label">Cleaning Consumables (Monthly)</div>
               <div class="summary-value" id="clnConsumablesMonthly">—</div>
-              <div class="summary-sub">Detergents, disinfectants, bags, wipes/paper (as defined in scope)</div>
+              <div class="summary-sub">Calculated from liters breakdown (or manual total if disabled)</div>
             </div>
 
             <div class="summary-box accent-box">
@@ -473,10 +532,6 @@
               <div class="capex-first-value" id="month1Total">—</div>
               <div class="capex-first-sub">CAPEX included: <span id="capexIncludedText">Yes</span></div>
             </div>
-
-            <div class="note subtle" style="margin-top:12px;">
-              CAPEX is not part of recurring monthly charges (OPEX). It is a one-time procurement cost.
-            </div>
           </div>
 
           <!-- Optional donut -->
@@ -492,7 +547,7 @@
       </aside>
     </section>
 
-    <!-- NEW: HOW IT’S CALCULATED (SHORT) -->
+    <!-- HOW IT’S CALCULATED (SHORT) -->
     <section class="wide card" id="calc-method">
       <h2>How the Price is Calculated (Short Method)</h2>
       <p class="muted">
@@ -582,56 +637,80 @@
       </details>
     </section>
 
-    <!-- MARKET PRICE SOURCES -->
+    <!-- MARKET PRICE SOURCES (UPDATED) -->
     <section class="wide card" id="sources">
-      <h2>Market Price Sources (Direct Links)</h2>
+      <h2>Market Price Sources (Morocco — Direct Links)</h2>
       <p class="muted">
-        For procurement evidence, select exact items and archive product pages/proformas (prices change frequently).
-        Best practice: keep at least <strong>2–3 comparable offers</strong> per major item.
+        Use these links to collect procurement evidence (screenshots/proformas). Best practice: keep 2–3 comparable offers per major item.
       </p>
 
       <div class="note subtle">
-        <strong>Recommended for professional procurement:</strong> prioritize B2B catalogs (more stable references), then use retail marketplaces as benchmarks.
+        <strong>Note:</strong> Manutan link removed. Below are alternative Morocco-market sources + brand catalogs.
       </div>
 
-      <h3 style="margin-top:14px;">A) B2B / Professional Catalog (Recommended)</h3>
+      <h3 style="margin-top:14px;">A) Professional / Brand Catalogs (Recommended for machines)</h3>
       <div class="sources">
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.manutan.ma/">
-          <span class="src-title">Manutan Maroc (B2B) — Professional equipment & supplies</span>
-          <span class="src-url">https://www.manutan.ma/</span>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.kaercher.com/ma/">
+          <span class="src-title">Kärcher Morocco (official) — cleaning machines & professional equipment</span>
+          <span class="src-url">https://www.kaercher.com/ma/</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.manutan.ma/fr/ma/search?text=autolaveuse">
-          <span class="src-title">Manutan — Scrubber dryer (autolaveuse) search</span>
-          <span class="src-url">https://www.manutan.ma/fr/ma/search?text=autolaveuse</span>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.kaercher.com/ma/professional.html">
+          <span class="src-title">Kärcher Professional (vacuum, scrubber, etc.)</span>
+          <span class="src-url">https://www.kaercher.com/ma/professional.html</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.manutan.ma/fr/ma/search?text=aspirateur%20professionnel">
-          <span class="src-title">Manutan — Professional vacuum search</span>
-          <span class="src-url">https://www.manutan.ma/fr/ma/search?text=aspirateur%20professionnel</span>
+
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.bricoma.ma/">
+          <span class="src-title">Bricoma Maroc (tools & equipment benchmark)</span>
+          <span class="src-url">https://www.bricoma.ma/</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.manutan.ma/fr/ma/search?text=chaussures%20de%20securite">
-          <span class="src-title">Manutan — Safety shoes search</span>
-          <span class="src-url">https://www.manutan.ma/fr/ma/search?text=chaussures%20de%20securite</span>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.electroplanet.ma/">
+          <span class="src-title">Electroplanet Maroc (retail benchmark: vacuums & small equipment)</span>
+          <span class="src-url">https://www.electroplanet.ma/</span>
         </a>
       </div>
 
-      <h3 style="margin-top:14px;">B) Retail Benchmarks (Secondary)</h3>
+      <h3 style="margin-top:14px;">B) Marketplaces (Benchmark + fast comparisons)</h3>
       <div class="sources">
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chaussures+de+securite">
-          <span class="src-title">Jumia Morocco — Safety shoes (search)</span>
-          <span class="src-url">https://www.jumia.ma/catalog/?q=chaussures+de+securite</span>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chaussures%20de%20securite">
+          <span class="src-title">Jumia — Safety shoes (chaussures de sécurité)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=chaussures%20de%20securite</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=vetement+de+travail">
-          <span class="src-title">Jumia Morocco — Workwear / uniforms (search)</span>
-          <span class="src-url">https://www.jumia.ma/catalog/?q=vetement+de+travail</span>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=vetement%20de%20travail">
+          <span class="src-title">Jumia — Workwear / uniforms (vêtement de travail)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=vetement%20de%20travail</span>
+        </a>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur%20professionnel">
+          <span class="src-title">Jumia — Professional vacuum (aspirateur professionnel)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=aspirateur%20professionnel</span>
         </a>
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=autolaveuse">
-          <span class="src-title">Jumia Morocco — Scrubber dryer / autolaveuse (search)</span>
+          <span class="src-title">Jumia — Scrubber dryer / autolaveuse</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=autolaveuse</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur+professionnel">
-          <span class="src-title">Jumia Morocco — Professional vacuum (search)</span>
-          <span class="src-url">https://www.jumia.ma/catalog/?q=aspirateur+professionnel</span>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chariot%20de%20menage%20professionnel">
+          <span class="src-title">Jumia — Cleaning trolley (chariot de ménage professionnel)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=chariot%20de%20menage%20professionnel</span>
         </a>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=degraissant">
+          <span class="src-title">Jumia — Degreaser (dégraissant)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=degraissant</span>
+        </a>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=desinfectant">
+          <span class="src-title">Jumia — Disinfectant (désinfectant)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=desinfectant</span>
+        </a>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.avito.ma/fr/maroc?q=autolaveuse">
+          <span class="src-title">Avito.ma — Autolaveuse (market benchmark / offers)</span>
+          <span class="src-url">https://www.avito.ma/fr/maroc?q=autolaveuse</span>
+        </a>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.avito.ma/fr/maroc?q=aspirateur%20professionnel">
+          <span class="src-title">Avito.ma — Aspirateur professionnel</span>
+          <span class="src-url">https://www.avito.ma/fr/maroc?q=aspirateur%20professionnel</span>
+        </a>
+      </div>
+
+      <div class="note">
+        <strong>Procurement tip:</strong> open a search link → select the exact product → archive the product URL + screenshot + supplier proforma.
       </div>
     </section>
 
@@ -667,12 +746,11 @@
     </section>
 
     <footer class="footer">
-      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.2 (Calc-method added)</small>
+      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.3 (Market sources + consumables liters)</small>
     </footer>
   </main>
 
-  <!-- IMPORTANT: match your latest app.js version to avoid cache issues -->
-  <script src="app.js?v=5.2"></script>
+  <!-- IMPORTANT: update app.js accordingly (consumables liters breakdown) and keep version to avoid cache issues -->
+  <script src="app.js?v=5.3"></script>
 </body>
 </html>
-
