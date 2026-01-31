@@ -1,9 +1,10 @@
+```html
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="DSM Project — Security & Industrial Cleaning Quotation Model (Tangier Free Zone, Morocco)" />
+  <meta name="description" content="DSM Project — Security & Industrial Cleaning Quotation Model (Tangier Free Zone | NET – TVA Exempt)" />
   <title>DSM Project | Security & Cleaning Quotation Model — Tangier Free Zone</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -15,33 +16,36 @@
         <img class="logo" src="assets/logo.png" alt="Design Studio Morocco Logo">
         <div class="brand-text">
           <div class="brand-title">DESIGN STUDIO MOROCCO</div>
-          <div class="brand-subtitle">Quotation Model — Security & Industrial Cleaning (Tangier Free Zone | NET – TVA Exempt)</div>
+          <div class="brand-subtitle">
+            Professional Quotation Model — Security & Industrial Cleaning (Tangier Free Zone | NET – TVA Exempt)
+          </div>
         </div>
       </div>
 
       <nav class="nav">
         <a href="#model">Model</a>
-        <a href="#breakdown">OPEX/CAPEX</a>
-        <a href="#sources">Price Sources</a>
-        <a href="#evidence">References</a>
+        <a href="#definitions">Definitions</a>
+        <a href="#sources">Market Price Sources</a>
+        <a href="#evidence">Regulatory References</a>
       </nav>
     </div>
   </header>
 
   <main class="container" id="model">
+    <!-- HERO -->
     <section class="hero">
       <div class="hero-content">
-        <h1>Security & Industrial Cleaning — Financial Model (NET – TVA Exempt)</h1>
+        <h1>Security & Industrial Cleaning — Cost Model (NET)</h1>
         <p>
-          Reference: <strong>5,000 m² industrial facility</strong> + <strong>24 sanitary units</strong>.
-          Includes staffing checks, overtime estimation, OPEX/CAPEX separation, and procurement links.
+          Reference site: <strong>5,000 m²</strong> industrial facility + <strong>24 sanitary units</strong>.
+          This calculator supports staffing sizing, overtime checks, and CAPEX vs OPEX separation.
         </p>
 
         <div class="hero-badges">
-          <span class="badge">Sliders (agents/day/night)</span>
-          <span class="badge">Overtime check</span>
-          <span class="badge">OPEX vs CAPEX</span>
-          <span class="badge">NET (TVA Exempt)</span>
+          <span class="badge">NET (TVA Exempt – Free Zone)</span>
+          <span class="badge">Replacement coefficient toggle</span>
+          <span class="badge">Day/Night overtime rules</span>
+          <span class="badge">CAPEX & OPEX view</span>
         </div>
       </div>
 
@@ -64,11 +68,12 @@
       <section class="panel">
         <div class="panel-title">
           <h2>Inputs & Assumptions</h2>
-          <p>Use sliders for staffing and night allocation. Overtime is calculated automatically when capacity is insufficient.</p>
+          <p>All values are editable. Use the “Replacement coefficient” toggle for operational continuity modelling.</p>
         </div>
 
+        <!-- A) PAYROLL -->
         <div class="card">
-          <h3>A) Payroll Rates (Morocco)</h3>
+          <h3>A) Payroll Parameters (Morocco)</h3>
 
           <div class="grid">
             <label>
@@ -86,41 +91,21 @@
             <label>
               Employer contributions (%) — Patronal (Company)
               <input id="employerRate" type="number" step="0.01" value="21.09">
-              <small class="hint">Paid by company (patronal). Confirm from CNSS table.</small>
-            </label>
-
-            <label>
-              Replacement coefficient (%)
-              <input id="replacement" type="number" step="0.01" value="8.50">
-              <small class="hint">Continuity factor: leave/holidays/absences (service replacement).</small>
+              <small class="hint">Paid by company (patronal). Confirm from CNSS official contribution table.</small>
             </label>
 
             <label>
               Standard monthly hours per agent (capacity)
               <input id="legalMonthlyHours" type="number" step="1" value="191">
-              <small class="hint">Benchmark capacity per agent/month (adjust per your HR policy).</small>
-            </label>
-
-            <label>
-              Night hours definition (hours/night per 24h)
-              <input id="nightHoursPerDay" type="number" step="1" value="9">
-              <small class="hint">Common definition: 21:00–06:00 = 9 hours (adjust if needed).</small>
-            </label>
-
-            <label>
-              Overtime premium — Day (%)
-              <input id="otDayPremium" type="number" step="0.01" value="25">
-              <small class="hint">Default: +25% (editable).</small>
-            </label>
-
-            <label>
-              Overtime premium — Night (%)
-              <input id="otNightPremium" type="number" step="0.01" value="50">
-              <small class="hint">Often higher at night. Set per your legal interpretation/contract.</small>
+              <small class="hint">Benchmark capacity per agent/month used for staffing & overtime checks.</small>
             </label>
           </div>
 
           <div class="mini-metrics">
+            <div class="metric">
+              <div class="metric-label">Net hourly (info) (MAD/h)</div>
+              <div class="metric-value" id="netHourly">—</div>
+            </div>
             <div class="metric">
               <div class="metric-label">Employer cost (MAD/h)</div>
               <div class="metric-value" id="employerHourly">—</div>
@@ -141,69 +126,181 @@
               <div class="metric-label">1 agent/month cost (MAD)</div>
               <div class="metric-value" id="oneAgentMonthlyCost">—</div>
             </div>
-            <div class="metric">
-              <div class="metric-label">Net hourly (info) (MAD/h)</div>
-              <div class="metric-value" id="netHourly">—</div>
-            </div>
           </div>
 
           <div class="note">
-            <strong>NET – TVA Exempt:</strong> Tangier Free Zone scenario. Confirm exemption conditions and invoicing wording with your finance/tax rules.
+            <strong>Tax note:</strong> Tangier Free Zone scenario — displayed as <strong>NET (TVA Exempt)</strong>.
+            Verify your eligibility and invoice wording per client and tax regime.
           </div>
         </div>
 
+        <!-- B) REPLACEMENT COEFFICIENT -->
         <div class="card">
-          <h3>B) Security — Coverage & Staffing (Sliders)</h3>
+          <h3>B) Replacement Coefficient (Continuity Coverage) — Toggle & Justification</h3>
+
+          <div class="grid">
+            <label class="toggle">
+              Enable Replacement coefficient (apply to chargeable hourly)
+              <input id="replacementEnabled" type="checkbox" checked>
+              <span class="toggle-ui" aria-hidden="true"></span>
+            </label>
+
+            <label>
+              Replacement coefficient (%) — applied when enabled
+              <input id="replacement" type="number" step="0.01" value="8.50">
+              <small class="hint">Used to cover paid leave, holidays, rest days impact, sickness/justified absences.</small>
+            </label>
+          </div>
+
+          <details class="note subtle" style="margin-top:12px;">
+            <summary style="cursor:pointer; font-weight:900; color:#111;">
+              Show detailed components (best practice justification)
+            </summary>
+
+            <div style="margin-top:10px;">
+              <p class="hint" style="margin:0 0 10px;">
+                This section documents why a replacement coefficient exists (service continuity). You may keep it as narrative
+                in your quotation annexes. Values below are indicative and must be aligned with your HR policy and legal updates.
+              </p>
+
+              <div class="grid">
+                <label>
+                  Annual paid leave (days/year)
+                  <input id="annualLeaveDaysPerYear" type="number" step="0.5" value="18">
+                  <small class="hint">
+                    1.5 days per month worked ≈ 18 days/year — Code du Travail (Art. 231).
+                  </small>
+                </label>
+
+                <label>
+                  Public holidays (paid) (days/year)
+                  <input id="publicHolidaysDaysPerYear" type="number" step="1" value="13">
+                  <small class="hint">≈ 13 official paid holidays/year (per decrees; confirm yearly calendar).</small>
+                </label>
+
+                <label>
+                  Weekly rest (days/year)
+                  <input id="weeklyRestDaysPerYear" type="number" step="1" value="52">
+                  <small class="hint">
+                    1 day/week. Often “included in planning”, but it still impacts coverage staffing.
+                  </small>
+                </label>
+
+                <label>
+                  Sick leave & justified absences buffer (%)
+                  <input id="sickAbsenceBufferPercent" type="number" step="0.1" value="2.0">
+                  <small class="hint">Legally protected; CNSS compensation may apply. Use internal historical data if available.</small>
+                </label>
+              </div>
+
+              <div class="actions" style="margin-top:12px;">
+                <button type="button" class="ghost" id="replacementAutoBtn">
+                  Auto-calculate Replacement % (from components)
+                </button>
+                <span class="hint" style="align-self:center;">
+                  Computed value: <strong id="replacementComputedDisplay">—</strong>
+                </span>
+              </div>
+
+              <div class="note" style="margin-top:12px;">
+                <strong>How it is used:</strong> when enabled, the replacement coefficient increases the chargeable hourly
+                to ensure the provider can maintain the required service despite leave, holidays and absences.
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- C) OVERTIME RULES & SHIFT TIMES -->
+        <div class="card" id="definitions">
+          <h3>C) Shift Timings & Overtime Day/Night Definition (Operational)</h3>
+
+          <div class="grid">
+            <label>
+              Security shift timing (display)
+              <input type="text" value="Day: 07:00–19:00 | Night: 19:00–07:00" readonly>
+              <small class="hint">Two 12-hour shifts for presence; your costing can consider working vs break time.</small>
+            </label>
+
+            <label>
+              Security paid hours per shift (work + break) — hours
+              <input id="secPaidHoursPerShift" type="number" step="0.5" value="10">
+              <small class="hint">Your rule: 8h work + 2h break = 10h paid/billable per shift.</small>
+            </label>
+
+            <label>
+              Cleaning shift timing (display)
+              <input type="text" value="Day: 07:00–17:30 | Evening: 17:30–00:00" readonly>
+              <small class="hint">Evening portion may be treated as “night” depending on your policy.</small>
+            </label>
+
+            <label>
+              Night hours definition used by model (hours/night per 24h)
+              <input id="nightHoursPerDay" type="number" step="1" value="12">
+              <small class="hint">
+                For Security: night shift is 19:00–07:00 = 12 hours.
+                Adjust if your contract defines night differently.
+              </small>
+            </label>
+
+            <label>
+              Overtime premium — Day (%)
+              <input id="otDayPremium" type="number" step="0.01" value="25">
+              <small class="hint">Default set to +25% per your instruction.</small>
+            </label>
+
+            <label>
+              Overtime premium — Night (%)
+              <input id="otNightPremium" type="number" step="0.01" value="50">
+              <small class="hint">Set higher than day OT if applicable (editable).</small>
+            </label>
+          </div>
+
+          <div class="note">
+            <strong>Overtime logic used by this model:</strong> OT hours arise only when required hours exceed available legal capacity.
+            OT is then priced using the OT premium (Day vs Night).
+          </div>
+
+          <div class="note subtle">
+            <strong>Important:</strong> Moroccan overtime premiums may vary by time period and by Sundays/public holidays.
+            This model provides configurable premiums for Day and Night; refine per your contract interpretation and HR policy.
+          </div>
+        </div>
+
+        <!-- D) SECURITY COVERAGE & STAFFING -->
+        <div class="card">
+          <h3>D) Security — Coverage & Staffing (Linked Sliders)</h3>
 
           <div class="grid">
             <label>
               Days per month (for 24/7 calculation)
-              <label>
-  Paid hours per security shift (work + break) — hours
-  <input id="secPaidHoursPerShift" type="number" step="0.5" value="10">
-  <small class="hint">
-    Your rule: 8h work + 2h break = 10h paid/billable per shift.
-    Shifts: 07:00–19:00 and 19:00–07:00.
-  </small>
-</label>
-
-<label class="toggle">
-  Auto-size Security team (total agents) from required hours
-  <input id="autoSizeSecurity" type="checkbox" checked>
-  <span class="toggle-ui" aria-hidden="true"></span>
-</label>
               <input id="daysInMonth" type="number" step="0.01" value="30.33">
-              <small class="hint">Average month = 30.33. You can use 30 or 31.</small>
+              <small class="hint">Average month = 30.33. You may set 30 or 31 depending on invoice period.</small>
+            </label>
+
+            <label class="toggle">
+              Auto-size Security team (total agents) from required billable hours
+              <input id="autoSizeSecurity" type="checkbox" checked>
+              <span class="toggle-ui" aria-hidden="true"></span>
             </label>
 
             <div class="rangebox">
               <div class="rangetop">
                 <div>
                   <div class="rangetitle">Security coverage — 24/7 posts</div>
-                  <div class="rangehint">Required hours = posts × 24 × days/month</div>
+                  <div class="rangehint">Coverage hours = posts × 24 × days/month</div>
                 </div>
                 <div class="pill"><span id="secPostsVal">2</span> posts</div>
               </div>
               <input id="secPosts" type="range" min="1" max="8" step="1" value="2">
-<div class="rangefoot">
-  <span>Coverage hours / month (24/7):</span>
-  <strong id="secCoverageHours">—</strong>
-</div>
-<div class="rangefoot">
-  <span>Billable/Paid hours / month:</span>
-  <strong id="secBillableHours">—</strong>
-</div>
-            </div>
 
-            <div class="rangebox">
-              <div class="rangetop">
-                <div>
-                  <div class="rangetitle">Security team — total agents</div>
-                  <div class="rangehint">Capacity = agents × standard monthly hours</div>
-                </div>
-                <div class="pill"><span id="secAgentsVal">8</span> agents</div>
+              <div class="rangefoot">
+                <span>Coverage hours / month (24/7 SLA):</span>
+                <strong id="secCoverageHours">—</strong>
               </div>
-              <input id="secAgents" type="range" min="1" max="40" step="1" value="8">
+              <div class="rangefoot">
+                <span>Billable/Paid hours / month:</span>
+                <strong id="secBillableHours">—</strong>
+              </div>
               <div class="rangefoot">
                 <span>Team capacity (hours/month):</span>
                 <strong id="secCapacity">—</strong>
@@ -213,15 +310,30 @@
             <div class="rangebox">
               <div class="rangetop">
                 <div>
-                  <div class="rangetitle">Security night agents</div>
-                  <div class="rangehint">Night OT is calculated separately (based on night coverage hours)</div>
+                  <div class="rangetitle">Security team — total agents</div>
+                  <div class="rangehint">Total agents are linked to day/night allocation (night ≤ total).</div>
+                </div>
+                <div class="pill"><span id="secAgentsVal">8</span> agents</div>
+              </div>
+              <input id="secAgents" type="range" min="1" max="40" step="1" value="8">
+              <div class="rangefoot">
+                <span>Day agents (auto):</span>
+                <strong id="secDayAgentsOut">—</strong>
+              </div>
+            </div>
+
+            <div class="rangebox">
+              <div class="rangetop">
+                <div>
+                  <div class="rangetitle">Security team — night agents</div>
+                  <div class="rangehint">Night agents must be ≤ total. Day agents = total − night.</div>
                 </div>
                 <div class="pill"><span id="secNightAgentsVal">4</span> night</div>
               </div>
               <input id="secNightAgents" type="range" min="0" max="40" step="1" value="4">
               <div class="rangefoot">
-                <span>Day agents (auto):</span>
-                <strong id="secDayAgentsOut">—</strong>
+                <span>Overtime note:</span>
+                <strong id="secOtHours">See alert</strong>
               </div>
             </div>
           </div>
@@ -229,13 +341,15 @@
           <div class="note" id="secOtAlert">—</div>
         </div>
 
+        <!-- E) CLEANING STAFFING -->
         <div class="card">
-          <h3>C) Cleaning — Staffing & Schedule (Sliders)</h3>
+          <h3>E) Cleaning — Staffing & Schedule (Linked Sliders)</h3>
 
           <div class="grid">
             <label>
-              Cleaning hours per agent / day
+              Cleaning hours per agent / day (paid/billable)
               <input id="clnHoursPerDay" type="number" step="0.5" value="8">
+              <small class="hint">If breaks reduce productive time, keep this as paid hours used for costing.</small>
             </label>
 
             <label>
@@ -262,8 +376,8 @@
             <div class="rangebox">
               <div class="rangetop">
                 <div>
-                  <div class="rangetitle">Cleaning night agents</div>
-                  <div class="rangehint">Night OT estimated separately if capacity shortage on night allocation</div>
+                  <div class="rangetitle">Cleaning team — night/evening agents</div>
+                  <div class="rangehint">Night/evening agents must be ≤ total. Day agents = total − night/evening.</div>
                 </div>
                 <div class="pill"><span id="clnNightAgentsVal">0</span> night</div>
               </div>
@@ -278,8 +392,9 @@
           <div class="note" id="clnOtAlert">—</div>
         </div>
 
+        <!-- F) CAPEX & OPEX -->
         <div class="card">
-          <h3>D) CAPEX (One-time) & OPEX (Recurring)</h3>
+          <h3>F) CAPEX (One-time) & OPEX (Recurring)</h3>
 
           <div class="grid">
             <label>
@@ -315,13 +430,14 @@
           </div>
 
           <div class="actions" style="margin-top:12px;">
-            <button id="toggleBreakdownBtn" type="button">Show CAPEX & OPEX Breakdown</button>
+            <button id="toggleBreakdownBtn" type="button">Show CAPEX & OPEX Explanation</button>
             <button class="ghost" id="printBtn" type="button">Print / Save PDF</button>
             <button class="ghost" id="resetBtn" type="button">Reset</button>
           </div>
 
-          <div class="hint" style="margin-top:10px;">
-            CAPEX = purchased once (PPE/equipment). OPEX = recurring monthly costs (labor + consumables + other fixed).
+          <div class="note subtle" style="margin-top:12px;">
+            <strong>OPEX</strong> = recurring operating expenses (labor, consumables, recurring fixed costs).<br/>
+            <strong>CAPEX</strong> = one-time investment purchases (PPE, equipment).
           </div>
         </div>
       </section>
@@ -330,7 +446,7 @@
       <aside class="summary panel">
         <div class="panel-title">
           <h2>Monthly Financial Summary (NET)</h2>
-          <p>Detailed view by service, overtime, consumables, and totals.</p>
+          <p>Detailed costs by Security, Cleaning, Consumables/Other, plus CAPEX view.</p>
         </div>
 
         <div class="card">
@@ -407,33 +523,33 @@
           </table>
 
           <div class="note subtle">
-            “Night agents” is used to allocate capacity into day/night pools to estimate day vs night overtime.
-            If your real planning differs (12h shifts, rotation, weekly rest), adjust capacity hours and night allocation accordingly.
+            <strong>Notes:</strong> This model splits requirements into Day/Night using the defined shift timings.
+            Overtime occurs when required hours exceed the available capacity (agents × standard monthly hours).
           </div>
         </div>
 
         <!-- Collapsible breakdown -->
         <section class="card hidden" id="breakdown">
-          <h3>CAPEX & OPEX Breakdown (Explanation)</h3>
+          <h3>CAPEX & OPEX Explanation (Professional Definitions)</h3>
 
           <div class="twoCols">
             <div class="infoBox">
-              <h4>OPEX (Recurring)</h4>
+              <h4>OPEX (Operating Expenditure) — Recurring</h4>
               <ul>
-                <li>Security labor (normal + OT)</li>
-                <li>Cleaning labor (normal + OT)</li>
+                <li>Security labor (normal + overtime)</li>
+                <li>Cleaning labor (normal + overtime)</li>
                 <li>Consumables (monthly)</li>
-                <li>Other recurring fixed costs (supervision, admin, transport, etc.)</li>
+                <li>Other recurring fixed costs (supervision, transport, admin, insurance, etc.)</li>
               </ul>
               <div class="infoLine"><span>OPEX / Month (NET)</span><strong id="opexExplainMonthly">—</strong></div>
               <div class="infoLine"><span>OPEX / Year (NET)</span><strong id="opexExplainAnnual">—</strong></div>
             </div>
 
             <div class="infoBox">
-              <h4>CAPEX (One-time)</h4>
+              <h4>CAPEX (Capital Expenditure) — One-time</h4>
               <ul>
-                <li>PPE for Security team (uniforms, safety shoes, accessories)</li>
-                <li>PPE for Cleaning team</li>
+                <li>Security PPE (uniforms, safety shoes, accessories)</li>
+                <li>Cleaning PPE</li>
                 <li>Cleaning equipment (trolleys, vacuum, scrubber, tools)</li>
               </ul>
               <div class="infoLine"><span>Total CAPEX (one time)</span><strong id="capexExplainTotal">—</strong></div>
@@ -442,65 +558,114 @@
           </div>
 
           <div class="note">
-            Overtime is charged only when required hours exceed available capacity.
-            OT premiums are configurable: Day default +25%, Night default +50%.
+            Replacement coefficient (when enabled) ensures continuity coverage for:
+            annual paid leave, public holidays, weekly rest impact, and sick/justified absences.
           </div>
         </section>
-
       </aside>
     </section>
 
+    <!-- MARKET PRICE SOURCES -->
     <section class="wide card" id="sources">
-      <h2>Market Price Sources (Direct Links — Jumia Morocco)</h2>
-      <p class="muted">Direct search links to real listings. For procurement evidence, select exact items and archive product pages/proformas.</p>
+      <h2>Market Price Sources (Direct Links)</h2>
+      <p class="muted">
+        For procurement evidence, select exact items and archive product pages/proformas (prices change frequently).
+        Best practice: keep at least <strong>2–3 comparable offers</strong> per major item.
+      </p>
 
+      <div class="note subtle">
+        <strong>Recommended for professional procurement:</strong> prioritize B2B catalogs (more stable references), then use retail marketplaces as benchmarks.
+      </div>
+
+      <h3 style="margin-top:14px;">A) B2B / Professional Catalog (Recommended)</h3>
+      <div class="sources">
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.manutan.ma/">
+          <span class="src-title">Manutan Maroc (B2B) — Professional equipment & supplies</span>
+          <span class="src-url">https://www.manutan.ma/</span>
+        </a>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.manutan.ma/fr/ma/search?text=autolaveuse">
+          <span class="src-title">Manutan — Scrubber dryer (autolaveuse) search</span>
+          <span class="src-url">https://www.manutan.ma/fr/ma/search?text=autolaveuse</span>
+        </a>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.manutan.ma/fr/ma/search?text=aspirateur%20professionnel">
+          <span class="src-title">Manutan — Professional vacuum search</span>
+          <span class="src-url">https://www.manutan.ma/fr/ma/search?text=aspirateur%20professionnel</span>
+        </a>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.manutan.ma/fr/ma/search?text=chaussures%20de%20securite">
+          <span class="src-title">Manutan — Safety shoes search</span>
+          <span class="src-url">https://www.manutan.ma/fr/ma/search?text=chaussures%20de%20securite</span>
+        </a>
+      </div>
+
+      <h3 style="margin-top:14px;">B) Retail Benchmarks (Secondary)</h3>
       <div class="sources">
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chariot+de+menage+professionnel">
-          <span class="src-title">Industrial trolley (chariot de ménage)</span>
+          <span class="src-title">Jumia Morocco — Industrial trolley (search)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=chariot+de+menage+professionnel</span>
         </a>
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur+professionnel">
-          <span class="src-title">Professional vacuum (aspirateur professionnel)</span>
+          <span class="src-title">Jumia Morocco — Professional vacuum (search)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=aspirateur+professionnel</span>
         </a>
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=autolaveuse">
-          <span class="src-title">Scrubber dryer (autolaveuse)</span>
+          <span class="src-title">Jumia Morocco — Scrubber dryer / autolaveuse (search)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=autolaveuse</span>
         </a>
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chaussures+de+securite">
-          <span class="src-title">Safety shoes (chaussures de sécurité)</span>
+          <span class="src-title">Jumia Morocco — Safety shoes (search)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=chaussures+de+securite</span>
         </a>
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=vetement+de+travail">
-          <span class="src-title">Workwear / Uniforms (vêtement de travail)</span>
+          <span class="src-title">Jumia Morocco — Workwear / uniforms (search)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=vetement+de+travail</span>
         </a>
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=sacs+poubelle">
-          <span class="src-title">Trash bags / consumables (sacs poubelle)</span>
+          <span class="src-title">Jumia Morocco — Trash bags / consumables (search)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=sacs+poubelle</span>
         </a>
       </div>
     </section>
 
+    <!-- REGULATORY REFERENCES -->
     <section class="wide card" id="evidence">
       <h2>Regulatory References (Official Websites)</h2>
+      <p class="muted">
+        Attach official extracts (BO, decrees, CNSS rate table) to your procurement file at bid/award date.
+      </p>
+
       <ul class="evidence">
-        <li><strong>Bulletin Officiel (BO):</strong> <a target="_blank" rel="noreferrer" href="https://www.sgg.gov.ma/BO/">https://www.sgg.gov.ma/BO/</a></li>
-        <li><strong>CNSS:</strong> <a target="_blank" rel="noreferrer" href="https://www.cnss.ma/">https://www.cnss.ma/</a></li>
-        <li><strong>ANAM (AMO):</strong> <a target="_blank" rel="noreferrer" href="https://www.anam.ma/">https://www.anam.ma/</a></li>
-        <li><strong>Ministry portal:</strong> <a target="_blank" rel="noreferrer" href="https://www.miepeec.gov.ma/">https://www.miepeec.gov.ma/</a></li>
+        <li>
+          <strong>Secrétariat Général du Gouvernement — Bulletin Officiel (BO):</strong>
+          <a target="_blank" rel="noreferrer" href="https://www.sgg.gov.ma/BO/">https://www.sgg.gov.ma/BO/</a>
+          <div class="hint">Use BO search for: SMIG decrees, Code du Travail (Loi 65-99), public holiday decrees.</div>
+        </li>
+        <li>
+          <strong>CNSS (Cotisations / Employer obligations):</strong>
+          <a target="_blank" rel="noreferrer" href="https://www.cnss.ma/">https://www.cnss.ma/</a>
+        </li>
+        <li>
+          <strong>ANAM (AMO):</strong>
+          <a target="_blank" rel="noreferrer" href="https://www.anam.ma/">https://www.anam.ma/</a>
+        </li>
+        <li>
+          <strong>Ministry portal (Employment / SMIG information):</strong>
+          <a target="_blank" rel="noreferrer" href="https://www.miepeec.gov.ma/">https://www.miepeec.gov.ma/</a>
+        </li>
       </ul>
+
+      <div class="note subtle">
+        <strong>Replacement coefficient justification (documentation):</strong>
+        Annual paid leave (Art. 231), public holidays (decrees), weekly rest, and sick/justified absences (CNSS rules) must be reflected in staffing continuity assumptions.
+      </div>
     </section>
 
     <footer class="footer">
-      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 4.0</small>
+      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 4.2 (HTML update)</small>
     </footer>
   </main>
 
+  <!-- Cache-busting recommended after updates -->
   <script src="app.js?v=4.2"></script>
 </body>
 </html>
-
-
-
-
+```
