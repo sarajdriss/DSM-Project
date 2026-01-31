@@ -37,13 +37,13 @@
         <h1>Security & Industrial Cleaning — Cost Model (NET)</h1>
         <p>
           Reference site: <strong>5,000 m²</strong> industrial facility + <strong>24 sanitary units</strong>.
-          This calculator supports staffing estimation, and CAPEX vs OPEX separation (NET – TVA Exempt).
+          This calculator supports staffing estimation, weekly overtime check (48h/week), and CAPEX vs OPEX separation (NET – TVA Exempt).
         </p>
 
         <div class="hero-badges">
           <span class="badge">NET (TVA Exempt – Free Zone)</span>
           <span class="badge">Replacement coefficient toggle</span>
-          <span class="badge">Day/Night overtime rules</span>
+          <span class="badge">OT rule: +25% only (48h/week)</span>
           <span class="badge">CAPEX & OPEX view</span>
         </div>
       </div>
@@ -67,7 +67,7 @@
       <section class="panel">
         <div class="panel-title">
           <h2>Inputs & Assumptions</h2>
-          <p>All values are editable. Use the “Replacement coefficient” toggle for operational continuity modelling.</p>
+          <p>All values are editable. Overtime is calculated only above <strong>48 hours/week</strong> with a fixed premium of <strong>+25%</strong>.</p>
         </div>
 
         <!-- A) PAYROLL -->
@@ -94,9 +94,11 @@
             </label>
 
             <label>
-              Standard monthly hours per agent (capacity)
+              Standard monthly hours per agent (capacity/planning) — hours/month
               <input id="legalMonthlyHours" type="number" step="1" value="191">
-              <small class="hint">Benchmark capacity per agent/month used for staffing checks.</small>
+              <small class="hint">
+                Used for Cleaning headcount pricing. Security OT is calculated using the weekly table (days/week & hours/day).
+              </small>
             </label>
           </div>
 
@@ -114,12 +116,8 @@
               <div class="metric-value accent" id="chargeableHourly">—</div>
             </div>
             <div class="metric">
-              <div class="metric-label">OT day hourly (MAD/h)</div>
+              <div class="metric-label">OT hourly (+25%) (MAD/h)</div>
               <div class="metric-value accent" id="otDayHourly">—</div>
-            </div>
-            <div class="metric">
-              <div class="metric-label">OT night hourly (MAD/h)</div>
-              <div class="metric-value accent" id="otNightHourly">—</div>
             </div>
             <div class="metric">
               <div class="metric-label">1 agent/month cost (MAD)</div>
@@ -129,7 +127,7 @@
 
           <div class="note">
             <strong>Tax note:</strong> Tangier Free Zone scenario — displayed as <strong>NET (TVA Exempt)</strong>.
-            Verify your eligibility and invoice wording per client and tax regime.
+            Verify eligibility and invoice wording per client and tax regime.
           </div>
         </div>
 
@@ -158,8 +156,7 @@
 
             <div style="margin-top:10px;">
               <p class="hint" style="margin:0 0 10px;">
-                This section documents why a replacement coefficient exists (service continuity). Values below are indicative and must be aligned
-                with your HR policy and legal updates.
+                Values below are indicative. Align with your HR policy, legal updates and historical absence data.
               </p>
 
               <div class="grid">
@@ -196,143 +193,161 @@
                   Computed value: <strong id="replacementComputedDisplay">—</strong>
                 </span>
               </div>
-
-              <div class="note" style="margin-top:12px;">
-                <strong>How it is used:</strong> when enabled, the replacement coefficient increases the chargeable hourly to help maintain continuity
-                despite leave, holidays and justified absences.
-              </div>
             </div>
           </details>
         </div>
 
         <!-- C) DEFINITIONS -->
         <div class="card" id="definitions">
-          <h3>C) Shift Timings & Overtime Day/Night Definition (Operational)</h3>
+          <h3>C) Shift Timings & Overtime Rule (Primak)</h3>
 
           <div class="grid">
             <label>
               Security shift timing (display)
               <input type="text" value="Day: 07:00–19:00 | Night: 19:00–07:00" readonly>
-              <small class="hint">Two 12-hour shifts for presence; the model is headcount-based for security.</small>
+              <small class="hint">Pricing: night agent is calculated the same as day agent (no normal night premium).</small>
             </label>
 
             <label>
-              Security paid hours per shift (work + break) — hours
+              Security paid hours per shift (work + break) — hours (info)
               <input id="secPaidHoursPerShift" type="number" step="0.5" value="10">
-              <small class="hint">Your rule: 8h work + 2h break = 10h paid/billable per shift.</small>
+              <small class="hint">Example: 10h paid = 8h work + 2h break.</small>
             </label>
 
             <label>
               Cleaning shift timing (display)
               <input type="text" value="Day: 07:00–17:30 | Evening: 17:30–00:00" readonly>
-              <small class="hint">Evening portion may be treated as night depending on your policy.</small>
+              <small class="hint">Cleaning pricing is headcount-based in this model.</small>
             </label>
 
             <label>
-              Night hours definition (used for overtime split where applicable)
-              <input id="nightHoursPerDay" type="number" step="1" value="12">
-              <small class="hint">Default set to reflect security night shift length (12 hours). Adjust if needed.</small>
-            </label>
-
-            <label>
-              Overtime premium — Day (%)
-              <input id="otDayPremium" type="number" step="0.01" value="25">
-              <small class="hint">Default set to +25% per your instruction.</small>
-            </label>
-
-            <label>
-              Overtime premium — Night (%)
-              <input id="otNightPremium" type="number" step="0.01" value="50">
-              <small class="hint">Editable (may be higher than day OT depending on policy/contract).</small>
+              Overtime premium (fixed) — %
+              <input id="otDayPremium" type="number" step="0.01" value="25" readonly>
+              <small class="hint">Fixed by client code: overtime is always +25%.</small>
             </label>
           </div>
 
           <div class="note subtle">
-            <strong>Note:</strong> Overtime premiums can vary by Sundays and public holidays. Adjust the premiums per your contract/legal interpretation.
+            <strong>Overtime condition:</strong> Overtime is counted only when the agent exceeds <strong>48 hours/week</strong>.
+            In Security, this is computed using the weekly table (days/week × paid hours/day).
           </div>
         </div>
 
-        <!-- D) SECURITY — ONLY DAY/NIGHT/TOTAL (NO COVERAGE/POSTS) -->
+        <!-- D) SECURITY (NEW WEEKLY TABLE +25% OT ONLY) -->
         <div class="card">
-          <h3>D) Security — Staffing (Day / Night / Total) — Headcount Input</h3>
+          <h3>D) Security — Staffing (Day / Night / Total) — Weekly OT Rule (48h/week)</h3>
 
-          <div class="grid">
+          <div class="securityGrid">
+            <!-- Day -->
             <div class="rangebox">
               <div class="rangetop">
                 <div>
                   <div class="rangetitle">Security working on Day shift (07:00–19:00)</div>
-                  <div class="rangehint">Headcount input (not coverage/posts). Total = Day + Night.</div>
+                  <div class="rangehint">Headcount input. Night priced the same as day (Primak rule).</div>
                 </div>
                 <div class="pill"><span id="secDayAgentsVal">5</span> day</div>
               </div>
               <input id="secDayAgents" type="range" min="0" max="60" step="1" value="5">
             </div>
 
+            <!-- Night -->
             <div class="rangebox">
               <div class="rangetop">
                 <div>
                   <div class="rangetitle">Security working on Night shift (19:00–07:00)</div>
-                  <div class="rangehint">Headcount input (not coverage/posts). Total = Day + Night.</div>
+                  <div class="rangehint">Headcount input. Same hourly pricing as day.</div>
                 </div>
                 <div class="pill"><span id="secNightAgentsVal">2</span> night</div>
               </div>
               <input id="secNightAgents" type="range" min="0" max="60" step="1" value="2">
             </div>
 
-            <div class="rangebox" style="grid-column: 1 / -1;">
+            <!-- Total + KPIs -->
+            <div class="rangebox securityTotal">
               <div class="rangetop">
                 <div>
                   <div class="rangetitle">Total Security Team (auto-calculated)</div>
-                  <div class="rangehint">Total = Day + Night. Used for monthly cost calculation.</div>
+                  <div class="rangehint">Total = Day + Night. Used for cost and weekly OT breakdown.</div>
                 </div>
                 <div class="pill"><span id="secAgentsVal">7</span> total</div>
               </div>
 
-              <div class="rangefoot">
-                <span>Monthly capacity (hours):</span>
-                <strong id="secCapacity">—</strong>
-              </div>
-
-              <div class="hint" style="margin-top:10px;">
-                Working-days explanation: with <strong>standard monthly hours/agent</strong> and <strong>10h paid per shift</strong>,
-                the equivalent working days per agent ≈ (monthly hours ÷ 10).
+              <div class="securityTotals">
+                <div class="rangefoot">
+                  <span>Work days/month:</span>
+                  <strong id="secWorkDaysOut">—</strong>
+                </div>
+                <div class="rangefoot">
+                  <span>Paid hours/day (incl. break):</span>
+                  <strong><span id="secPaidHoursOut">10</span> h</strong>
+                </div>
+                <div class="rangefoot">
+                  <span>Total hours/agent/month (paid):</span>
+                  <strong id="secAgentTotalHours">—</strong>
+                </div>
+                <div class="rangefoot">
+                  <span>OT hours/agent/month (48h/week rule):</span>
+                  <strong id="secAgentOtHours">—</strong>
+                </div>
               </div>
             </div>
+
+            <!-- Inputs -->
+            <label class="securityInfo">
+              Security paid hours/day (includes break) — hours
+              <input id="secPaidHoursPerDay" type="number" step="0.5" value="10">
+              <small class="hint">Example: 10h paid/day (2h break + 8h work).</small>
+            </label>
+
+            <label class="securityInfo">
+              Security working days per month
+              <input id="secWorkDaysPerMonth" type="number" step="1" value="23">
+              <small class="hint">Example month: 23 working days (Excel-like breakdown).</small>
+            </label>
+
+            <label class="securityInfo">
+              Security working days per week
+              <input id="secWorkDaysPerWeek" type="number" step="1" value="5">
+              <small class="hint">Example: 5 days/week → 50h/week → OT = 2h/week above 48h.</small>
+            </label>
           </div>
 
-          <div class="note" id="secOtAlert">
-            Headcount-based security pricing: overtime is not computed (no required-hours/coverage model in this section).
+          <div class="scheduleWrap">
+            <div class="scheduleTitle">Weekly Breakdown (per agent) — like your Excel</div>
+            <div id="secScheduleTable"></div>
           </div>
+
+          <div class="note" id="secOtAlert">—</div>
         </div>
 
-        <!-- E) CLEANING STAFFING -->
+        <!-- E) CLEANING -->
         <div class="card">
-          <h3>E) Cleaning — Staffing & Schedule (Linked Sliders)</h3>
+          <h3>E) Cleaning — Staffing (Headcount) + Planning Info</h3>
 
           <div class="grid">
             <label>
-              Cleaning hours per agent / day (paid/billable)
+              Cleaning hours per agent / day (info)
               <input id="clnHoursPerDay" type="number" step="0.5" value="8">
-              <small class="hint">If breaks reduce productive time, keep this as paid hours used for costing.</small>
+              <small class="hint">Planning info only (pricing is headcount-based in this version).</small>
             </label>
 
             <label>
-              Cleaning working days / month
+              Cleaning working days / month (info)
               <input id="clnDaysPerMonth" type="number" step="1" value="22">
-              <small class="hint">Example: 22 for Mon–Fri. Adjust if Saturdays are included.</small>
+              <small class="hint">Planning info only.</small>
             </label>
 
             <div class="rangebox">
               <div class="rangetop">
                 <div>
                   <div class="rangetitle">Cleaning team — total agents</div>
-                  <div class="rangehint">Required hours = agents × hours/day × days/month</div>
+                  <div class="rangehint">Headcount input (pricing is per agent/month).</div>
                 </div>
                 <div class="pill"><span id="clnAgentsVal">5</span> agents</div>
               </div>
               <input id="clnAgents" type="range" min="0" max="40" step="1" value="5">
               <div class="rangefoot">
-                <span>Required cleaning hours / month:</span>
+                <span>Planned hours / month (info):</span>
                 <strong id="clnReqHours">—</strong>
               </div>
             </div>
@@ -340,8 +355,8 @@
             <div class="rangebox">
               <div class="rangetop">
                 <div>
-                  <div class="rangetitle">Cleaning team — night/evening agents</div>
-                  <div class="rangehint">Night/evening agents must be ≤ total. Day agents = total − night/evening.</div>
+                  <div class="rangetitle">Cleaning team — night/evening agents (info)</div>
+                  <div class="rangehint">Informational allocation only.</div>
                 </div>
                 <div class="pill"><span id="clnNightAgentsVal">0</span> night</div>
               </div>
@@ -394,7 +409,6 @@
           </div>
 
           <div class="actions" style="margin-top:12px;">
-            <button id="toggleBreakdownBtn" type="button">Show CAPEX & OPEX Explanation</button>
             <button class="ghost" id="printBtn" type="button">Print / Save PDF</button>
             <button class="ghost" id="resetBtn" type="button">Reset</button>
           </div>
@@ -407,149 +421,74 @@
       </section>
 
       <!-- RIGHT: SUMMARY -->
-<aside class="summary panel">
-  <div class="panel-title">
-    <h2>Monthly Financial Summary (NET)</h2>
-    <p>Security Team + Cleaning Team + Cleaning Consumables (CAPEX shown on demand).</p>
-  </div>
-
-  <div class="card">
-    <div class="summary-grid">
-      <div class="summary-box">
-        <div class="summary-label">Security Team (Monthly)</div>
-        <div class="summary-value" id="secTeamMonthly">—</div>
-        <div class="summary-sub" id="secTeamInfo">Day: — | Night: — | Total: —</div>
-      </div>
-
-      <div class="summary-box">
-        <div class="summary-label">Cleaning Team (Monthly)</div>
-        <div class="summary-value" id="clnTeamMonthly">—</div>
-        <div class="summary-sub" id="clnTeamInfo">Total: — | Night/Evening: —</div>
-      </div>
-
-      <div class="summary-box">
-        <div class="summary-label">Cleaning Consumables (Monthly)</div>
-        <div class="summary-value" id="clnConsumablesMonthly">—</div>
-        <div class="summary-sub">Detergents, disinfectants, bags, wipes/paper (as defined in scope)</div>
-      </div>
-
-      <div class="summary-box accent-box">
-        <div class="summary-label">OPEX Total / Month (NET)</div>
-        <div class="summary-value" id="opexTotal">—</div>
-        <div class="summary-sub" id="opexAnnual">—</div>
-      </div>
-    </div>
-
-    <div class="actions" style="margin-top:12px;">
-      <button id="toggleCapexBtn" type="button">Show PPE & Equipment (CAPEX)</button>
-    </div>
-
-    <!-- CAPEX (hidden by default) -->
-    <div id="capexPanel" class="capex-box hidden" style="margin-top:12px;">
-      <h4>PPE & Equipment (CAPEX — One-time purchases)</h4>
-
-      <div class="capex-line"><span>Security PPE (one-time)</span><strong id="capexSec">—</strong></div>
-      <div class="capex-line"><span>Cleaning PPE (one-time)</span><strong id="capexCln">—</strong></div>
-      <div class="capex-line"><span>Cleaning Equipment (one-time)</span><strong id="capexEq">—</strong></div>
-      <div class="capex-line total"><span>Total CAPEX</span><strong id="capexTotal">—</strong></div>
-
-      <div class="capex-first">
-        <div class="capex-first-label">Month 1 Total (NET)</div>
-        <div class="capex-first-value" id="month1Total">—</div>
-        <div class="capex-first-sub">CAPEX included: <span id="capexIncludedText">Yes</span></div>
-      </div>
-
-      <div class="note subtle" style="margin-top:12px;">
-        CAPEX is not part of recurring monthly charges (OPEX). It is a one-time procurement cost.
-      </div>
-    </div>
-  </div>
-</aside>
-
-          <div class="split">
-            <div class="donut-wrap">
-              <div class="donut" id="donut" aria-label="OPEX breakdown chart"></div>
-              <div class="donut-legend">
-                <div class="leg"><span class="dot s1"></span>Security</div>
-                <div class="leg"><span class="dot s2"></span>Cleaning</div>
-                <div class="leg"><span class="dot s3"></span>Consumables/Other</div>
-              </div>
-            </div>
-
-            <div class="capex-box">
-              <h4>CAPEX (One-time) + Month 1</h4>
-              <div class="capex-line"><span>Security PPE</span><strong id="capexSec">—</strong></div>
-              <div class="capex-line"><span>Cleaning PPE</span><strong id="capexCln">—</strong></div>
-              <div class="capex-line"><span>Cleaning equipment</span><strong id="capexEq">—</strong></div>
-              <div class="capex-line total"><span>Total CAPEX</span><strong id="capexTotal">—</strong></div>
-
-              <div class="capex-first">
-                <div class="capex-first-label">Month 1 Total (NET)</div>
-                <div class="capex-first-value" id="month1Total">—</div>
-                <div class="capex-first-sub">CAPEX included: <span id="capexIncludedText">Yes</span></div>
-              </div>
-            </div>
-          </div>
-
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Line item</th>
-                <th class="num">MAD / Month</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Security normal hours cost</td><td class="num" id="secCostNormal">—</td></tr>
-              <tr><td>Security overtime (day) cost</td><td class="num" id="secCostOtDay">—</td></tr>
-              <tr><td>Security overtime (night) cost</td><td class="num" id="secCostOtNight">—</td></tr>
-
-              <tr><td>Cleaning normal hours cost</td><td class="num" id="clnCostNormal">—</td></tr>
-              <tr><td>Cleaning overtime (day) cost</td><td class="num" id="clnCostOtDay">—</td></tr>
-              <tr><td>Cleaning overtime (night) cost</td><td class="num" id="clnCostOtNight">—</td></tr>
-
-              <tr><td>Consumables (Cleaning)</td><td class="num" id="consumables">—</td></tr>
-              <tr><td>Other fixed OPEX</td><td class="num" id="otherFixedOut">—</td></tr>
-            </tbody>
-          </table>
-
-          <div class="note subtle">
-            <strong>Notes:</strong> Security pricing here is headcount-based (day + night headcount). Cleaning remains schedule-based and may generate OT if required hours exceed capacity.
-          </div>
+      <aside class="summary panel">
+        <div class="panel-title">
+          <h2>Monthly Financial Summary (NET)</h2>
+          <p>Security Team + Cleaning Team + Cleaning Consumables (CAPEX shown on demand).</p>
         </div>
 
-        <!-- Collapsible breakdown -->
-        <section class="card hidden" id="breakdown">
-          <h3>CAPEX & OPEX Explanation (Professional Definitions)</h3>
-
-          <div class="twoCols">
-            <div class="infoBox">
-              <h4>OPEX (Operating Expenditure) — Recurring</h4>
-              <ul>
-                <li>Security labor (headcount-based)</li>
-                <li>Cleaning labor (normal + overtime where applicable)</li>
-                <li>Consumables (monthly)</li>
-                <li>Other recurring fixed costs (supervision, transport, admin, insurance, etc.)</li>
-              </ul>
-              <div class="infoLine"><span>OPEX / Month (NET)</span><strong id="opexExplainMonthly">—</strong></div>
-              <div class="infoLine"><span>OPEX / Year (NET)</span><strong id="opexExplainAnnual">—</strong></div>
+        <div class="card">
+          <div class="summary-grid">
+            <div class="summary-box">
+              <div class="summary-label">Security Team (Monthly)</div>
+              <div class="summary-value" id="secTeamMonthly">—</div>
+              <div class="summary-sub" id="secTeamInfo">Day: — | Night: — | Total: —</div>
             </div>
 
-            <div class="infoBox">
-              <h4>CAPEX (Capital Expenditure) — One-time</h4>
-              <ul>
-                <li>Security PPE (uniforms, safety shoes, accessories)</li>
-                <li>Cleaning PPE</li>
-                <li>Cleaning equipment (trolleys, vacuum, scrubber, tools)</li>
-              </ul>
-              <div class="infoLine"><span>Total CAPEX (one time)</span><strong id="capexExplainTotal">—</strong></div>
-              <div class="infoLine"><span>Month 1 Total (NET)</span><strong id="month1ExplainTotal">—</strong></div>
+            <div class="summary-box">
+              <div class="summary-label">Cleaning Team (Monthly)</div>
+              <div class="summary-value" id="clnTeamMonthly">—</div>
+              <div class="summary-sub" id="clnTeamInfo">Total: — | Night/Evening: —</div>
+            </div>
+
+            <div class="summary-box">
+              <div class="summary-label">Cleaning Consumables (Monthly)</div>
+              <div class="summary-value" id="clnConsumablesMonthly">—</div>
+              <div class="summary-sub">Detergents, disinfectants, bags, wipes/paper (as defined in scope)</div>
+            </div>
+
+            <div class="summary-box accent-box">
+              <div class="summary-label">OPEX Total / Month (NET)</div>
+              <div class="summary-value" id="opexTotal">—</div>
+              <div class="summary-sub" id="opexAnnual">—</div>
             </div>
           </div>
 
-          <div class="note">
-            Replacement coefficient (when enabled) ensures continuity coverage for annual paid leave, public holidays, weekly rest impact, and sick/justified absences.
+          <div class="actions" style="margin-top:12px;">
+            <button id="toggleCapexBtn" type="button">Show PPE & Equipment (CAPEX)</button>
           </div>
-        </section>
+
+          <!-- CAPEX (hidden by default) -->
+          <div id="capexPanel" class="capex-box hidden" style="margin-top:12px;">
+            <h4>PPE & Equipment (CAPEX — One-time purchases)</h4>
+
+            <div class="capex-line"><span>Security PPE (one-time)</span><strong id="capexSec">—</strong></div>
+            <div class="capex-line"><span>Cleaning PPE (one-time)</span><strong id="capexCln">—</strong></div>
+            <div class="capex-line"><span>Cleaning Equipment (one-time)</span><strong id="capexEq">—</strong></div>
+            <div class="capex-line total"><span>Total CAPEX</span><strong id="capexTotal">—</strong></div>
+
+            <div class="capex-first">
+              <div class="capex-first-label">Month 1 Total (NET)</div>
+              <div class="capex-first-value" id="month1Total">—</div>
+              <div class="capex-first-sub">CAPEX included: <span id="capexIncludedText">Yes</span></div>
+            </div>
+
+            <div class="note subtle" style="margin-top:12px;">
+              CAPEX is not part of recurring monthly charges (OPEX). It is a one-time procurement cost.
+            </div>
+          </div>
+
+          <!-- Optional donut (if styles/app supports it) -->
+          <div class="donut-wrap" style="margin-top:12px;">
+            <div class="donut" id="donut" aria-label="OPEX breakdown chart"></div>
+            <div class="donut-legend">
+              <div class="leg"><span class="dot s1"></span>Security</div>
+              <div class="leg"><span class="dot s2"></span>Cleaning</div>
+              <div class="leg"><span class="dot s3"></span>Consumables/Other</div>
+            </div>
+          </div>
+
+        </div>
       </aside>
     </section>
 
@@ -587,21 +526,21 @@
 
       <h3 style="margin-top:14px;">B) Retail Benchmarks (Secondary)</h3>
       <div class="sources">
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chariot+de+menage+professionnel">
-          <span class="src-title">Jumia Morocco — Industrial trolley (search)</span>
-          <span class="src-url">https://www.jumia.ma/catalog/?q=chariot+de+menage+professionnel</span>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chaussures+de+securite">
+          <span class="src-title">Jumia Morocco — Safety shoes (search)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=chaussures+de+securite</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur+professionnel">
-          <span class="src-title">Jumia Morocco — Professional vacuum (search)</span>
-          <span class="src-url">https://www.jumia.ma/catalog/?q=aspirateur+professionnel</span>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=vetement+de+travail">
+          <span class="src-title">Jumia Morocco — Workwear / uniforms (search)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=vetement+de+travail</span>
         </a>
         <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=autolaveuse">
           <span class="src-title">Jumia Morocco — Scrubber dryer / autolaveuse (search)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=autolaveuse</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chaussures+de+securite">
-          <span class="src-title">Jumia Morocco — Safety shoes (search)</span>
-          <span class="src-url">https://www.jumia.ma/catalog/?q=chaussures+de+securite</span>
+        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur+professionnel">
+          <span class="src-title">Jumia Morocco — Professional vacuum (search)</span>
+          <span class="src-url">https://www.jumia.ma/catalog/?q=aspirateur+professionnel</span>
         </a>
       </div>
     </section>
@@ -638,12 +577,11 @@
     </section>
 
     <footer class="footer">
-      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 4.5 (Index cleaned)</small>
+      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.1 (Index aligned with OT +25% rule)</small>
     </footer>
   </main>
 
-  <script src="app.js?v=4.8"></script>
+  <!-- IMPORTANT: match your latest app.js version to avoid cache issues -->
+  <script src="app.js?v=5.1"></script>
 </body>
 </html>
-
-
