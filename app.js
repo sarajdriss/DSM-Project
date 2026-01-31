@@ -1,26 +1,24 @@
-/* DSM Project — app.js (v5.2)
-   LAST UPDATE APPLIED (per your latest Index/CSS):
-
-   SECURITY:
-   - Day + Night headcount (night priced same as day; no night premium)
-   - Overtime premium: +25% ONLY (no 50% anywhere)
-   - Overtime condition: ONLY hours above 48 hours/week
-   - Weekly table generated like your Excel:
-       - input: secWorkDaysPerMonth (e.g. 23)
-       - input: secWorkDaysPerWeek (e.g. 5)
-       - input: secPaidHoursPerDay (e.g. 10 includes break)
-     => distributes month days into weeks: 5,5,5,5,3 and computes OT per week.
-
-   CLEANING:
-   - Headcount-based pricing (no overtime computed in this version)
-   - Keeps "planned hours" display for information only.
-
-   SUMMARY (right panel):
-   - Security Team monthly
-   - Cleaning Team monthly
-   - Cleaning consumables monthly
-   - OPEX total + annual
-   - CAPEX panel toggled by button
+/* DSM Project — app.js (v5.3)
+   Applied modifications:
+   1) SECURITY
+      - Day + Night headcount (night priced same as day; no night premium)
+      - Overtime premium: +25% ONLY
+      - Overtime condition: ONLY hours above 48 hours/week
+      - Weekly table generated like Excel based on:
+          secWorkDaysPerMonth, secWorkDaysPerWeek, secPaidHoursPerDay
+   2) CLEANING
+      - Headcount-based pricing (no OT computed in this version)
+      - Planned hours are informational only (clnHoursPerDay × clnDaysPerMonth × agents)
+   3) CONSUMABLES (NEW)
+      - Liters breakdown with quantities (L/month) and unit prices (MAD/L)
+      - Toggle to use breakdown or manual total
+      - Updates summary “Cleaning Consumables (Monthly)” accordingly
+   4) SUMMARY
+      - Security Team monthly
+      - Cleaning Team monthly
+      - Cleaning consumables monthly (from breakdown or manual)
+      - OPEX total + annual
+      - CAPEX panel toggled by button
 */
 
 const DEFAULTS = {
@@ -59,12 +57,32 @@ const DEFAULTS = {
   clnHoursPerDay: 8,          // info only
   clnDaysPerMonth: 22,        // info only
 
-  // CAPEX & OPEX
+  // CAPEX
   secPpeCapex: 6090,
   clnPpeCapex: 3600,
   equipCapex: 29000,
+
+  // CONSUMABLES (NEW liters breakdown)
+  useConsumablesBreakdown: true,
+
+  floorDegreaserQtyL: 80,
+  floorDegreaserPricePerL: 15,
+
+  disinfectantQtyL: 40,
+  disinfectantPricePerL: 18,
+
+  toiletCleanerQtyL: 30,
+  toiletCleanerPricePerL: 18,
+
+  glassCleanerQtyL: 10,
+  glassCleanerPricePerL: 20,
+
+  // Manual fallback (used only if breakdown OFF)
   clnProducts: 3040,
+
+  // Other recurring
   otherFixed: 0,
+
   includeCapex: true
 };
 
@@ -270,7 +288,6 @@ function calc() {
   setText("employerHourly", moneyMAD(employerHourly, 2));
   setText("chargeableHourly", moneyMAD(chargeableHourly, 2));
   setText("otDayHourly", moneyMAD(overtimeHourly, 2));
-  setText("otNightHourly", moneyMAD(overtimeHourly, 2)); // if exists, same as day (no 50%)
   setText("oneAgentMonthlyCost", moneyMAD(legalMonthlyHours * chargeableHourly, 0));
 
   // =========================
@@ -284,9 +301,9 @@ function calc() {
   setText("secNightAgentsVal", secNight);
   setText("secAgentsVal", secTotalAgents);
 
-  const paidHoursPerDay = readNum("secPaidHoursPerDay");           // e.g., 10
-  const workDaysPerMonth = Math.max(0, Math.round(readNum("secWorkDaysPerMonth"))); // e.g., 23
-  const workDaysPerWeek = Math.max(1, Math.round(readNum("secWorkDaysPerWeek")));   // e.g., 5
+  const paidHoursPerDay = readNum("secPaidHoursPerDay");
+  const workDaysPerMonth = Math.max(0, Math.round(readNum("secWorkDaysPerMonth")));
+  const workDaysPerWeek = Math.max(1, Math.round(readNum("secWorkDaysPerWeek")));
 
   setText("secPaidHoursOut", paidHoursPerDay.toFixed(0));
   setText("secWorkDaysOut", `${workDaysPerMonth} days`);
@@ -335,9 +352,38 @@ function calc() {
   setText("clnOtAlert", "Cleaning: headcount-based pricing (no overtime computed in this version).");
 
   // =========================
+  // CONSUMABLES — liters breakdown (NEW)
+  // =========================
+  const useConsumablesBreakdown = readBool("useConsumablesBreakdown");
+
+  const floorDegQty = readNum("floorDegreaserQtyL");
+  const floorDegP = readNum("floorDegreaserPricePerL");
+  const disQty = readNum("disinfectantQtyL");
+  const disP = readNum("disinfectantPricePerL");
+  const toiletQty = readNum("toiletCleanerQtyL");
+  const toiletP = readNum("toiletCleanerPricePerL");
+  const glassQty = readNum("glassCleanerQtyL");
+  const glassP = readNum("glassCleanerPricePerL");
+
+  const floorTotal = floorDegQty * floorDegP;
+  const disTotal = disQty * disP;
+  const toiletTotal = toiletQty * toiletP;
+  const glassTotal = glassQty * glassP;
+
+  setText("floorDegreaserTotal", moneyMAD(floorTotal, 0));
+  setText("disinfectantTotal", moneyMAD(disTotal, 0));
+  setText("toiletCleanerTotal", moneyMAD(toiletTotal, 0));
+  setText("glassCleanerTotal", moneyMAD(glassTotal, 0));
+
+  const breakdownTotal = floorTotal + disTotal + toiletTotal + glassTotal;
+  setText("consumablesTotalOut", moneyMAD(breakdownTotal, 0));
+
+  const manualConsumables = readNum("clnProducts");
+  const clnProducts = useConsumablesBreakdown ? breakdownTotal : manualConsumables;
+
+  // =========================
   // OPEX / CAPEX
   // =========================
-  const clnProducts = readNum("clnProducts");
   const otherFixed = readNum("otherFixed");
 
   const secPpeCapex = readNum("secPpeCapex");
