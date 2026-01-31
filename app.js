@@ -1,13 +1,15 @@
-/* DSM Project — app.js (v4.4)
-   Adds Pricing Mode toggle:
-   - Headcount-based (Mode 2): cost = agents × legalMonthlyHours × chargeableHourly (no OT / no posts sizing)
-   - Coverage-based: required hours from posts/schedule; OT computed if shortage
+/* DSM Project — app.js (v4.5)
+   SECURITY is now HEADCOUNT-based only:
+   - Inputs: secDayAgents + secNightAgents
+   - Total security = day + night
+   - Security monthly cost = total × legalMonthlyHours × chargeableHourly
+   - No security overtime computation (since no coverage/required hours model)
+
+   Cleaning kept as planned-hours coverage model (agents × hours/day × days/month),
+   with OT if required hours exceed capacity (day/night split).
 */
 
 const DEFAULTS = {
-  // Pricing mode
-  pricingModeHeadcount: true, // TRUE = headcount-based; FALSE = coverage-based
-
   // Payroll
   smig: 17.92,
   empDedRate: 6.74,        // employee CNSS+AMO (deduction)
@@ -24,21 +26,20 @@ const DEFAULTS = {
   weeklyRestDaysPerYear: 52,
   sickAbsenceBufferPercent: 2.0,
 
-  // Day/Night & overtime
-  nightHoursPerDay: 12,     // Security night shift 19:00–07:00 = 12h
-  otDayPremium: 25,         // +25%
-  otNightPremium: 50,       // +50% (editable)
+  // Overtime premiums (used for CLEANING OT only in this version)
+  otDayPremium: 25,
+  otNightPremium: 50,
 
-  // Security
-  daysInMonth: 30.33,
-  secPosts: 2,
-  autoSizeSecurity: true,   // only used in coverage-based mode
-  secAgents: 7,
+  // Day/Night definition used to split cleaning required hours (by night staffing ratio)
+  nightHoursPerDay: 12,
+
+  // SECURITY (headcount input only)
+  secDayAgents: 5,
   secNightAgents: 2,
-  secPaidHoursPerShift: 10, // 8h work + 2h break = 10h paid per 12h shift
+  secPaidHoursPerShift: 10, // info only
 
-  // Cleaning
-  clnHoursPerDay: 8,        // paid/billable hours per agent/day (coverage-based mode uses this)
+  // CLEANING (planned-hours model)
+  clnHoursPerDay: 8,
   clnDaysPerMonth: 22,
   clnAgents: 5,
   clnNightAgents: 0,
@@ -172,33 +173,10 @@ function computeLaborCostCoverage({ reqDay, reqNight, dayAgents, nightAgents, le
   };
 }
 
-function syncNightAgentMax() {
-  const secAgents = Math.round(readNum("secAgents"));
-  const secNightEl = $("secNightAgents");
-  if (secNightEl) secNightEl.max = String(Math.max(0, secAgents));
-
-  const clnAgents = Math.round(readNum("clnAgents"));
-  const clnNightEl = $("clnNightAgents");
-  if (clnNightEl) clnNightEl.max = String(Math.max(0, clnAgents));
-}
-
 function calc() {
-  syncNightAgentMax();
-
-  // Replacement computed display
+  // Replacement computed display (if present)
   const replComputed = computeReplacementPercentFromComponents();
   setText("replacementComputedDisplay", `${replComputed.toFixed(2)}%`);
-
-  // Pricing Mode
-  const headcountMode = readBool("pricingModeHeadcount");
-  setText("pricingModeOut", headcountMode ? "Pricing mode: Headcount-based" : "Pricing mode: Coverage-based");
-
-  setText(
-    "pricingModeNote",
-    headcountMode
-      ? "Headcount-based: pricing is per agent/month (agents × standard monthly hours × chargeable hourly). Posts/coverage are shown for information only; no overtime is computed."
-      : "Coverage-based: pricing is driven by required billable hours (from posts/schedule). Overtime is computed if staffing capacity is insufficient."
-  );
 
   // Payroll & rates
   const smig = readNum("smig");
@@ -229,136 +207,64 @@ function calc() {
   setText("otNightHourly", moneyMAD(otNightHourly, 2));
   setText("oneAgentMonthlyCost", moneyMAD(legalMonthlyHours * chargeableHourly, 0));
 
-  // Day/Night hours (used in coverage mode for security split)
-  const nightHoursPerDay = clamp(readNum("nightHoursPerDay"), 0, 24);
+  // SECURITY (headcount-only)
+  const secDay = Math.round(readNum("secDayAgents"));
+  const secNight = Math.round(readNum("secNightAgents"));
+  const secTotalAgents = Math.max(0, secDay + secNight);
 
-  // Read headcounts + enforce linkage (night <= total)
-  let secAgents = Math.round(readNum("secAgents"));
-  let secNightAgents = Math.round(readNum("secNightAgents"));
-  secNightAgents = clamp(secNightAgents, 0, secAgents);
-  if ($("secNightAgents")) $("secNightAgents").value = String(secNightAgents);
-  const secDayAgents = secAgents - secNightAgents;
+  setText("secDayAgentsVal", secDay);
+  setText("secNightAgentsVal", secNight);
+  setText("secAgentsVal", secTotalAgents);
+  setText("secCapacity", `${Math.round(secTotalAgents * legalMonthlyHours)} h`);
 
-  setText("secAgentsVal", secAgents);
-  setText("secNightAgentsVal", secNightAgents);
-  setText("secDayAgentsOut", `${secDayAgents} day`);
+  // Security monthly labor cost (NO OT)
+  const secCostNormal = secTotalAgents * legalMonthlyHours * chargeableHourly;
+  const secRes = { costNormal: secCostNormal, costOtDay: 0, costOtNight: 0, otDayHours: 0, otNightHours: 0, totalCost: secCostNormal };
 
-  let clnAgents = Math.round(readNum("clnAgents"));
+  setText("secOtAlert", "Headcount-based security pricing: overtime is not computed (no coverage/required-hours model).");
+
+  // CLEANING (planned-hours model + OT if needed)
+  const clnHoursPerDay = readNum("clnHoursPerDay");
+  const clnDaysPerMonth = readNum("clnDaysPerMonth");
+  const clnAgents = Math.round(readNum("clnAgents"));
+
   let clnNightAgents = Math.round(readNum("clnNightAgents"));
   clnNightAgents = clamp(clnNightAgents, 0, clnAgents);
   if ($("clnNightAgents")) $("clnNightAgents").value = String(clnNightAgents);
+
   const clnDayAgents = clnAgents - clnNightAgents;
 
   setText("clnAgentsVal", clnAgents);
   setText("clnNightAgentsVal", clnNightAgents);
   setText("clnDayAgentsOut", `${clnDayAgents} day`);
 
-  // SECURITY info (coverage/billable hours display)
-  const daysInMonth = readNum("daysInMonth");
-  const secPosts = Math.round(readNum("secPosts"));
-  const secPaidHoursPerShift = readNum("secPaidHoursPerShift");
-  const autoSizeSecurity = readBool("autoSizeSecurity");
-
-  setText("secPostsVal", secPosts);
-
-  const secCoverageHours = secPosts * 24 * daysInMonth;
-  const secBillableHours = secPosts * 2 * secPaidHoursPerShift * daysInMonth;
-
-  setText("secCoverageHours", `${Math.round(secCoverageHours)} h`);
-  setText("secBillableHours", `${Math.round(secBillableHours)} h`);
-  setText("secCapacity", `${Math.round(secAgents * legalMonthlyHours)} h`);
-
-  // CLEANING schedule inputs (only used in coverage mode)
-  const clnHoursPerDay = readNum("clnHoursPerDay");
-  const clnDaysPerMonth = readNum("clnDaysPerMonth");
   const clnReqTotal = clnAgents * clnHoursPerDay * clnDaysPerMonth;
   setText("clnReqHours", `${Math.round(clnReqTotal)} h`);
 
-  // Compute Security and Cleaning costs depending on mode
-  let secRes, clnRes;
+  // Split cleaning required hours by night staffing ratio
+  const clnReqNight = (clnAgents > 0) ? (clnReqTotal * (clnNightAgents / clnAgents)) : 0;
+  const clnReqDay = clnReqTotal - clnReqNight;
 
-  if (headcountMode) {
-    // Headcount-based = per-agent monthly lumpsum (no overtime)
-    const secCostNormal = secAgents * legalMonthlyHours * chargeableHourly;
-    secRes = { costNormal: secCostNormal, costOtDay: 0, costOtNight: 0, otDayHours: 0, otNightHours: 0, totalCost: secCostNormal };
-    setText("secOtAlert", `Headcount mode: Security cost = ${secAgents} agents × ${legalMonthlyHours}h × hourly rate. Overtime not computed.`);
+  const clnRes = computeLaborCostCoverage({
+    reqDay: clnReqDay,
+    reqNight: clnReqNight,
+    dayAgents: clnDayAgents,
+    nightAgents: clnNightAgents,
+    legalMonthlyHours,
+    rateNormal: chargeableHourly,
+    rateOtDay: otDayHourly,
+    rateOtNight: otNightHourly
+  });
 
-    const clnCostNormal = clnAgents * legalMonthlyHours * chargeableHourly;
-    clnRes = { costNormal: clnCostNormal, costOtDay: 0, costOtNight: 0, otDayHours: 0, otNightHours: 0, totalCost: clnCostNormal };
-    setText("clnOtAlert", `Headcount mode: Cleaning cost = ${clnAgents} agents × ${legalMonthlyHours}h × hourly rate. Overtime not computed.`);
-  } else {
-    // Coverage-based (security uses billable hours from posts; cleaning uses planned hours)
-    // Optional auto-size security headcount (coverage mode only)
-    if (autoSizeSecurity && $("secAgents")) {
-      const currentTotal = Math.max(1, secAgents);
-      const nightShare = currentTotal > 0 ? (secNightAgents / currentTotal) : 0.5;
+  const clnShort = clnRes.otDayHours + clnRes.otNightHours;
+  setText(
+    "clnOtAlert",
+    clnShort > 0
+      ? `Cleaning OT required: ${Math.round(clnShort)} h (Day: ${Math.round(clnRes.otDayHours)} h | Night: ${Math.round(clnRes.otNightHours)} h).`
+      : `Cleaning staffing OK: no overtime required (planned-hours model).`
+  );
 
-      const neededAgents = Math.max(1, Math.ceil(secBillableHours / Math.max(1, legalMonthlyHours)));
-      $("secAgents").value = String(neededAgents);
-
-      // keep ratio for night
-      const newNight = Math.round(neededAgents * nightShare);
-      if ($("secNightAgents")) $("secNightAgents").value = String(clamp(newNight, 0, neededAgents));
-
-      // re-read after autosize
-      secAgents = neededAgents;
-      secNightAgents = clamp(Math.round(readNum("secNightAgents")), 0, secAgents);
-    }
-
-    const secDayAgents2 = secAgents - secNightAgents;
-    setText("secAgentsVal", secAgents);
-    setText("secNightAgentsVal", secNightAgents);
-    setText("secDayAgentsOut", `${secDayAgents2} day`);
-    setText("secCapacity", `${Math.round(secAgents * legalMonthlyHours)} h`);
-
-    // Split required billable hours into day/night by nightHoursPerDay ratio
-    const secReqNight = secBillableHours * (nightHoursPerDay / 24);
-    const secReqDay = secBillableHours - secReqNight;
-
-    secRes = computeLaborCostCoverage({
-      reqDay: secReqDay,
-      reqNight: secReqNight,
-      dayAgents: secDayAgents2,
-      nightAgents: secNightAgents,
-      legalMonthlyHours,
-      rateNormal: chargeableHourly,
-      rateOtDay: otDayHourly,
-      rateOtNight: otNightHourly
-    });
-
-    const secShort = secRes.otDayHours + secRes.otNightHours;
-    setText(
-      "secOtAlert",
-      secShort > 0
-        ? `Security OT required: ${Math.round(secShort)} h (Day: ${Math.round(secRes.otDayHours)} h | Night: ${Math.round(secRes.otNightHours)} h).`
-        : `Security staffing OK: no overtime required (coverage mode).`
-    );
-
-    // Cleaning coverage mode: use planned required hours and split by night allocation
-    const clnReqNight = (clnAgents > 0) ? (clnReqTotal * (clnNightAgents / clnAgents)) : 0;
-    const clnReqDay = clnReqTotal - clnReqNight;
-
-    clnRes = computeLaborCostCoverage({
-      reqDay: clnReqDay,
-      reqNight: clnReqNight,
-      dayAgents: clnDayAgents,
-      nightAgents: clnNightAgents,
-      legalMonthlyHours,
-      rateNormal: chargeableHourly,
-      rateOtDay: otDayHourly,
-      rateOtNight: otNightHourly
-    });
-
-    const clnShort = clnRes.otDayHours + clnRes.otNightHours;
-    setText(
-      "clnOtAlert",
-      clnShort > 0
-        ? `Cleaning OT required: ${Math.round(clnShort)} h (Day: ${Math.round(clnRes.otDayHours)} h | Night: ${Math.round(clnRes.otNightHours)} h).`
-        : `Cleaning staffing OK: no overtime required (coverage mode).`
-    );
-  }
-
-  // OPEX & CAPEX totals
+  // OPEX & CAPEX
   const clnProducts = readNum("clnProducts");
   const otherFixed = readNum("otherFixed");
 
@@ -384,7 +290,7 @@ function calc() {
   setText("opexTotal", moneyMAD(opexTotal, 0));
   setText("opexAnnual", `Annual OPEX (NET): ${moneyMAD(opexAnnual, 0)}`);
 
-  setText("secDetailLine", `Normal: ${moneyMAD(secRes.costNormal,0)} | OT day: ${moneyMAD(secRes.costOtDay,0)} | OT night: ${moneyMAD(secRes.costOtNight,0)}`);
+  setText("secDetailLine", `Normal: ${moneyMAD(secRes.costNormal,0)} | OT day: ${moneyMAD(0,0)} | OT night: ${moneyMAD(0,0)}`);
   setText("clnDetailLine", `Normal: ${moneyMAD(clnRes.costNormal,0)} | OT day: ${moneyMAD(clnRes.costOtDay,0)} | OT night: ${moneyMAD(clnRes.costOtNight,0)}`);
 
   setText("kpiOpexMonthly", moneyMAD(opexTotal, 0));
@@ -398,8 +304,8 @@ function calc() {
   setText("capexIncludedText", includeCapex ? "Yes" : "No");
 
   setText("secCostNormal", moneyMAD(secRes.costNormal, 0));
-  setText("secCostOtDay", moneyMAD(secRes.costOtDay, 0));
-  setText("secCostOtNight", moneyMAD(secRes.costOtNight, 0));
+  setText("secCostOtDay", moneyMAD(0, 0));
+  setText("secCostOtNight", moneyMAD(0, 0));
 
   setText("clnCostNormal", moneyMAD(clnRes.costNormal, 0));
   setText("clnCostOtDay", moneyMAD(clnRes.costOtDay, 0));
