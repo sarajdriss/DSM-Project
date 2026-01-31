@@ -158,6 +158,20 @@
           <div class="grid">
             <label>
               Days per month (for 24/7 calculation)
+              <label>
+  Paid hours per security shift (work + break) — hours
+  <input id="secPaidHoursPerShift" type="number" step="0.5" value="10">
+  <small class="hint">
+    Your rule: 8h work + 2h break = 10h paid/billable per shift.
+    Shifts: 07:00–19:00 and 19:00–07:00.
+  </small>
+</label>
+
+<label class="toggle">
+  Auto-size Security team (total agents) from required hours
+  <input id="autoSizeSecurity" type="checkbox" checked>
+  <span class="toggle-ui" aria-hidden="true"></span>
+</label>
               <input id="daysInMonth" type="number" step="0.01" value="30.33">
               <small class="hint">Average month = 30.33. You can use 30 or 31.</small>
             </label>
@@ -482,5 +496,6 @@
   <script src="app.js?v=4.2"></script>
 </body>
 </html>
+
 
 
