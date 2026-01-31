@@ -279,7 +279,59 @@
 
         <!-- D) SECURITY COVERAGE & STAFFING -->
         <div class="card">
-          <h3>D) Security — Coverage & Staffing (Linked Sliders)</h3>
+          <div class="card">
+  <h3>D) Security — Staffing (Day / Night / Total) — Headcount Input</h3>
+
+  <div class="grid">
+    <div class="rangebox">
+      <div class="rangetop">
+        <div>
+          <div class="rangetitle">Security working on Day shift (07:00–19:00)</div>
+          <div class="rangehint">Headcount input (not coverage/posts). Total = Day + Night.</div>
+        </div>
+        <div class="pill"><span id="secDayAgentsVal">5</span> day</div>
+      </div>
+      <input id="secDayAgents" type="range" min="0" max="60" step="1" value="5">
+    </div>
+
+    <div class="rangebox">
+      <div class="rangetop">
+        <div>
+          <div class="rangetitle">Security working on Night shift (19:00–07:00)</div>
+          <div class="rangehint">Headcount input (not coverage/posts). Total = Day + Night.</div>
+        </div>
+        <div class="pill"><span id="secNightAgentsVal">2</span> night</div>
+      </div>
+      <input id="secNightAgents" type="range" min="0" max="60" step="1" value="2">
+    </div>
+
+    <div class="rangebox" style="grid-column: 1 / -1;">
+      <div class="rangetop">
+        <div>
+          <div class="rangetitle">Total Security Team (auto-calculated)</div>
+          <div class="rangehint">Total = Day + Night. Used for monthly cost calculation.</div>
+        </div>
+        <div class="pill"><span id="secAgentsVal">7</span> total</div>
+      </div>
+      <div class="rangefoot">
+        <span>Monthly capacity (hours):</span>
+        <strong id="secCapacity">—</strong>
+      </div>
+    </div>
+
+    <label>
+      Paid hours per security shift (work + break) — hours (info)
+      <input id="secPaidHoursPerShift" type="number" step="0.5" value="10">
+      <small class="hint">
+        Info only in headcount mode: 8h work + 2h break = 10h paid per shift.
+      </small>
+    </label>
+  </div>
+
+  <div class="note" id="secOtAlert">
+    Headcount-based security pricing: overtime is not computed (no required-hours/coverage model in this section).
+  </div>
+</div>
 
           <div class="grid">
             <label>
@@ -676,7 +728,8 @@
   </main>
 
   <!-- Cache-busting recommended after updates -->
-  <script src="app.js?v=4.2"></script>
+  <script src="app.js?v=4.5"></script>
 </body>
 </html>
+
 
