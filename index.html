@@ -24,6 +24,7 @@
       <nav class="nav">
         <a href="#model">Model</a>
         <a href="#definitions">Definitions</a>
+        <a href="#calc-method">How it’s Calculated</a>
         <a href="#sources">Market Price Sources</a>
         <a href="#evidence">Regulatory References</a>
       </nav>
@@ -233,7 +234,7 @@
           </div>
         </div>
 
-        <!-- D) SECURITY (NEW WEEKLY TABLE +25% OT ONLY) -->
+        <!-- D) SECURITY (WEEKLY TABLE +25% OT ONLY) -->
         <div class="card">
           <h3>D) Security — Staffing (Day / Night / Total) — Weekly OT Rule (48h/week)</h3>
 
@@ -478,7 +479,7 @@
             </div>
           </div>
 
-          <!-- Optional donut (if styles/app supports it) -->
+          <!-- Optional donut -->
           <div class="donut-wrap" style="margin-top:12px;">
             <div class="donut" id="donut" aria-label="OPEX breakdown chart"></div>
             <div class="donut-legend">
@@ -487,9 +488,98 @@
               <div class="leg"><span class="dot s3"></span>Consumables/Other</div>
             </div>
           </div>
-
         </div>
       </aside>
+    </section>
+
+    <!-- NEW: HOW IT’S CALCULATED (SHORT) -->
+    <section class="wide card" id="calc-method">
+      <h2>How the Price is Calculated (Short Method)</h2>
+      <p class="muted">
+        This section summarizes the formulas used by the calculator (NET – TVA Exempt).
+        Night security is priced the same as day security. Overtime is only <strong>+25%</strong>.
+      </p>
+
+      <div class="grid">
+        <div class="infoBox">
+          <h4>Hourly Rates</h4>
+          <ul>
+            <li><strong>Net hourly (info)</strong> = SMIG × (1 − employee deductions)</li>
+            <li><strong>Employer cost</strong> = SMIG × (1 + employer patronal %)</li>
+            <li><strong>Chargeable hourly</strong> = Employer cost × (1 + replacement %) <em>(if enabled)</em></li>
+            <li><strong>OT hourly (+25%)</strong> = Chargeable hourly × 1.25</li>
+          </ul>
+        </div>
+
+        <div class="infoBox">
+          <h4>Monthly Costs</h4>
+          <ul>
+            <li>
+              <strong>Security Team (Monthly)</strong> =
+              (Standard hours × Chargeable hourly) + (OT hours × OT hourly)
+              <br><span class="hint">Standard/OT hours computed weekly: OT applies only above <strong>48h/week</strong>.</span>
+            </li>
+            <li>
+              <strong>Cleaning Team (Monthly)</strong> =
+              (Cleaning agents × monthly hours/agent × Chargeable hourly)
+            </li>
+            <li>
+              <strong>OPEX Total / Month</strong> =
+              Security Team + Cleaning Team + Cleaning consumables + Other fixed
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <details class="note subtle" style="margin-top:12px;">
+        <summary style="cursor:pointer; font-weight:900; color:#111;">
+          Show CAPEX scope (one-time purchases)
+        </summary>
+
+        <div style="margin-top:10px;">
+          <p class="hint" style="margin-top:0;">
+            CAPEX is a one-time procurement cost (not recurring monthly).
+          </p>
+
+          <div class="grid">
+            <div class="infoBox">
+              <h4>Security PPE (one-time)</h4>
+              <ul>
+                <li>Uniform / workwear set</li>
+                <li>Safety shoes</li>
+                <li>Belt / accessories</li>
+                <li>Badge / ID patch</li>
+                <li>Optional: flashlight, raincoat, hi-vis vest (site requirement)</li>
+              </ul>
+            </div>
+
+            <div class="infoBox">
+              <h4>Cleaning PPE (one-time)</h4>
+              <ul>
+                <li>Cleaning uniform / workwear</li>
+                <li>Safety shoes</li>
+                <li>Protective gloves (initial stock)</li>
+                <li>Optional: mask, goggles, apron (chemical/HSE requirement)</li>
+              </ul>
+            </div>
+
+            <div class="infoBox">
+              <h4>Cleaning Equipment (one-time)</h4>
+              <ul>
+                <li>Cleaning trolley / cart</li>
+                <li>Professional vacuum</li>
+                <li>Scrubber dryer (autolaveuse) if included</li>
+                <li>Mop system, buckets, squeegees, brushes</li>
+                <li>Wet floor signs + tools/accessories</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="note" style="margin-top:12px;">
+            <strong>Reminder:</strong> chemicals, bags, paper/wipes are <strong>Consumables (OPEX)</strong>, not equipment CAPEX.
+          </div>
+        </div>
+      </details>
     </section>
 
     <!-- MARKET PRICE SOURCES -->
@@ -577,11 +667,11 @@
     </section>
 
     <footer class="footer">
-      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.1 (Index aligned with OT +25% rule)</small>
+      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.2 (Calc-method added)</small>
     </footer>
   </main>
 
   <!-- IMPORTANT: match your latest app.js version to avoid cache issues -->
-  <script src="app.js?v=5.1"></script>
+  <script src="app.js?v=5.2"></script>
 </body>
 </html>
