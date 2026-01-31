@@ -508,6 +508,15 @@ details[open].note summary:after{ content: "▴"; }
 }
 
 /* -----------------------------
+   NEW: Consumables (Liters breakdown) table styling
+   ----------------------------- */
+.consumablesBox input[type="number"]{
+  width: 100%;
+  min-width: 90px;
+}
+.schedTable td strong{ color: var(--text); }
+
+/* -----------------------------
    NEW: "How it's Calculated" section styling
    ----------------------------- */
 #calc-method ul{ margin: 8px 0 0; padding-left: 18px; color: var(--muted); }
