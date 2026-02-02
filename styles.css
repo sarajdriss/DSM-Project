@@ -530,6 +530,71 @@ details[open].note summary:after{ content: "▴"; }
   padding: 12px;
 }
 
+/* -----------------------------
+   NEW: CAPEX split + Transport + Supplier links (verification)
+   ----------------------------- */
+
+/* 3-column input grid (used for CAPEX split + Transport inputs) */
+.form-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* Row wrapper when label is NOT wrapping the input */
+.form-row label{
+  /* Override global label { display:flex; flex-direction:column; ... } */
+  display:block;
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0 0 7px;
+}
+
+/* Ensure inputs align with the rest of the UI */
+.form-row input[type="number"],
+.form-row input[type="text"]{
+  width: 100%;
+}
+
+/* Subtotal / total line (for CAPEX PPE subtotal + Transport monthly cost) */
+.total-row{
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  font-size: 13px;
+  color: var(--muted);
+}
+.total-row strong{
+  color: var(--text);
+  font-weight: 950;
+}
+
+/* Links layout (A/B suppliers) */
+.links-grid{
+  margin-top: 10px;
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.clean-list{
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+.clean-list li{
+  margin: 10px 0;
+}
+.clean-list a{
+  color: var(--primary);
+  font-weight: 900;
+  word-break: break-word;
+}
+
 /* Helper */
 .hidden{ display:none; }
 
@@ -542,6 +607,10 @@ details[open].note summary:after{ content: "▴"; }
   .mini-metrics{ grid-template-columns: 1fr; }
   .sources{ grid-template-columns: 1fr; }
   .securityGrid{ grid-template-columns: 1fr; }
+
+  /* NEW responsive rules for added sections */
+  .form-grid{ grid-template-columns: 1fr; }
+  .links-grid{ grid-template-columns: 1fr; }
 }
 
 /* Print */
