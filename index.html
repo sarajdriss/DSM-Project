@@ -38,13 +38,14 @@
         <h1>Security & Industrial Cleaning — Cost Model (NET)</h1>
         <p>
           Reference site: <strong>5,000 m²</strong> industrial facility + <strong>22 sanitary units</strong>.
-          This calculator supports staffing estimation, weekly overtime check (48h/week), and CAPEX vs OPEX separation (NET – TVA Exempt).
+          This calculator supports staffing estimation, weekly overtime check (48h/week), transport OPEX, and CAPEX vs OPEX separation (NET – TVA Exempt).
         </p>
 
         <div class="hero-badges">
           <span class="badge">NET (TVA Exempt – Free Zone)</span>
           <span class="badge">Replacement coefficient toggle</span>
           <span class="badge">OT rule: +25% only (48h/week)</span>
+          <span class="badge">Transport OPEX</span>
           <span class="badge">CAPEX & OPEX view</span>
         </div>
       </div>
@@ -53,7 +54,7 @@
         <div class="kpi">
           <div class="kpi-label">OPEX / Month (NET)</div>
           <div class="kpi-value" id="kpiOpexMonthly">—</div>
-          <div class="kpi-foot">Recurring: labor + consumables + other fixed</div>
+          <div class="kpi-foot">Recurring: labor + consumables + transport + other fixed</div>
         </div>
         <div class="kpi">
           <div class="kpi-label">Month 1 Total (NET)</div>
@@ -377,27 +378,63 @@
           <h3>F) CAPEX (One-time) & OPEX (Recurring)</h3>
 
           <div class="grid">
+            <!-- CAPEX (separate, one-time) -->
             <label>
-              Security PPE CAPEX (one time) — MAD
+              Security PPE (one-time CAPEX) — MAD
               <input id="secPpeCapex" type="number" step="1" value="6090">
             </label>
 
             <label>
-              Cleaning PPE CAPEX (one time) — MAD
+              Cleaning PPE (one-time CAPEX) — MAD
               <input id="clnPpeCapex" type="number" step="1" value="3600">
             </label>
 
             <label>
-              Cleaning equipment CAPEX (one time) — MAD
+              Cleaning Equipment (one-time CAPEX) — MAD
               <input id="equipCapex" type="number" step="1" value="29000">
             </label>
+
+            <!-- Transport OPEX (NEW) -->
+            <div class="infoBox" style="grid-column: 1 / -1;">
+              <h4 style="margin:0 0 8px;">Transport (OPEX) — Monthly Calculation</h4>
+              <div class="grid">
+                <label>
+                  Trips per day (round trips)
+                  <input id="transportTripsPerDay" type="number" step="1" value="2">
+                  <small class="hint">Example: 2 trips/day (home→factory + factory→home).</small>
+                </label>
+
+                <label>
+                  Cost per trip (MAD)
+                  <input id="transportCostPerTrip" type="number" step="1" value="120">
+                  <small class="hint">Given: 120 MAD per one bus travel.</small>
+                </label>
+
+                <label>
+                  Transport days per month
+                  <input id="transportDaysPerMonth" type="number" step="1" value="23">
+                  <small class="hint">Set to actual working days where transport operates.</small>
+                </label>
+
+                <label>
+                  Number of buses
+                  <input id="transportBuses" type="number" step="1" value="1">
+                  <small class="hint">If one bus is not enough, increase this value.</small>
+                </label>
+              </div>
+
+              <div class="note subtle" style="margin-top:10px;">
+                Monthly Transport = buses × trips/day × cost/trip × days/month =
+                <strong id="transportMonthlyOut">—</strong>
+              </div>
+            </div>
 
             <label>
               Other fixed OPEX — MAD/month (optional)
               <input id="otherFixed" type="number" step="1" value="0">
             </label>
 
-            <!-- NEW: Consumables (Liters breakdown) -->
+            <!-- Consumables (Liters breakdown) -->
             <div class="consumablesBox" style="grid-column: 1 / -1;">
               <h4 style="margin:0 0 8px;">Cleaning Consumables (OPEX) — Monthly Quantities (Liters)</h4>
 
@@ -474,7 +511,7 @@
           </div>
 
           <div class="note subtle" style="margin-top:12px;">
-            <strong>OPEX</strong> = recurring operating expenses (labor, consumables, recurring fixed costs).<br/>
+            <strong>OPEX</strong> = recurring operating expenses (labor, consumables, transport, recurring fixed costs).<br/>
             <strong>CAPEX</strong> = one-time investment purchases (PPE, equipment).
           </div>
         </div>
@@ -484,7 +521,7 @@
       <aside class="summary panel">
         <div class="panel-title">
           <h2>Monthly Financial Summary (NET)</h2>
-          <p>Security Team + Cleaning Team + Cleaning Consumables (CAPEX shown on demand).</p>
+          <p>Security + Cleaning + Consumables + Transport (CAPEX shown on demand).</p>
         </div>
 
         <div class="card">
@@ -505,6 +542,12 @@
               <div class="summary-label">Cleaning Consumables (Monthly)</div>
               <div class="summary-value" id="clnConsumablesMonthly">—</div>
               <div class="summary-sub">Calculated from liters breakdown (or manual total if disabled)</div>
+            </div>
+
+            <div class="summary-box">
+              <div class="summary-label">Transport (Monthly)</div>
+              <div class="summary-value" id="transportMonthlySummary">—</div>
+              <div class="summary-sub">buses × trips/day × cost/trip × days/month</div>
             </div>
 
             <div class="summary-box accent-box">
@@ -540,7 +583,7 @@
             <div class="donut-legend">
               <div class="leg"><span class="dot s1"></span>Security</div>
               <div class="leg"><span class="dot s2"></span>Cleaning</div>
-              <div class="leg"><span class="dot s3"></span>Consumables/Other</div>
+              <div class="leg"><span class="dot s3"></span>OPEX (Consumables+Transport+Other)</div>
             </div>
           </div>
         </div>
@@ -551,8 +594,8 @@
     <section class="wide card" id="calc-method">
       <h2>How the Price is Calculated (Short Method)</h2>
       <p class="muted">
-        This section summarizes the formulas used by the calculator (NET – TVA Exempt).
-        Night security is priced the same as day security. Overtime is only <strong>+25%</strong>.
+        Summary of formulas used by the calculator (NET – TVA Exempt). Night security is priced the same as day security.
+        Overtime is only <strong>+25%</strong>.
       </p>
 
       <div class="grid">
@@ -569,72 +612,13 @@
         <div class="infoBox">
           <h4>Monthly Costs</h4>
           <ul>
-            <li>
-              <strong>Security Team (Monthly)</strong> =
-              (Standard hours × Chargeable hourly) + (OT hours × OT hourly)
-              <br><span class="hint">Standard/OT hours computed weekly: OT applies only above <strong>48h/week</strong>.</span>
-            </li>
-            <li>
-              <strong>Cleaning Team (Monthly)</strong> =
-              (Cleaning agents × monthly hours/agent × Chargeable hourly)
-            </li>
-            <li>
-              <strong>OPEX Total / Month</strong> =
-              Security Team + Cleaning Team + Cleaning consumables + Other fixed
-            </li>
+            <li><strong>Security Team</strong> = (Standard hours × Chargeable) + (OT hours × OT hourly) <span class="hint">(OT only above 48h/week)</span></li>
+            <li><strong>Cleaning Team</strong> = Cleaning agents × monthly hours/agent × Chargeable hourly</li>
+            <li><strong>Transport</strong> = buses × trips/day × cost/trip × days/month</li>
+            <li><strong>OPEX Total / Month</strong> = Security + Cleaning + Consumables + Transport + Other fixed</li>
           </ul>
         </div>
       </div>
-
-      <details class="note subtle" style="margin-top:12px;">
-        <summary style="cursor:pointer; font-weight:900; color:#111;">
-          Show CAPEX scope (one-time purchases)
-        </summary>
-
-        <div style="margin-top:10px;">
-          <p class="hint" style="margin-top:0;">
-            CAPEX is a one-time procurement cost (not recurring monthly).
-          </p>
-
-          <div class="grid">
-            <div class="infoBox">
-              <h4>Security PPE (one-time)</h4>
-              <ul>
-                <li>Uniform / workwear set</li>
-                <li>Safety shoes</li>
-                <li>Belt / accessories</li>
-                <li>Badge / ID patch</li>
-                <li>Optional: flashlight, raincoat, hi-vis vest (site requirement)</li>
-              </ul>
-            </div>
-
-            <div class="infoBox">
-              <h4>Cleaning PPE (one-time)</h4>
-              <ul>
-                <li>Cleaning uniform / workwear</li>
-                <li>Safety shoes</li>
-                <li>Protective gloves (initial stock)</li>
-                <li>Optional: mask, goggles, apron (chemical/HSE requirement)</li>
-              </ul>
-            </div>
-
-            <div class="infoBox">
-              <h4>Cleaning Equipment (one-time)</h4>
-              <ul>
-                <li>Cleaning trolley / cart</li>
-                <li>Professional vacuum</li>
-                <li>Scrubber dryer (autolaveuse) if included</li>
-                <li>Mop system, buckets, squeegees, brushes</li>
-                <li>Wet floor signs + tools/accessories</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="note" style="margin-top:12px;">
-            <strong>Reminder:</strong> chemicals, bags, paper/wipes are <strong>Consumables (OPEX)</strong>, not equipment CAPEX.
-          </div>
-        </div>
-      </details>
     </section>
 
     <!-- MARKET PRICE SOURCES (UPDATED) -->
@@ -645,7 +629,7 @@
       </p>
 
       <div class="note subtle">
-        <strong>Note:</strong> Manutan link removed. Below are alternative Morocco-market sources + brand catalogs.
+        <strong>Verification tip:</strong> open the link → select the exact product → archive URL + screenshot + supplier proforma.
       </div>
 
       <h3 style="margin-top:14px;">A) Professional / Brand Catalogs (Recommended for machines)</h3>
@@ -658,7 +642,6 @@
           <span class="src-title">Kärcher Professional (vacuum, scrubber, etc.)</span>
           <span class="src-url">https://www.kaercher.com/ma/professional.html</span>
         </a>
-
         <a class="source" target="_blank" rel="noreferrer" href="https://www.bricoma.ma/">
           <span class="src-title">Bricoma Maroc (tools & equipment benchmark)</span>
           <span class="src-url">https://www.bricoma.ma/</span>
@@ -708,10 +691,6 @@
           <span class="src-url">https://www.avito.ma/fr/maroc?q=aspirateur%20professionnel</span>
         </a>
       </div>
-
-      <div class="note">
-        <strong>Procurement tip:</strong> open a search link → select the exact product → archive the product URL + screenshot + supplier proforma.
-      </div>
     </section>
 
     <!-- REGULATORY REFERENCES -->
@@ -746,11 +725,11 @@
     </section>
 
     <footer class="footer">
-      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.3 (Market sources + consumables liters)</small>
+      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.4 (Transport + CAPEX separated)</small>
     </footer>
   </main>
 
-  <!-- IMPORTANT: update app.js accordingly (consumables liters breakdown) and keep version to avoid cache issues -->
-  <script src="app.js?v=5.3"></script>
+  <!-- IMPORTANT: update app.js accordingly (transport + consumables liters) and keep version to avoid cache issues -->
+  <script src="app.js?v=5.4"></script>
 </body>
 </html>
