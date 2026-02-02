@@ -161,7 +161,8 @@ label{
 }
 
 input[type="number"],
-input[type="text"]{
+input[type="text"],
+input[type="date"]{
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 10px 10px;
@@ -174,7 +175,8 @@ input[readonly]{
   color: #333;
 }
 input[type="number"]:focus,
-input[type="text"]:focus{
+input[type="text"]:focus,
+input[type="date"]:focus{
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(212,0,26,.12);
 }
@@ -467,6 +469,10 @@ details[open].note summary:after{ content: "▴"; }
   border-radius: 14px;
   background: #fff;
   padding: 12px;
+
+  /* NEW (v5.5): allow large tables (CAPEX item tables) to scroll on small screens */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .scheduleTitle{
   font-weight: 900;
@@ -508,7 +514,7 @@ details[open].note summary:after{ content: "▴"; }
 }
 
 /* -----------------------------
-   NEW: Consumables (Liters breakdown) table styling
+   Consumables (Liters breakdown) table styling
    ----------------------------- */
 .consumablesBox input[type="number"]{
   width: 100%;
@@ -517,7 +523,28 @@ details[open].note summary:after{ content: "▴"; }
 .schedTable td strong{ color: var(--text); }
 
 /* -----------------------------
-   NEW: "How it's Calculated" section styling
+   NEW (v5.5): CAPEX itemized tables styling
+   ----------------------------- */
+.capexItemsTable input[type="number"]{
+  width: 100%;
+  min-width: 90px;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+.capexItemsTable .hint{
+  margin-top: 4px;
+}
+
+/* Keep “Last verified” date input compact inside text */
+#capexVerifiedDate{
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  border-color: var(--line);
+}
+
+/* -----------------------------
+   "How it's Calculated" section styling
    ----------------------------- */
 #calc-method ul{ margin: 8px 0 0; padding-left: 18px; color: var(--muted); }
 #calc-method li{ margin: 6px 0; }
@@ -531,32 +558,23 @@ details[open].note summary:after{ content: "▴"; }
 }
 
 /* -----------------------------
-   NEW: CAPEX split + Transport + Supplier links (verification)
+   Optional utility classes (kept for compatibility)
    ----------------------------- */
-
-/* 3-column input grid (used for CAPEX split + Transport inputs) */
 .form-grid{
   display:grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
-
-/* Row wrapper when label is NOT wrapping the input */
 .form-row label{
-  /* Override global label { display:flex; flex-direction:column; ... } */
   display:block;
   color: var(--muted);
   font-size: 13px;
   margin: 0 0 7px;
 }
-
-/* Ensure inputs align with the rest of the UI */
 .form-row input[type="number"],
 .form-row input[type="text"]{
   width: 100%;
 }
-
-/* Subtotal / total line (for CAPEX PPE subtotal + Transport monthly cost) */
 .total-row{
   display:flex;
   justify-content: space-between;
@@ -572,23 +590,18 @@ details[open].note summary:after{ content: "▴"; }
   color: var(--text);
   font-weight: 950;
 }
-
-/* Links layout (A/B suppliers) */
 .links-grid{
   margin-top: 10px;
   display:grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
-
 .clean-list{
   margin: 0;
   padding-left: 18px;
   color: var(--muted);
 }
-.clean-list li{
-  margin: 10px 0;
-}
+.clean-list li{ margin: 10px 0; }
 .clean-list a{
   color: var(--primary);
   font-weight: 900;
@@ -608,7 +621,7 @@ details[open].note summary:after{ content: "▴"; }
   .sources{ grid-template-columns: 1fr; }
   .securityGrid{ grid-template-columns: 1fr; }
 
-  /* NEW responsive rules for added sections */
+  /* utility layouts */
   .form-grid{ grid-template-columns: 1fr; }
   .links-grid{ grid-template-columns: 1fr; }
 }
