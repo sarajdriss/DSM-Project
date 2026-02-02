@@ -378,21 +378,398 @@
           <h3>F) CAPEX (One-time) & OPEX (Recurring)</h3>
 
           <div class="grid">
-            <!-- CAPEX (separate, one-time) -->
-            <label>
-              Security PPE (one-time CAPEX) — MAD
-              <input id="secPpeCapex" type="number" step="1" value="6090">
-            </label>
+            <!-- CAPEX (Itemized, modifiable) -->
+            <div class="infoBox" style="grid-column: 1 / -1;">
+              <h4 style="margin:0 0 8px;">PPE &amp; Equipment (CAPEX — One-time purchases) — Itemized Detail (modifiable)</h4>
 
-            <label>
-              Cleaning PPE (one-time CAPEX) — MAD
-              <input id="clnPpeCapex" type="number" step="1" value="3600">
-            </label>
+              <div class="hint" style="margin:0 0 10px;">
+                Each line is editable (Qty × Unit price). Use the market links to verify and keep procurement evidence.
+                Last verified:
+                <input type="date" id="capexVerifiedDate" value="2026-02-02" />
+                <span class="hint"> | See also: <a href="#sources">Market Price Sources</a></span>
+              </div>
 
-            <label>
-              Cleaning Equipment (one-time CAPEX) — MAD
-              <input id="equipCapex" type="number" step="1" value="29000">
-            </label>
+              <!-- CAPEX totals (calculated from the item tables) -->
+              <div class="capex-box">
+                <div class="capex-line">
+                  <span>Security PPE (one-time)</span>
+                  <strong id="secPpeCapexDisplay">6,090 MAD</strong>
+                </div>
+                <div class="capex-line">
+                  <span>Cleaning PPE (one-time)</span>
+                  <strong id="clnPpeCapexDisplay">3,600 MAD</strong>
+                </div>
+                <div class="capex-line">
+                  <span>Cleaning Equipment (one-time)</span>
+                  <strong id="equipCapexDisplay">29,000 MAD</strong>
+                </div>
+                <div class="capex-line total">
+                  <span>PPE &amp; Equipment CAPEX subtotal</span>
+                  <strong id="capexPpeEquipmentSubtotalDisplay">38,690 MAD</strong>
+                </div>
+              </div>
+
+              <!-- Keep the original numeric CAPEX inputs used by app.js (now fed by itemized totals) -->
+              <input id="secPpeCapex" type="number" step="1" value="6090" class="hidden">
+              <input id="clnPpeCapex" type="number" step="1" value="3600" class="hidden">
+              <input id="equipCapex" type="number" step="1" value="29000" class="hidden">
+
+              <!-- SECURITY PPE — total must = 6,090 MAD -->
+              <details class="note subtle" open style="margin-top:12px;">
+                <summary style="cursor:pointer; font-weight:900; color:#111;">
+                  Security PPE (one-time) — detailed items (Total target: 6,090 MAD)
+                </summary>
+
+                <div class="scheduleWrap">
+                  <table class="schedTable capexItemsTable">
+                    <thead>
+                      <tr>
+                        <th style="text-align:left;">Item (Marketplace reference)</th>
+                        <th>Qty</th>
+                        <th>Unit (MAD)</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="left">
+                          Safety shoes S3 (pair)
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chaussure%20de%20securite%20S3">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="sec_qty_shoes" type="number" min="0" step="1" value="3"></td>
+                        <td><input class="capex-item-input" id="sec_price_shoes" type="number" min="0" step="0.01" value="550"></td>
+                        <td><strong id="sec_line_shoes">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Reflective vest
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=gilet%20reflechissant">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="sec_qty_vest" type="number" min="0" step="1" value="3"></td>
+                        <td><input class="capex-item-input" id="sec_price_vest" type="number" min="0" step="0.01" value="80"></td>
+                        <td><strong id="sec_line_vest">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Work parka / winter jacket
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=parka%20travail">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="sec_qty_parka" type="number" min="0" step="1" value="3"></td>
+                        <td><input class="capex-item-input" id="sec_price_parka" type="number" min="0" step="0.01" value="420"></td>
+                        <td><strong id="sec_line_parka">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Raincoat (work)
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=impermeable%20pluie%20travail">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="sec_qty_rain" type="number" min="0" step="1" value="3"></td>
+                        <td><input class="capex-item-input" id="sec_price_rain" type="number" min="0" step="0.01" value="180"></td>
+                        <td><strong id="sec_line_rain">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Rechargeable flashlight
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=lampe%20torche%20rechargeable">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="sec_qty_light" type="number" min="0" step="1" value="3"></td>
+                        <td><input class="capex-item-input" id="sec_price_light" type="number" min="0" step="0.01" value="150"></td>
+                        <td><strong id="sec_line_light">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Walkie-talkie set
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=talkie%20walkie">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="sec_qty_radio" type="number" min="0" step="1" value="2"></td>
+                        <td><input class="capex-item-input" id="sec_price_radio" type="number" min="0" step="0.01" value="850"></td>
+                        <td><strong id="sec_line_radio">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          First aid kit
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=trousse%20premiers%20secours">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="sec_qty_aid" type="number" min="0" step="1" value="1"></td>
+                        <td><input class="capex-item-input" id="sec_price_aid" type="number" min="0" step="0.01" value="250"></td>
+                        <td><strong id="sec_line_aid">—</strong></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+
+              <!-- CLEANING PPE — total must = 3,600 MAD -->
+              <details class="note subtle" open style="margin-top:12px;">
+                <summary style="cursor:pointer; font-weight:900; color:#111;">
+                  Cleaning PPE (one-time) — detailed items (Total target: 3,600 MAD)
+                </summary>
+
+                <div class="scheduleWrap">
+                  <table class="schedTable capexItemsTable">
+                    <thead>
+                      <tr>
+                        <th style="text-align:left;">Item (Marketplace reference)</th>
+                        <th>Qty</th>
+                        <th>Unit (MAD)</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="left">
+                          Rubber safety boots (pair)
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=bottes%20caoutchouc%20securite">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="clp_qty_boots" type="number" min="0" step="1" value="4"></td>
+                        <td><input class="capex-item-input" id="clp_price_boots" type="number" min="0" step="0.01" value="220"></td>
+                        <td><strong id="clp_line_boots">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Waterproof apron
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=tablier%20imperm%C3%A9able">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="clp_qty_apron" type="number" min="0" step="1" value="4"></td>
+                        <td><input class="capex-item-input" id="clp_price_apron" type="number" min="0" step="0.01" value="120"></td>
+                        <td><strong id="clp_line_apron">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Safety goggles
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=lunettes%20de%20protection">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="clp_qty_goggles" type="number" min="0" step="1" value="4"></td>
+                        <td><input class="capex-item-input" id="clp_price_goggles" type="number" min="0" step="0.01" value="95"></td>
+                        <td><strong id="clp_line_goggles">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Nitrile gloves (box of 100)
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=gants%20nitrile%20boite%20100">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="clp_qty_gloves" type="number" min="0" step="1" value="12"></td>
+                        <td><input class="capex-item-input" id="clp_price_gloves" type="number" min="0" step="0.01" value="65"></td>
+                        <td><strong id="clp_line_gloves">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Disposable masks (box)
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=masques%20jetables%20boite">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="clp_qty_masks" type="number" min="0" step="1" value="10"></td>
+                        <td><input class="capex-item-input" id="clp_price_masks" type="number" min="0" step="0.01" value="55"></td>
+                        <td><strong id="clp_line_masks">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Half-face respirator + filters (set)
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=masque%20respiratoire%20demi%20face">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="clp_qty_respir" type="number" min="0" step="1" value="2"></td>
+                        <td><input class="capex-item-input" id="clp_price_respir" type="number" min="0" step="0.01" value="265"></td>
+                        <td><strong id="clp_line_respir">—</strong></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+
+              <!-- CLEANING EQUIPMENT — total must = 29,000 MAD -->
+              <details class="note subtle" open style="margin-top:12px;">
+                <summary style="cursor:pointer; font-weight:900; color:#111;">
+                  Cleaning Equipment (one-time) — detailed items (Total target: 29,000 MAD)
+                </summary>
+
+                <div class="scheduleWrap">
+                  <table class="schedTable capexItemsTable">
+                    <thead>
+                      <tr>
+                        <th style="text-align:left;">Item (Marketplace reference)</th>
+                        <th>Qty</th>
+                        <th>Unit (MAD)</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="left">
+                          Single-disc floor scrubber / polisher 17"
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=monobrosse%2017">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="cle_qty_mono" type="number" min="0" step="1" value="1"></td>
+                        <td><input class="capex-item-input" id="cle_price_mono" type="number" min="0" step="0.01" value="10500"></td>
+                        <td><strong id="cle_line_mono">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Wet &amp; dry industrial vacuum 70L
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur%20eau%20poussiere%2070L">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="cle_qty_vac" type="number" min="0" step="1" value="1"></td>
+                        <td><input class="capex-item-input" id="cle_price_vac" type="number" min="0" step="0.01" value="4500"></td>
+                        <td><strong id="cle_line_vac">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          High-pressure washer
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=nettoyeur%20haute%20pression">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="cle_qty_karcher" type="number" min="0" step="1" value="1"></td>
+                        <td><input class="capex-item-input" id="cle_price_karcher" type="number" min="0" step="0.01" value="6200"></td>
+                        <td><strong id="cle_line_karcher">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Professional janitorial trolley
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chariot%20menage%20professionnel">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="cle_qty_trolley" type="number" min="0" step="1" value="1"></td>
+                        <td><input class="capex-item-input" id="cle_price_trolley" type="number" min="0" step="0.01" value="1800"></td>
+                        <td><strong id="cle_line_trolley">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Mop bucket with wringer (set)
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=seau%20balai%20essoreur">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="cle_qty_bucket" type="number" min="0" step="1" value="4"></td>
+                        <td><input class="capex-item-input" id="cle_price_bucket" type="number" min="0" step="0.01" value="450"></td>
+                        <td><strong id="cle_line_bucket">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Microfiber system kit
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=kit%20microfibre%20nettoyage">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="cle_qty_micro" type="number" min="0" step="1" value="1"></td>
+                        <td><input class="capex-item-input" id="cle_price_micro" type="number" min="0" step="0.01" value="1200"></td>
+                        <td><strong id="cle_line_micro">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Extension cable (25m)
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=rallonge%20electrique%2025m">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="cle_qty_cable" type="number" min="0" step="1" value="2"></td>
+                        <td><input class="capex-item-input" id="cle_price_cable" type="number" min="0" step="0.01" value="250"></td>
+                        <td><strong id="cle_line_cable">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          "Wet floor" warning sign
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=panneau%20sol%20mouill%C3%A9">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="cle_qty_sign" type="number" min="0" step="1" value="3"></td>
+                        <td><input class="capex-item-input" id="cle_price_sign" type="number" min="0" step="0.01" value="100"></td>
+                        <td><strong id="cle_line_sign">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Aluminum ladder (6 steps)
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=escabeau%206%20marches">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="cle_qty_ladder" type="number" min="0" step="1" value="1"></td>
+                        <td><input class="capex-item-input" id="cle_price_ladder" type="number" min="0" step="0.01" value="900"></td>
+                        <td><strong id="cle_line_ladder">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Window cleaning kit (squeegee)
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=raclette%20vitre%20kit">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="cle_qty_window" type="number" min="0" step="1" value="1"></td>
+                        <td><input class="capex-item-input" id="cle_price_window" type="number" min="0" step="0.01" value="700"></td>
+                        <td><strong id="cle_line_window">—</strong></td>
+                      </tr>
+
+                      <tr>
+                        <td class="left">
+                          Hand tools kit (scrapers + brushes)
+                          <div class="hint">
+                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=grattoir%20brosse%20nettoyage%20kit">Market link</a>
+                          </div>
+                        </td>
+                        <td><input class="capex-item-input" id="cle_qty_tools" type="number" min="0" step="1" value="1"></td>
+                        <td><input class="capex-item-input" id="cle_price_tools" type="number" min="0" step="0.01" value="600"></td>
+                        <td><strong id="cle_line_tools">—</strong></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+
+              <div class="note subtle" style="margin-top:12px;">
+                <strong>Important:</strong> CAPEX totals above must be calculated from the item tables (Qty × Unit).
+                Keep the procurement evidence (URL + screenshot + proforma) per major item.
+              </div>
+            </div>
 
             <!-- Transport OPEX (NEW) -->
             <div class="infoBox" style="grid-column: 1 / -1;">
@@ -725,11 +1102,13 @@
     </section>
 
     <footer class="footer">
-      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.4 (Transport + CAPEX separated)</small>
+      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.5 (CAPEX itemized + Transport + CAPEX separated)</small>
     </footer>
   </main>
 
-  <!-- IMPORTANT: update app.js accordingly (transport + consumables liters) and keep version to avoid cache issues -->
-  <script src="app.js?v=5.4"></script>
+  <!-- IMPORTANT: app.js must compute CAPEX totals from the item tables (Qty × Unit) and update:
+       secPpeCapex, clnPpeCapex, equipCapex + display fields + CAPEX panel.
+  -->
+  <script src="app.js?v=5.5"></script>
 </body>
 </html>
