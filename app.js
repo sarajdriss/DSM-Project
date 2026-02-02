@@ -1,24 +1,36 @@
-/* DSM Project — app.js (v5.3)
-   Applied modifications:
-   1) SECURITY
-      - Day + Night headcount (night priced same as day; no night premium)
-      - Overtime premium: +25% ONLY
-      - Overtime condition: ONLY hours above 48 hours/week
-      - Weekly table generated like Excel based on:
-          secWorkDaysPerMonth, secWorkDaysPerWeek, secPaidHoursPerDay
-   2) CLEANING
-      - Headcount-based pricing (no OT computed in this version)
-      - Planned hours are informational only (clnHoursPerDay × clnDaysPerMonth × agents)
-   3) CONSUMABLES (NEW)
-      - Liters breakdown with quantities (L/month) and unit prices (MAD/L)
-      - Toggle to use breakdown or manual total
-      - Updates summary “Cleaning Consumables (Monthly)” accordingly
-   4) SUMMARY
-      - Security Team monthly
-      - Cleaning Team monthly
-      - Cleaning consumables monthly (from breakdown or manual)
-      - OPEX total + annual
-      - CAPEX panel toggled by button
+/* DSM Project — app.js (v5.4)
+   UPDATED per latest index.html requirements:
+
+   SECURITY
+   - Day + Night headcount (night priced same as day; no night premium)
+   - OT premium: +25% ONLY
+   - OT applies ONLY above 48h/week
+   - Weekly table like Excel using:
+       secWorkDaysPerMonth, secWorkDaysPerWeek, secPaidHoursPerDay
+
+   CLEANING
+   - Headcount-based pricing (no OT computed in this version)
+   - Planned hours display is informational only
+
+   CONSUMABLES (Liters breakdown)
+   - Qty (L/month) × Unit price (MAD/L)
+   - Toggle to use breakdown or manual total
+
+   TRANSPORT (NEW — OPEX)
+   - Monthly Transport = buses × trips/day × cost/trip × days/month
+   - Shown in summary + included in OPEX
+
+   CAPEX
+   - Separated fields:
+     Security PPE, Cleaning PPE, Cleaning Equipment
+
+   SUMMARY
+   - Security Team monthly
+   - Cleaning Team monthly
+   - Cleaning consumables monthly
+   - Transport monthly
+   - OPEX total + annual
+   - CAPEX toggle panel
 */
 
 const DEFAULTS = {
@@ -57,12 +69,18 @@ const DEFAULTS = {
   clnHoursPerDay: 8,          // info only
   clnDaysPerMonth: 22,        // info only
 
-  // CAPEX
+  // CAPEX (separate)
   secPpeCapex: 6090,
   clnPpeCapex: 3600,
   equipCapex: 29000,
 
-  // CONSUMABLES (NEW liters breakdown)
+  // TRANSPORT (NEW — OPEX)
+  transportTripsPerDay: 2,     // home->factory + factory->home
+  transportCostPerTrip: 120,   // MAD per trip
+  transportDaysPerMonth: 23,   // working days
+  transportBuses: 1,           // number of buses
+
+  // CONSUMABLES (liters breakdown)
   useConsumablesBreakdown: true,
 
   floorDegreaserQtyL: 80,
@@ -87,8 +105,8 @@ const DEFAULTS = {
 };
 
 const STORAGE_PREFIX = "DSM_";
-const WEEKLY_LIMIT_HOURS = 48;   // OT starts above this
-const OT_PREMIUM = 0.25;         // +25% only
+const WEEKLY_LIMIT_HOURS = 48; // OT starts above this
+const OT_PREMIUM = 0.25;       // +25% only
 
 function $(id){ return document.getElementById(id); }
 function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
@@ -193,7 +211,7 @@ function splitDaysIntoWeeks(totalDays, daysPerWeek) {
     const w = Math.min(cap, remaining);
     weeks.push(w);
     remaining -= w;
-    if (weeks.length > 6) break; // safety
+    if (weeks.length > 6) break;
   }
   if (weeks.length === 0) weeks.push(0);
   return weeks;
@@ -263,7 +281,7 @@ function syncCleaningNightMax() {
 function calc() {
   syncCleaningNightMax();
 
-  // Replacement computed display (if present)
+  // Replacement computed display
   const replComputed = computeReplacementPercentFromComponents();
   setText("replacementComputedDisplay", `${replComputed.toFixed(2)}%`);
 
@@ -283,7 +301,7 @@ function calc() {
   // OT hourly fixed at +25%
   const overtimeHourly = chargeableHourly * (1 + OT_PREMIUM);
 
-  // Metrics (existence-safe)
+  // Metrics
   setText("netHourly", moneyMAD(netHourly, 2));
   setText("employerHourly", moneyMAD(employerHourly, 2));
   setText("chargeableHourly", moneyMAD(chargeableHourly, 2));
@@ -311,11 +329,9 @@ function calc() {
   const weeks = splitDaysIntoWeeks(workDaysPerMonth, workDaysPerWeek);
   const totals = renderSecurityScheduleTable(weeks, paidHoursPerDay) || { totalDays:0, totalHours:0, totalReg:0, totalOt:0 };
 
-  // per agent
   setText("secAgentTotalHours", `${totals.totalHours.toFixed(0)} h`);
   setText("secAgentOtHours", `${totals.totalOt.toFixed(0)} h`);
 
-  // team totals
   const teamRegularHours = secTotalAgents * totals.totalReg;
   const teamOtHours = secTotalAgents * totals.totalOt;
 
@@ -331,7 +347,7 @@ function calc() {
   );
 
   // =========================
-  // CLEANING — headcount based (no OT here)
+  // CLEANING — headcount based (no OT)
   // =========================
   const clnAgents = Math.max(0, Math.round(readNum("clnAgents")));
   let clnNightAgents = Math.round(readNum("clnNightAgents"));
@@ -343,7 +359,6 @@ function calc() {
   setText("clnNightAgentsVal", clnNightAgents);
   setText("clnDayAgentsOut", `${clnDayAgents} day`);
 
-  // planning info only
   const clnHoursPerDay = readNum("clnHoursPerDay");
   const clnDaysPerMonth = readNum("clnDaysPerMonth");
   setText("clnReqHours", `${Math.round(clnAgents * clnHoursPerDay * clnDaysPerMonth)} h`);
@@ -352,7 +367,7 @@ function calc() {
   setText("clnOtAlert", "Cleaning: headcount-based pricing (no overtime computed in this version).");
 
   // =========================
-  // CONSUMABLES — liters breakdown (NEW)
+  // CONSUMABLES — liters breakdown
   // =========================
   const useConsumablesBreakdown = readBool("useConsumablesBreakdown");
 
@@ -382,6 +397,19 @@ function calc() {
   const clnProducts = useConsumablesBreakdown ? breakdownTotal : manualConsumables;
 
   // =========================
+  // TRANSPORT — OPEX (NEW)
+  // =========================
+  const transportTripsPerDay = Math.max(0, Math.round(readNum("transportTripsPerDay")));
+  const transportCostPerTrip = readNum("transportCostPerTrip");
+  const transportDaysPerMonth = Math.max(0, Math.round(readNum("transportDaysPerMonth")));
+  const transportBuses = Math.max(0, Math.round(readNum("transportBuses")));
+
+  const transportMonthly = transportBuses * transportTripsPerDay * transportCostPerTrip * transportDaysPerMonth;
+
+  setText("transportMonthlyOut", moneyMAD(transportMonthly, 0));
+  setText("transportMonthlySummary", moneyMAD(transportMonthly, 0));
+
+  // =========================
   // OPEX / CAPEX
   // =========================
   const otherFixed = readNum("otherFixed");
@@ -392,8 +420,8 @@ function calc() {
   const includeCapex = readBool("includeCapex");
 
   const capexTotal = secPpeCapex + clnPpeCapex + equipCapex;
-  const opexOther = clnProducts + otherFixed;
 
+  const opexOther = clnProducts + transportMonthly + otherFixed; // includes transport now
   const opexTotal = secTeamMonthly + clnTeamMonthly + opexOther;
   const opexAnnual = opexTotal * 12;
   const month1Total = includeCapex ? (opexTotal + capexTotal) : opexTotal;
@@ -402,7 +430,7 @@ function calc() {
   setText("kpiOpexMonthly", moneyMAD(opexTotal, 0));
   setText("kpiMonth1", moneyMAD(month1Total, 0));
 
-  // Right summary (new IDs)
+  // Right summary
   setText("secTeamMonthly", moneyMAD(secTeamMonthly, 0));
   setText("secTeamInfo", `Day: ${secDay} | Night: ${secNight} | Total: ${secTotalAgents}`);
 
@@ -413,7 +441,7 @@ function calc() {
   setText("opexTotal", moneyMAD(opexTotal, 0));
   setText("opexAnnual", `Annual OPEX (NET): ${moneyMAD(opexAnnual, 0)}`);
 
-  // CAPEX panel IDs
+  // CAPEX panel IDs (separate)
   setText("capexSec", moneyMAD(secPpeCapex, 0));
   setText("capexCln", moneyMAD(clnPpeCapex, 0));
   setText("capexEq", moneyMAD(equipCapex, 0));
@@ -421,21 +449,20 @@ function calc() {
   setText("month1Total", moneyMAD(month1Total, 0));
   setText("capexIncludedText", includeCapex ? "Yes" : "No");
 
-  // Backward compatibility IDs (if still present somewhere)
+  // Backward compatibility IDs (if present)
   setText("secTotal", moneyMAD(secTeamMonthly, 0));
   setText("clnTotal", moneyMAD(clnTeamMonthly, 0));
   setText("consumables", moneyMAD(clnProducts, 0));
   setText("otherFixedOut", moneyMAD(otherFixed, 0));
   setText("opexOther", moneyMAD(opexOther, 0));
 
-  // Donut (optional)
+  // Donut (Security / Cleaning / Other OPEX)
   setDonut(secTeamMonthly, clnTeamMonthly, opexOther);
 
   saveAll();
 }
 
 function bind() {
-  // any input change triggers calc
   document.addEventListener("input", (e) => {
     if (e.target && e.target.matches("input")) calc();
   });
@@ -443,7 +470,6 @@ function bind() {
     if (e.target && e.target.matches("input")) calc();
   });
 
-  // Replacement auto-calc button
   const replBtn = $("replacementAutoBtn");
   if (replBtn) {
     replBtn.addEventListener("click", () => {
@@ -457,7 +483,6 @@ function bind() {
     });
   }
 
-  // CAPEX toggle button
   const capexBtn = $("toggleCapexBtn");
   const capexPanel = $("capexPanel");
   if (capexBtn && capexPanel) {
@@ -469,11 +494,9 @@ function bind() {
     });
   }
 
-  // Print
   const printBtn = $("printBtn");
   if (printBtn) printBtn.addEventListener("click", () => window.print());
 
-  // Reset
   const resetBtn = $("resetBtn");
   if (resetBtn) resetBtn.addEventListener("click", resetDefaults);
 }
