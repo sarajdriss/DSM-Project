@@ -1,3 +1,4 @@
+/* styles.css */
 :root{
   --bg:#ffffff;
   --card:#ffffff;
@@ -121,6 +122,47 @@ a:hover{ color: var(--primary2); }
 .kpi-label{ color: var(--muted); font-size: 12px; font-weight: 700; }
 .kpi-value{ font-size: 22px; font-weight: 950; margin: 6px 0 4px; }
 .kpi-foot{ color: var(--muted); font-size: 12px; line-height: 1.35; }
+
+/* Option Toggle */
+.option-toggle{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.option-radio{
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.option-radio:hover{
+  border-color: rgba(212,0,26,.3);
+}
+.option-radio input{
+  margin-top: 2px;
+  accent-color: var(--primary);
+}
+.option-radio input:checked + .option-label{
+  color: var(--primary);
+}
+.option-label{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.option-desc{
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: normal;
+}
+.option-radio:has(input:checked){
+  border-color: var(--primary);
+  background: rgba(212,0,26,.03);
+}
 
 /* Layout */
 .layout{
@@ -469,8 +511,6 @@ details[open].note summary:after{ content: "▴"; }
   border-radius: 14px;
   background: #fff;
   padding: 12px;
-
-  /* NEW (v5.5): allow large tables (CAPEX item tables) to scroll on small screens */
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -523,7 +563,7 @@ details[open].note summary:after{ content: "▴"; }
 .schedTable td strong{ color: var(--text); }
 
 /* -----------------------------
-   NEW (v5.5): CAPEX itemized tables styling
+   CAPEX itemized tables styling
    ----------------------------- */
 .capexItemsTable input[type="number"]{
   width: 100%;
@@ -635,6 +675,7 @@ details[open].note summary:after{ content: "▴"; }
   .mini-metrics{ grid-template-columns: 1fr; }
   .sources{ grid-template-columns: 1fr; }
   .securityGrid{ grid-template-columns: 1fr; }
+  .option-toggle{ grid-template-columns: 1fr; }
 
   /* utility layouts */
   .form-grid{ grid-template-columns: 1fr; }
