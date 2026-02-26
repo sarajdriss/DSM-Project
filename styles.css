@@ -535,7 +535,7 @@ details[open].note summary:after{ content: "▴"; }
   margin-top: 4px;
 }
 
-/* Keep “Last verified” date input compact inside text */
+/* Keep "Last verified" date input compact inside text */
 #capexVerifiedDate{
   padding: 6px 10px;
   border-radius: 10px;
@@ -555,6 +555,21 @@ details[open].note summary:after{ content: "▴"; }
   border-radius: 14px;
   background: #fff;
   padding: 12px;
+}
+
+/* -----------------------------
+   Procurement section styling (v5.6)
+   ----------------------------- */
+#procurement .schedTable{
+  font-size: 12px;
+}
+#procurement .schedTable th{
+  background: rgba(212,0,26,.04);
+}
+#procurement .schedTable tfoot td{
+  background: rgba(212,0,26,.06);
+  font-weight: 900;
+  border-top: 2px solid var(--primary);
 }
 
 /* -----------------------------
