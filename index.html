@@ -24,9 +24,10 @@
       <nav class="nav">
         <a href="#model">Model</a>
         <a href="#definitions">Definitions</a>
-        <a href="#calc-method">How it’s Calculated</a>
+        <a href="#calc-method">How it's Calculated</a>
         <a href="#sources">Market Price Sources</a>
         <a href="#evidence">Regulatory References</a>
+        <a href="#procurement">Procurement</a>
       </nav>
     </div>
   </header>
@@ -47,6 +48,7 @@
           <span class="badge">OT rule: +25% only (48h/week)</span>
           <span class="badge">Transport OPEX</span>
           <span class="badge">CAPEX & OPEX view</span>
+          <span class="badge">HYPROCOL Procurement</span>
         </div>
       </div>
 
@@ -386,7 +388,7 @@
                 Each line is editable (Qty × Unit price). Use the market links to verify and keep procurement evidence.
                 Last verified:
                 <input type="date" id="capexVerifiedDate" value="2026-02-02" />
-                <span class="hint"> | See also: <a href="#sources">Market Price Sources</a></span>
+                <span class="hint"> | See also: <a href="#sources">Market Price Sources</a> | <a href="#procurement">HYPROCOL Procurement</a></span>
               </div>
 
               <!-- CAPEX totals (calculated from the item tables) -->
@@ -435,7 +437,7 @@
                         <td class="left">
                           Safety shoes S3 (pair)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chaussure%20de%20securite%20S3">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=chaussure%20de%20securite%20S3">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="sec_qty_shoes" type="number" min="0" step="1" value="3"></td>
@@ -447,7 +449,7 @@
                         <td class="left">
                           Reflective vest
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=gilet%20reflechissant">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=gilet%20reflechissant">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="sec_qty_vest" type="number" min="0" step="1" value="3"></td>
@@ -459,7 +461,7 @@
                         <td class="left">
                           Work parka / winter jacket
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=parka%20travail">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=parka%20travail">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="sec_qty_parka" type="number" min="0" step="1" value="3"></td>
@@ -471,7 +473,7 @@
                         <td class="left">
                           Raincoat (work)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=impermeable%20pluie%20travail">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=impermeable%20pluie%20travail">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="sec_qty_rain" type="number" min="0" step="1" value="3"></td>
@@ -483,7 +485,7 @@
                         <td class="left">
                           Rechargeable flashlight
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=lampe%20torche%20rechargeable">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=lampe%20torche%20rechargeable">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="sec_qty_light" type="number" min="0" step="1" value="3"></td>
@@ -493,9 +495,9 @@
 
                       <tr>
                         <td class="left">
-                          Walkie-talkie set
+                          Walkie-talkie set (Motorola T50)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=talkie%20walkie">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://alhorria.ma/produit/talkie-walkie-motorola-t50%C2%96-sans-licence/?utm_source=chatgpt.com">Alhorria.ma link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="sec_qty_radio" type="number" min="0" step="1" value="2"></td>
@@ -507,7 +509,7 @@
                         <td class="left">
                           First aid kit
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=trousse%20premiers%20secours">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=trousse%20premiers%20secours">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="sec_qty_aid" type="number" min="0" step="1" value="1"></td>
@@ -540,7 +542,7 @@
                         <td class="left">
                           Rubber safety boots (pair)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=bottes%20caoutchouc%20securite">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=bottes%20caoutchouc%20securite">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="clp_qty_boots" type="number" min="0" step="1" value="4"></td>
@@ -552,7 +554,7 @@
                         <td class="left">
                           Waterproof apron
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=tablier%20imperm%C3%A9able">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=tablier%20imperm%C3%A9able">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="clp_qty_apron" type="number" min="0" step="1" value="4"></td>
@@ -564,7 +566,7 @@
                         <td class="left">
                           Safety goggles
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=lunettes%20de%20protection">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=lunettes%20de%20protection">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="clp_qty_goggles" type="number" min="0" step="1" value="4"></td>
@@ -576,7 +578,7 @@
                         <td class="left">
                           Nitrile gloves (box of 100)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=gants%20nitrile%20boite%20100">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=gants%20nitrile%20boite%20100">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="clp_qty_gloves" type="number" min="0" step="1" value="12"></td>
@@ -588,7 +590,7 @@
                         <td class="left">
                           Disposable masks (box)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=masques%20jetables%20boite">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=masques%20jetables%20boite">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="clp_qty_masks" type="number" min="0" step="1" value="10"></td>
@@ -600,7 +602,7 @@
                         <td class="left">
                           Half-face respirator + filters (set)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=masque%20respiratoire%20demi%20face">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=masque%20respiratoire%20demi%20face">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="clp_qty_respir" type="number" min="0" step="1" value="2"></td>
@@ -633,7 +635,7 @@
                         <td class="left">
                           Single-disc floor scrubber / polisher 17"
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=monobrosse%2017">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=monobrosse%2017">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="cle_qty_mono" type="number" min="0" step="1" value="1"></td>
@@ -645,7 +647,7 @@
                         <td class="left">
                           Wet &amp; dry industrial vacuum 70L
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur%20eau%20poussiere%2070L">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur%20eau%20poussiere%2070L">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="cle_qty_vac" type="number" min="0" step="1" value="1"></td>
@@ -657,7 +659,7 @@
                         <td class="left">
                           High-pressure washer
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=nettoyeur%20haute%20pression">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=nettoyeur%20haute%20pression">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="cle_qty_karcher" type="number" min="0" step="1" value="1"></td>
@@ -669,7 +671,7 @@
                         <td class="left">
                           Professional janitorial trolley
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chariot%20menage%20professionnel">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=chariot%20menage%20professionnel">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="cle_qty_trolley" type="number" min="0" step="1" value="1"></td>
@@ -681,7 +683,7 @@
                         <td class="left">
                           Mop bucket with wringer (set)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=seau%20balai%20essoreur">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=seau%20balai%20essoreur">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="cle_qty_bucket" type="number" min="0" step="1" value="4"></td>
@@ -693,7 +695,7 @@
                         <td class="left">
                           Microfiber system kit
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=kit%20microfibre%20nettoyage">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=kit%20microfibre%20nettoyage">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="cle_qty_micro" type="number" min="0" step="1" value="1"></td>
@@ -705,7 +707,7 @@
                         <td class="left">
                           Extension cable (25m)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=rallonge%20electrique%2025m">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=rallonge%20electrique%2025m">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="cle_qty_cable" type="number" min="0" step="1" value="2"></td>
@@ -717,7 +719,7 @@
                         <td class="left">
                           "Wet floor" warning sign
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=panneau%20sol%20mouill%C3%A9">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=panneau%20sol%20mouill%C3%A9">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="cle_qty_sign" type="number" min="0" step="1" value="3"></td>
@@ -729,7 +731,7 @@
                         <td class="left">
                           Aluminum ladder (6 steps)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=escabeau%206%20marches">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=escabeau%206%20marches">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="cle_qty_ladder" type="number" min="0" step="1" value="1"></td>
@@ -741,7 +743,7 @@
                         <td class="left">
                           Window cleaning kit (squeegee)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=raclette%20vitre%20kit">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=raclette%20vitre%20kit">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="cle_qty_window" type="number" min="0" step="1" value="1"></td>
@@ -753,7 +755,7 @@
                         <td class="left">
                           Hand tools kit (scrapers + brushes)
                           <div class="hint">
-                            <a target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=grattoir%20brosse%20nettoyage%20kit">Market link</a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=grattoir%20brosse%20nettoyage%20kit">Market link</a>
                           </div>
                         </td>
                         <td><input class="capex-item-input" id="cle_qty_tools" type="number" min="0" step="1" value="1"></td>
@@ -865,7 +867,7 @@
               </table>
 
               <div class="hint" style="margin-top:8px;">
-                Non-liquid items (bags, paper, wipes) are not in liters; you can include them in “Other fixed OPEX” or add another line later.
+                Non-liquid items (bags, paper, wipes) are not in liters; you can include them in "Other fixed OPEX" or add another line later.
               </div>
             </div>
 
@@ -967,7 +969,7 @@
       </aside>
     </section>
 
-    <!-- HOW IT’S CALCULATED (SHORT) -->
+    <!-- HOW IT'S CALCULATED (SHORT) -->
     <section class="wide card" id="calc-method">
       <h2>How the Price is Calculated (Short Method)</h2>
       <p class="muted">
@@ -1011,19 +1013,19 @@
 
       <h3 style="margin-top:14px;">A) Professional / Brand Catalogs (Recommended for machines)</h3>
       <div class="sources">
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.kaercher.com/ma/">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.kaercher.com/ma/">
           <span class="src-title">Kärcher Morocco (official) — cleaning machines & professional equipment</span>
           <span class="src-url">https://www.kaercher.com/ma/</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.kaercher.com/ma/professional.html">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.kaercher.com/ma/professional.html">
           <span class="src-title">Kärcher Professional (vacuum, scrubber, etc.)</span>
           <span class="src-url">https://www.kaercher.com/ma/professional.html</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.bricoma.ma/">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.bricoma.ma/">
           <span class="src-title">Bricoma Maroc (tools & equipment benchmark)</span>
           <span class="src-url">https://www.bricoma.ma/</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.electroplanet.ma/">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.electroplanet.ma/">
           <span class="src-title">Electroplanet Maroc (retail benchmark: vacuums & small equipment)</span>
           <span class="src-url">https://www.electroplanet.ma/</span>
         </a>
@@ -1031,39 +1033,39 @@
 
       <h3 style="margin-top:14px;">B) Marketplaces (Benchmark + fast comparisons)</h3>
       <div class="sources">
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chaussures%20de%20securite">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=chaussures%20de%20securite">
           <span class="src-title">Jumia — Safety shoes (chaussures de sécurité)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=chaussures%20de%20securite</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=vetement%20de%20travail">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=vetement%20de%20travail">
           <span class="src-title">Jumia — Workwear / uniforms (vêtement de travail)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=vetement%20de%20travail</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur%20professionnel">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur%20professionnel">
           <span class="src-title">Jumia — Professional vacuum (aspirateur professionnel)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=aspirateur%20professionnel</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=autolaveuse">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=autolaveuse">
           <span class="src-title">Jumia — Scrubber dryer / autolaveuse</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=autolaveuse</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=chariot%20de%20menage%20professionnel">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=chariot%20de%20menage%20professionnel">
           <span class="src-title">Jumia — Cleaning trolley (chariot de ménage professionnel)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=chariot%20de%20menage%20professionnel</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=degraissant">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=degraissant">
           <span class="src-title">Jumia — Degreaser (dégraissant)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=degraissant</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.jumia.ma/catalog/?q=desinfectant">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=desinfectant">
           <span class="src-title">Jumia — Disinfectant (désinfectant)</span>
           <span class="src-url">https://www.jumia.ma/catalog/?q=desinfectant</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.avito.ma/fr/maroc?q=autolaveuse">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.avito.ma/fr/maroc?q=autolaveuse">
           <span class="src-title">Avito.ma — Autolaveuse (market benchmark / offers)</span>
           <span class="src-url">https://www.avito.ma/fr/maroc?q=autolaveuse</span>
         </a>
-        <a class="source" target="_blank" rel="noreferrer" href="https://www.avito.ma/fr/maroc?q=aspirateur%20professionnel">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://www.avito.ma/fr/maroc?q=aspirateur%20professionnel">
           <span class="src-title">Avito.ma — Aspirateur professionnel</span>
           <span class="src-url">https://www.avito.ma/fr/maroc?q=aspirateur%20professionnel</span>
         </a>
@@ -1078,20 +1080,20 @@
       <ul class="evidence">
         <li>
           <strong>Secrétariat Général du Gouvernement — Bulletin Officiel (BO):</strong>
-          <a target="_blank" rel="noreferrer" href="https://www.sgg.gov.ma/BO/">https://www.sgg.gov.ma/BO/</a>
+          <a target="_blank" rel="noopener noreferrer" href="https://www.sgg.gov.ma/BO/">https://www.sgg.gov.ma/BO/</a>
           <div class="hint">Use BO search for: SMIG decrees, Code du Travail (Loi 65-99), public holiday decrees.</div>
         </li>
         <li>
           <strong>CNSS:</strong>
-          <a target="_blank" rel="noreferrer" href="https://www.cnss.ma/">https://www.cnss.ma/</a>
+          <a target="_blank" rel="noopener noreferrer" href="https://www.cnss.ma/">https://www.cnss.ma/</a>
         </li>
         <li>
           <strong>ANAM (AMO):</strong>
-          <a target="_blank" rel="noreferrer" href="https://www.anam.ma/">https://www.anam.ma/</a>
+          <a target="_blank" rel="noopener noreferrer" href="https://www.anam.ma/">https://www.anam.ma/</a>
         </li>
         <li>
           <strong>Ministry portal (Employment / SMIG):</strong>
-          <a target="_blank" rel="noreferrer" href="https://www.miepeec.gov.ma/">https://www.miepeec.gov.ma/</a>
+          <a target="_blank" rel="noopener noreferrer" href="https://www.miepeec.gov.ma/">https://www.miepeec.gov.ma/</a>
         </li>
       </ul>
 
@@ -1101,14 +1103,379 @@
       </div>
     </section>
 
+    <!-- HYPROCOL PROCUREMENT SECTION (NEW from PPT) -->
+    <section class="wide card" id="procurement">
+      <h2>HYPROCOL Procurement Proposal — Cleaning Products, Uniforms & Protective Workwear</h2>
+      <p class="muted">
+        Complete equipment and consumables specification from HYPROCOL (www.hyprocol.com | contact@hyprocol.com).
+        Exclusive ZAMBU Distributor in Morocco. All taxes included | VAT recoverable.
+      </p>
+
+      <div class="note" style="margin-bottom:14px;">
+        <strong>Total Investment Required: 16,808 MAD</strong> — Equipment (2,030 MAD) + Cleaning Products (2,416.90 MAD) + 
+        Equipment/Tools (10,023.75 MAD) + Uniforms/PPE (2,337.50 MAD)
+      </div>
+
+      <!-- Equipment Specifications -->
+      <details class="note subtle" open style="margin-top:12px;">
+        <summary style="cursor:pointer; font-weight:900; color:#111;">
+          A) Equipment Specifications — Dispensers & Bins (2,030 MAD)
+        </summary>
+
+        <div class="scheduleWrap">
+          <table class="schedTable capexItemsTable">
+            <thead>
+              <tr>
+                <th style="text-align:left;">Product</th>
+                <th>Reference</th>
+                <th>Location / Notes</th>
+                <th>Qty</th>
+                <th>Unit (MAD)</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="left">Manual Soap Dispenser 1L capacity, wall-mounted</td>
+                <td>ZAMBU-857</td>
+                <td>Replacement of broken units — Strategic locations</td>
+                <td>6</td>
+                <td>245.00</td>
+                <td><strong>1,470.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Standard Toilet Paper Dispenser Double roll, plastic</td>
+                <td>ZAMBU-4717</td>
+                <td>Medical Room Toilet Only</td>
+                <td>1</td>
+                <td>265.00</td>
+                <td><strong>265.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Economic Paper Towel Dispenser Basic model, wall-mounted</td>
+                <td>ZAMBU-4401</td>
+                <td>Boardroom Only</td>
+                <td>1</td>
+                <td>295.00</td>
+                <td><strong>295.00</strong></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="left" colspan="5"><strong>Subtotal Equipment (incl. sanitary bins in progress)</strong></td>
+                <td><strong>2,030.00</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </details>
+
+      <!-- Cleaning Products & Chemicals -->
+      <details class="note subtle" open style="margin-top:12px;">
+        <summary style="cursor:pointer; font-weight:900; color:#111;">
+          B) Cleaning Products & Chemicals — Initial Stock (2,416.90 MAD)
+        </summary>
+
+        <div class="scheduleWrap">
+          <table class="schedTable capexItemsTable">
+            <thead>
+              <tr>
+                <th style="text-align:left;">Product</th>
+                <th>Reference</th>
+                <th>Packaging</th>
+                <th>Qty</th>
+                <th>Unit (MAD)</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="left">FLOORNET — Lemon Freshness Floor and Surface Cleaner and Degreaser</td>
+                <td>HY8242</td>
+                <td>5L unit</td>
+                <td>5</td>
+                <td>45.00</td>
+                <td><strong>225.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">GRASNET — Liquid degreaser for all types of surfaces</td>
+                <td>HY8256</td>
+                <td>5L unit</td>
+                <td>3</td>
+                <td>90.00</td>
+                <td><strong>270.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">HANDSOFT — Liquid hand soap</td>
+                <td>HY625</td>
+                <td>5L unit</td>
+                <td>15</td>
+                <td>15.00</td>
+                <td><strong>862.50</strong></td>
+              </tr>
+              <tr>
+                <td class="left">BACTINET — Multi-purpose liquid disinfectant detergent (quaternary ammonium)</td>
+                <td>HY8239</td>
+                <td>5L unit</td>
+                <td>4</td>
+                <td>115.00</td>
+                <td><strong>460.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">ASEPNET — Liquid disinfectant (alcohol + quaternary ammonium)</td>
+                <td>HY015</td>
+                <td>5L unit</td>
+                <td>1</td>
+                <td>225.00</td>
+                <td><strong>225.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">SELPAK Household Toilet Paper — EXTRA SOFT, 3-Ply (72 rolls/pack)</td>
+                <td>HY783</td>
+                <td>Pack of 72</td>
+                <td>2</td>
+                <td>187.20</td>
+                <td><strong>374.40</strong></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="left" colspan="5"><strong>Subtotal Cleaning Products</strong></td>
+                <td><strong>2,416.90</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </details>
+
+      <!-- Cleaning Equipment -->
+      <details class="note subtle" open style="margin-top:12px;">
+        <summary style="cursor:pointer; font-weight:900; color:#111;">
+          C) Cleaning Equipment — Tools & Maintenance (10,023.75 MAD)
+        </summary>
+
+        <div class="scheduleWrap">
+          <table class="schedTable capexItemsTable">
+            <thead>
+              <tr>
+                <th style="text-align:left;">Equipment</th>
+                <th>Reference</th>
+                <th>Specifications</th>
+                <th>Qty</th>
+                <th>Unit (MAD)</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="left">Complete professional stainless steel washing trolley</td>
+                <td>1339</td>
+                <td>108×70×104cm complete professional washing trolley</td>
+                <td>1</td>
+                <td>4,975.00</td>
+                <td><strong>4,975.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">DUO Wash Trolley, 2 Buckets with Wringer, Stainless Steel Frame</td>
+                <td>512081</td>
+                <td>DUO Wash Trolley (2 Buckets) with Wringer</td>
+                <td>2</td>
+                <td>1,250.00</td>
+                <td><strong>2,500.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Professional Window Squeegee</td>
+                <td>400845</td>
+                <td>45cm professional window squeegee</td>
+                <td>5</td>
+                <td>82.50</td>
+                <td><strong>412.50</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Ultra Absorbent Blue Cloths</td>
+                <td>1278</td>
+                <td>12 Ultra Absorbent 23×50cm</td>
+                <td>5</td>
+                <td>74.00</td>
+                <td><strong>370.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Trash bags PROBAG BLEU (Sacs Poubelle)</td>
+                <td>HY6704</td>
+                <td>40 bags, 55×60cm, 30L (pack of 26)</td>
+                <td>16</td>
+                <td>20.00</td>
+                <td><strong>320.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Green wastepaper basket</td>
+                <td>962113</td>
+                <td>Inside Women's Toilets — prevents pump blockage</td>
+                <td>12</td>
+                <td>20.00</td>
+                <td><strong>240.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">PRO multi-surface abrasive sponges</td>
+                <td>712184</td>
+                <td>3 sponges, 14×7×4.4cm</td>
+                <td>5</td>
+                <td>15.00</td>
+                <td><strong>75.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Absorbent cloth</td>
+                <td>HY091</td>
+                <td>Absorbent 36×40 (pack of 24)</td>
+                <td>5</td>
+                <td>10.00</td>
+                <td><strong>50.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">120mm steel handle</td>
+                <td>514917</td>
+                <td>120mm steel handle</td>
+                <td>5</td>
+                <td>12.50</td>
+                <td><strong>62.50</strong></td>
+              </tr>
+              <tr>
+                <td class="left">100cm Industrial Broom Base (Replacement)</td>
+                <td>400654</td>
+                <td>100cm Industrial Broom Base + Replacement (SM)</td>
+                <td>5</td>
+                <td>162.50</td>
+                <td><strong>812.50</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Soft broom, 6 bristles, LAVENDER/RED</td>
+                <td>500743</td>
+                <td>Soft broom, 6 bristles</td>
+                <td>3</td>
+                <td>18.75</td>
+                <td><strong>56.25</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Galvanized metal shovel with handle</td>
+                <td>410639</td>
+                <td>Galvanized metal shovel with handle</td>
+                <td>2</td>
+                <td>75.00</td>
+                <td><strong>150.00</strong></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="left" colspan="5"><strong>Subtotal Cleaning Equipment</strong></td>
+                <td><strong>10,023.75</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </details>
+
+      <!-- Uniforms & Protective Workwear -->
+      <details class="note subtle" open style="margin-top:12px;">
+        <summary style="cursor:pointer; font-weight:900; color:#111;">
+          D) Uniforms & Protective Workwear / PPE (2,337.50 MAD)
+        </summary>
+
+        <div class="scheduleWrap">
+          <table class="schedTable capexItemsTable">
+            <thead>
+              <tr>
+                <th style="text-align:left;">Equipment</th>
+                <th>Reference</th>
+                <th>Specifications</th>
+                <th>Qty</th>
+                <th>Unit (MAD)</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="left">Grey/Navy work overalls with reflective strips</td>
+                <td>EP4105</td>
+                <td>Cotton/poly with reflective strips</td>
+                <td>5</td>
+                <td>225.00</td>
+                <td><strong>1,125.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Falcon High Safety Shoes (cleaning staff)</td>
+                <td>VETE-000017</td>
+                <td>High-top leather S3 SRC — Water-repellent, steel toe, anti-perforation sole</td>
+                <td>5</td>
+                <td>215.00</td>
+                <td><strong>1,075.00</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Surgical Respiratory Protection Masks (3-Ply)</td>
+                <td>3905</td>
+                <td>10 masks/pack — for big cleaning operations</td>
+                <td>5</td>
+                <td>12.50</td>
+                <td><strong>62.50</strong></td>
+              </tr>
+              <tr>
+                <td class="left">Ultra-resistant protective gloves (100% Latex)</td>
+                <td>HY030</td>
+                <td>Ultra-resistant 100% Latex gloves</td>
+                <td>5</td>
+                <td>15.00</td>
+                <td><strong>75.00</strong></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="left" colspan="5"><strong>Subtotal Uniforms & PPE</strong></td>
+                <td><strong>2,337.50</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </details>
+
+      <!-- Investment Summary -->
+      <div class="capex-box" style="margin-top:14px;">
+        <h4 style="margin:0 0 10px;">Investment Summary — Total Procurement Cost</h4>
+        <div class="capex-line">
+          <span>Equipment (Dispensers & Bins)</span>
+          <strong>2,030.00 MAD</strong>
+        </div>
+        <div class="capex-line">
+          <span>Cleaning Products & Chemicals</span>
+          <strong>2,416.90 MAD</strong>
+        </div>
+        <div class="capex-line">
+          <span>Cleaning Equipment & Tools</span>
+          <strong>10,023.75 MAD</strong>
+        </div>
+        <div class="capex-line">
+          <span>Uniforms & Protective Workwear</span>
+          <strong>2,337.50 MAD</strong>
+        </div>
+        <div class="capex-line total">
+          <span>TOTAL INVESTMENT REQUIRED</span>
+          <strong>16,808.15 MAD</strong>
+        </div>
+        <div class="note subtle" style="margin-top:10px;">
+          <strong>Supplier:</strong> HYPROCOL — Exclusive ZAMBU Distributor in Morocco<br>
+          <strong>Website:</strong> <a target="_blank" rel="noopener noreferrer" href="https://www.hyprocol.com">www.hyprocol.com</a> | 
+          <strong>Email:</strong> <a href="mailto:contact@hyprocol.com">contact@hyprocol.com</a><br>
+          All taxes included | VAT recoverable
+        </div>
+      </div>
+    </section>
+
     <footer class="footer">
-      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.5 (CAPEX itemized + Transport + CAPEX separated)</small>
+      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.6 (HYPROCOL Procurement + CAPEX itemized + Transport)</small>
     </footer>
   </main>
 
   <!-- IMPORTANT: app.js must compute CAPEX totals from the item tables (Qty × Unit) and update:
        secPpeCapex, clnPpeCapex, equipCapex + display fields + CAPEX panel.
   -->
-  <script src="app.js?v=5.5"></script>
+  <script src="app.js?v=5.6"></script>
 </body>
 </html>
