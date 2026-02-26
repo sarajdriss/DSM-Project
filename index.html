@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -27,7 +28,6 @@
         <a href="#calc-method">How it's Calculated</a>
         <a href="#sources">Market Price Sources</a>
         <a href="#evidence">Regulatory References</a>
-        <a href="#procurement">Procurement</a>
       </nav>
     </div>
   </header>
@@ -54,15 +54,41 @@
 
       <div class="hero-side">
         <div class="kpi">
+          <div class="kpi-label">CAPEX Total (One-time)</div>
+          <div class="kpi-value" id="kpiCapexTotal">—</div>
+          <div class="kpi-foot">PPE + Equipment + Initial Stock + Dispensers + Uniforms</div>
+        </div>
+        <div class="kpi">
           <div class="kpi-label">OPEX / Month (NET)</div>
           <div class="kpi-value" id="kpiOpexMonthly">—</div>
-          <div class="kpi-foot">Recurring: labor + consumables + transport + other fixed</div>
+          <div class="kpi-foot">Consumables + Transport</div>
         </div>
         <div class="kpi">
           <div class="kpi-label">Month 1 Total (NET)</div>
           <div class="kpi-value" id="kpiMonth1">—</div>
           <div class="kpi-foot">OPEX + CAPEX (one-time purchases)</div>
         </div>
+      </div>
+    </section>
+
+    <!-- OPTION TOGGLE -->
+    <section class="wide card" style="margin-bottom: 14px;">
+      <h3>Procurement Option</h3>
+      <div class="option-toggle">
+        <label class="option-radio">
+          <input type="radio" name="procurementOption" value="min" id="optionMin" checked>
+          <span class="option-label">
+            <strong>Option 1: Minimum Requirement</strong>
+            <span class="option-desc">Baseline quantities as specified in procurement proposal</span>
+          </span>
+        </label>
+        <label class="option-radio">
+          <input type="radio" name="procurementOption" value="full" id="optionFull">
+          <span class="option-label">
+            <strong>Option 2: Full Requirement</strong>
+            <span class="option-desc">Option 1 + additions with +30% quantity uplift</span>
+          </span>
+        </label>
       </div>
     </section>
 
@@ -142,7 +168,7 @@
           <div class="grid">
             <label class="toggle">
               Enable Replacement coefficient (apply to chargeable hourly)
-              <input id="replacementEnabled" type="checkbox" checked>
+              <input id="replacementEnabled" type="checkbox">
               <span class="toggle-ui" aria-hidden="true"></span>
             </label>
 
@@ -306,7 +332,7 @@
             <label class="securityInfo">
               Security working days per month
               <input id="secWorkDaysPerMonth" type="number" step="1" value="23">
-              <small class="hint">Example month: 23 working days (Excel-like breakdown).</small>
+              <small class="hint">Fixed at 23 working days for monthly calculations.</small>
             </label>
 
             <label class="securityInfo">
@@ -337,8 +363,8 @@
 
             <label>
               Cleaning working days / month (info)
-              <input id="clnDaysPerMonth" type="number" step="1" value="22">
-              <small class="hint">Planning info only.</small>
+              <input id="clnDaysPerMonth" type="number" step="1" value="23">
+              <small class="hint">Fixed at 23 working days.</small>
             </label>
 
             <div class="rangebox">
@@ -375,412 +401,214 @@
           <div class="note" id="clnOtAlert">—</div>
         </div>
 
-        <!-- F) CAPEX & OPEX -->
+        <!-- F) CAPEX (One-time) & OPEX (Recurring) -->
         <div class="card">
           <h3>F) CAPEX (One-time) & OPEX (Recurring)</h3>
 
-          <div class="grid">
-            <!-- CAPEX (Itemized, modifiable) -->
-            <div class="infoBox" style="grid-column: 1 / -1;">
-              <h4 style="margin:0 0 8px;">PPE &amp; Equipment (CAPEX — One-time purchases) — Itemized Detail (modifiable)</h4>
-
-              <div class="hint" style="margin:0 0 10px;">
-                Each line is editable (Qty × Unit price). Use the market links to verify and keep procurement evidence.
-                Last verified:
-                <input type="date" id="capexVerifiedDate" value="2026-02-02" />
-                <span class="hint"> | See also: <a href="#sources">Market Price Sources</a> | <a href="#procurement">HYPROCOL Procurement</a></span>
+          <!-- CAPEX SECTION -->
+          <div class="infoBox" style="grid-column: 1 / -1;">
+            <h4 style="margin:0 0 8px;">CAPEX — One-time Procurement Investment</h4>
+            
+            <!-- Security PPE -->
+            <details class="note subtle" open style="margin-top:12px;">
+              <summary style="cursor:pointer; font-weight:900; color:#111;">
+                1) Security PPE (One-time) — <span id="capexSecTotalDisplay">0</span> MAD
+              </summary>
+              <div class="scheduleWrap">
+                <table class="schedTable capexItemsTable">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;">Item</th>
+                      <th>Qty (Min)</th>
+                      <th>Qty (Full)</th>
+                      <th>Unit (MAD)</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="capexSecTableBody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
               </div>
+            </details>
 
-              <!-- CAPEX totals (calculated from the item tables) -->
-              <div class="capex-box">
-                <div class="capex-line">
-                  <span>Security PPE (one-time)</span>
-                  <strong id="secPpeCapexDisplay">6,090 MAD</strong>
-                </div>
-                <div class="capex-line">
-                  <span>Cleaning PPE (one-time)</span>
-                  <strong id="clnPpeCapexDisplay">3,600 MAD</strong>
-                </div>
-                <div class="capex-line">
-                  <span>Cleaning Equipment (one-time)</span>
-                  <strong id="equipCapexDisplay">29,000 MAD</strong>
-                </div>
-                <div class="capex-line total">
-                  <span>PPE &amp; Equipment CAPEX subtotal</span>
-                  <strong id="capexPpeEquipmentSubtotalDisplay">38,690 MAD</strong>
-                </div>
+            <!-- Cleaning PPE -->
+            <details class="note subtle" open style="margin-top:12px;">
+              <summary style="cursor:pointer; font-weight:900; color:#111;">
+                2) Cleaning PPE (One-time) — <span id="capexClnPpeTotalDisplay">0</span> MAD
+              </summary>
+              <div class="scheduleWrap">
+                <table class="schedTable capexItemsTable">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;">Item</th>
+                      <th>Qty (Min)</th>
+                      <th>Qty (Full)</th>
+                      <th>Unit (MAD)</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="capexClnPpeTableBody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
               </div>
+            </details>
 
-              <!-- Keep the original numeric CAPEX inputs used by app.js (now fed by itemized totals) -->
-              <input id="secPpeCapex" type="number" step="1" value="6090" class="hidden">
-              <input id="clnPpeCapex" type="number" step="1" value="3600" class="hidden">
-              <input id="equipCapex" type="number" step="1" value="29000" class="hidden">
+            <!-- Cleaning Equipment -->
+            <details class="note subtle" open style="margin-top:12px;">
+              <summary style="cursor:pointer; font-weight:900; color:#111;">
+                3) Cleaning Equipment (One-time) — <span id="capexEquipTotalDisplay">0</span> MAD
+              </summary>
+              <div class="scheduleWrap">
+                <table class="schedTable capexItemsTable">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;">Item</th>
+                      <th>Qty (Min)</th>
+                      <th>Qty (Full)</th>
+                      <th>Unit (MAD)</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="capexEquipTableBody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </details>
 
-              <!-- SECURITY PPE — total must = 6,090 MAD -->
-              <details class="note subtle" open style="margin-top:12px;">
-                <summary style="cursor:pointer; font-weight:900; color:#111;">
-                  Security PPE (one-time) — detailed items (Total target: 6,090 MAD)
-                </summary>
+            <!-- Cleaning Products & Chemicals — Initial Stock -->
+            <details class="note subtle" open style="margin-top:12px;">
+              <summary style="cursor:pointer; font-weight:900; color:#111;">
+                4) Cleaning Products & Chemicals — Initial Stock (One-time) — <span id="capexProductsTotalDisplay">0</span> MAD
+              </summary>
+              <div class="scheduleWrap">
+                <table class="schedTable capexItemsTable">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;">Product</th>
+                      <th>Reference</th>
+                      <th>Packaging</th>
+                      <th>Qty</th>
+                      <th>Unit (MAD)</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="capexProductsTableBody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </details>
 
-                <div class="scheduleWrap">
-                  <table class="schedTable capexItemsTable">
-                    <thead>
-                      <tr>
-                        <th style="text-align:left;">Item (Marketplace reference)</th>
-                        <th>Qty</th>
-                        <th>Unit (MAD)</th>
-                        <th>Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="left">
-                          Safety shoes S3 (pair)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=chaussure%20de%20securite%20S3">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="sec_qty_shoes" type="number" min="0" step="1" value="3"></td>
-                        <td><input class="capex-item-input" id="sec_price_shoes" type="number" min="0" step="0.01" value="550"></td>
-                        <td><strong id="sec_line_shoes">—</strong></td>
-                      </tr>
+            <!-- Washroom Dispensers / Replacement Items -->
+            <details class="note subtle" open style="margin-top:12px;">
+              <summary style="cursor:pointer; font-weight:900; color:#111;">
+                5) Washroom Dispensers / Replacement Items (One-time) — <span id="capexDispensersTotalDisplay">0</span> MAD
+              </summary>
+              <div class="scheduleWrap">
+                <table class="schedTable capexItemsTable">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;">Product</th>
+                      <th>Reference</th>
+                      <th>Location / Notes</th>
+                      <th>Qty</th>
+                      <th>Unit (MAD)</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="capexDispensersTableBody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </details>
 
-                      <tr>
-                        <td class="left">
-                          Reflective vest
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=gilet%20reflechissant">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="sec_qty_vest" type="number" min="0" step="1" value="3"></td>
-                        <td><input class="capex-item-input" id="sec_price_vest" type="number" min="0" step="0.01" value="80"></td>
-                        <td><strong id="sec_line_vest">—</strong></td>
-                      </tr>
+            <!-- Uniforms & Protective Workwear — Initial Purchase -->
+            <details class="note subtle" open style="margin-top:12px;">
+              <summary style="cursor:pointer; font-weight:900; color:#111;">
+                6) Uniforms & Protective Workwear — Initial Purchase (One-time) — <span id="capexUniformsTotalDisplay">0</span> MAD
+              </summary>
+              <div class="scheduleWrap">
+                <table class="schedTable capexItemsTable">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;">Equipment</th>
+                      <th>Reference</th>
+                      <th>Specifications</th>
+                      <th>Qty</th>
+                      <th>Unit (MAD)</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="capexUniformsTableBody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </details>
 
-                      <tr>
-                        <td class="left">
-                          Work parka / winter jacket
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=parka%20travail">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="sec_qty_parka" type="number" min="0" step="1" value="3"></td>
-                        <td><input class="capex-item-input" id="sec_price_parka" type="number" min="0" step="0.01" value="420"></td>
-                        <td><strong id="sec_line_parka">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Raincoat (work)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=impermeable%20pluie%20travail">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="sec_qty_rain" type="number" min="0" step="1" value="3"></td>
-                        <td><input class="capex-item-input" id="sec_price_rain" type="number" min="0" step="0.01" value="180"></td>
-                        <td><strong id="sec_line_rain">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Rechargeable flashlight
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=lampe%20torche%20rechargeable">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="sec_qty_light" type="number" min="0" step="1" value="3"></td>
-                        <td><input class="capex-item-input" id="sec_price_light" type="number" min="0" step="0.01" value="150"></td>
-                        <td><strong id="sec_line_light">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Walkie-talkie set (Motorola T50)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://alhorria.ma/produit/talkie-walkie-motorola-t50%C2%96-sans-licence/?utm_source=chatgpt.com">Alhorria.ma link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="sec_qty_radio" type="number" min="0" step="1" value="2"></td>
-                        <td><input class="capex-item-input" id="sec_price_radio" type="number" min="0" step="0.01" value="850"></td>
-                        <td><strong id="sec_line_radio">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          First aid kit
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=trousse%20premiers%20secours">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="sec_qty_aid" type="number" min="0" step="1" value="1"></td>
-                        <td><input class="capex-item-input" id="sec_price_aid" type="number" min="0" step="0.01" value="250"></td>
-                        <td><strong id="sec_line_aid">—</strong></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </details>
-
-              <!-- CLEANING PPE — total must = 3,600 MAD -->
-              <details class="note subtle" open style="margin-top:12px;">
-                <summary style="cursor:pointer; font-weight:900; color:#111;">
-                  Cleaning PPE (one-time) — detailed items (Total target: 3,600 MAD)
-                </summary>
-
-                <div class="scheduleWrap">
-                  <table class="schedTable capexItemsTable">
-                    <thead>
-                      <tr>
-                        <th style="text-align:left;">Item (Marketplace reference)</th>
-                        <th>Qty</th>
-                        <th>Unit (MAD)</th>
-                        <th>Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="left">
-                          Rubber safety boots (pair)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=bottes%20caoutchouc%20securite">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="clp_qty_boots" type="number" min="0" step="1" value="4"></td>
-                        <td><input class="capex-item-input" id="clp_price_boots" type="number" min="0" step="0.01" value="220"></td>
-                        <td><strong id="clp_line_boots">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Waterproof apron
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=tablier%20imperm%C3%A9able">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="clp_qty_apron" type="number" min="0" step="1" value="4"></td>
-                        <td><input class="capex-item-input" id="clp_price_apron" type="number" min="0" step="0.01" value="120"></td>
-                        <td><strong id="clp_line_apron">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Safety goggles
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=lunettes%20de%20protection">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="clp_qty_goggles" type="number" min="0" step="1" value="4"></td>
-                        <td><input class="capex-item-input" id="clp_price_goggles" type="number" min="0" step="0.01" value="95"></td>
-                        <td><strong id="clp_line_goggles">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Nitrile gloves (box of 100)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=gants%20nitrile%20boite%20100">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="clp_qty_gloves" type="number" min="0" step="1" value="12"></td>
-                        <td><input class="capex-item-input" id="clp_price_gloves" type="number" min="0" step="0.01" value="65"></td>
-                        <td><strong id="clp_line_gloves">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Disposable masks (box)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=masques%20jetables%20boite">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="clp_qty_masks" type="number" min="0" step="1" value="10"></td>
-                        <td><input class="capex-item-input" id="clp_price_masks" type="number" min="0" step="0.01" value="55"></td>
-                        <td><strong id="clp_line_masks">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Half-face respirator + filters (set)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=masque%20respiratoire%20demi%20face">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="clp_qty_respir" type="number" min="0" step="1" value="2"></td>
-                        <td><input class="capex-item-input" id="clp_price_respir" type="number" min="0" step="0.01" value="265"></td>
-                        <td><strong id="clp_line_respir">—</strong></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </details>
-
-              <!-- CLEANING EQUIPMENT — total must = 29,000 MAD -->
-              <details class="note subtle" open style="margin-top:12px;">
-                <summary style="cursor:pointer; font-weight:900; color:#111;">
-                  Cleaning Equipment (one-time) — detailed items (Total target: 29,000 MAD)
-                </summary>
-
-                <div class="scheduleWrap">
-                  <table class="schedTable capexItemsTable">
-                    <thead>
-                      <tr>
-                        <th style="text-align:left;">Item (Marketplace reference)</th>
-                        <th>Qty</th>
-                        <th>Unit (MAD)</th>
-                        <th>Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="left">
-                          Single-disc floor scrubber / polisher 17"
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=monobrosse%2017">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="cle_qty_mono" type="number" min="0" step="1" value="1"></td>
-                        <td><input class="capex-item-input" id="cle_price_mono" type="number" min="0" step="0.01" value="10500"></td>
-                        <td><strong id="cle_line_mono">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Wet &amp; dry industrial vacuum 70L
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=aspirateur%20eau%20poussiere%2070L">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="cle_qty_vac" type="number" min="0" step="1" value="1"></td>
-                        <td><input class="capex-item-input" id="cle_price_vac" type="number" min="0" step="0.01" value="4500"></td>
-                        <td><strong id="cle_line_vac">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          High-pressure washer
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=nettoyeur%20haute%20pression">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="cle_qty_karcher" type="number" min="0" step="1" value="1"></td>
-                        <td><input class="capex-item-input" id="cle_price_karcher" type="number" min="0" step="0.01" value="6200"></td>
-                        <td><strong id="cle_line_karcher">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Professional janitorial trolley
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=chariot%20menage%20professionnel">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="cle_qty_trolley" type="number" min="0" step="1" value="1"></td>
-                        <td><input class="capex-item-input" id="cle_price_trolley" type="number" min="0" step="0.01" value="1800"></td>
-                        <td><strong id="cle_line_trolley">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Mop bucket with wringer (set)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=seau%20balai%20essoreur">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="cle_qty_bucket" type="number" min="0" step="1" value="4"></td>
-                        <td><input class="capex-item-input" id="cle_price_bucket" type="number" min="0" step="0.01" value="450"></td>
-                        <td><strong id="cle_line_bucket">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Microfiber system kit
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=kit%20microfibre%20nettoyage">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="cle_qty_micro" type="number" min="0" step="1" value="1"></td>
-                        <td><input class="capex-item-input" id="cle_price_micro" type="number" min="0" step="0.01" value="1200"></td>
-                        <td><strong id="cle_line_micro">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Extension cable (25m)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=rallonge%20electrique%2025m">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="cle_qty_cable" type="number" min="0" step="1" value="2"></td>
-                        <td><input class="capex-item-input" id="cle_price_cable" type="number" min="0" step="0.01" value="250"></td>
-                        <td><strong id="cle_line_cable">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          "Wet floor" warning sign
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=panneau%20sol%20mouill%C3%A9">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="cle_qty_sign" type="number" min="0" step="1" value="3"></td>
-                        <td><input class="capex-item-input" id="cle_price_sign" type="number" min="0" step="0.01" value="100"></td>
-                        <td><strong id="cle_line_sign">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Aluminum ladder (6 steps)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=escabeau%206%20marches">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="cle_qty_ladder" type="number" min="0" step="1" value="1"></td>
-                        <td><input class="capex-item-input" id="cle_price_ladder" type="number" min="0" step="0.01" value="900"></td>
-                        <td><strong id="cle_line_ladder">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Window cleaning kit (squeegee)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=raclette%20vitre%20kit">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="cle_qty_window" type="number" min="0" step="1" value="1"></td>
-                        <td><input class="capex-item-input" id="cle_price_window" type="number" min="0" step="0.01" value="700"></td>
-                        <td><strong id="cle_line_window">—</strong></td>
-                      </tr>
-
-                      <tr>
-                        <td class="left">
-                          Hand tools kit (scrapers + brushes)
-                          <div class="hint">
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.jumia.ma/catalog/?q=grattoir%20brosse%20nettoyage%20kit">Market link</a>
-                          </div>
-                        </td>
-                        <td><input class="capex-item-input" id="cle_qty_tools" type="number" min="0" step="1" value="1"></td>
-                        <td><input class="capex-item-input" id="cle_price_tools" type="number" min="0" step="0.01" value="600"></td>
-                        <td><strong id="cle_line_tools">—</strong></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </details>
-
-              <div class="note subtle" style="margin-top:12px;">
-                <strong>Important:</strong> CAPEX totals above must be calculated from the item tables (Qty × Unit).
-                Keep the procurement evidence (URL + screenshot + proforma) per major item.
+            <!-- CAPEX Total Summary -->
+            <div class="capex-box" style="margin-top:14px;">
+              <div class="capex-line total">
+                <span>Total CAPEX Investment (One-time)</span>
+                <strong id="capexGrandTotalDisplay">0 MAD</strong>
               </div>
             </div>
 
-            <!-- Transport OPEX (NEW) -->
-            <div class="infoBox" style="grid-column: 1 / -1;">
+            <div class="note subtle" style="margin-top:12px;">
+              <strong>Supplier:</strong> HYPROCOL — Exclusive ZAMBU Distributor in Morocco<br>
+              <strong>Website:</strong> <a target="_blank" rel="noopener noreferrer" href="https://www.hyprocol.com">www.hyprocol.com</a> | 
+              <strong>Email:</strong> <a href="mailto:contact@hyprocol.com">contact@hyprocol.com</a><br>
+              All taxes included | VAT recoverable
+            </div>
+          </div>
+
+          <!-- OPEX SECTION -->
+          <div class="infoBox" style="grid-column: 1 / -1; margin-top:14px;">
+            <h4 style="margin:0 0 8px;">OPEX — Monthly Recurring Costs</h4>
+
+            <!-- Cleaning Consumables (Monthly) -->
+            <div class="consumablesBox">
+              <h4 style="margin:0 0 8px;">Cleaning Consumables (Monthly) — Minimum Essential Items</h4>
+              
+              <table class="schedTable">
+                <thead>
+                  <tr>
+                    <th style="text-align:left;">Product</th>
+                    <th>Monthly Qty</th>
+                    <th>Unit</th>
+                    <th>Unit Price (MAD)</th>
+                    <th>Monthly Total</th>
+                  </tr>
+                </thead>
+                <tbody id="opexConsumablesTableBody">
+                  <!-- Populated by JS -->
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td class="left" colspan="4"><strong>Monthly Consumables Total</strong></td>
+                    <td><strong id="opexConsumablesTotal">—</strong></td>
+                  </tr>
+                </tfoot>
+              </table>
+
+              <div class="hint" style="margin-top:8px;">
+                * Items marked "Not provided" are displayed for reference but excluded from totals.<br>
+                ** Option 2 applies +30% uplift to all quantities.
+              </div>
+            </div>
+
+            <!-- Transport (OPEX) -->
+            <div style="margin-top:14px;">
               <h4 style="margin:0 0 8px;">Transport (OPEX) — Monthly Calculation</h4>
               <div class="grid">
                 <label>
                   Trips per day (round trips)
-                  <input id="transportTripsPerDay" type="number" step="1" value="2">
-                  <small class="hint">Example: 2 trips/day (home→factory + factory→home).</small>
+                  <input id="transportTripsPerDay" type="number" step="1" value="3">
+                  <small class="hint">Default: 3 trips/day (home→factory + factory→home variations).</small>
                 </label>
 
                 <label>
@@ -790,9 +618,9 @@
                 </label>
 
                 <label>
-                  Transport days per month
-                  <input id="transportDaysPerMonth" type="number" step="1" value="23">
-                  <small class="hint">Set to actual working days where transport operates.</small>
+                  Transport days per month (fixed)
+                  <input id="transportDaysPerMonth" type="number" step="1" value="23" readonly>
+                  <small class="hint">Fixed at 23 working days/month.</small>
                 </label>
 
                 <label>
@@ -808,76 +636,12 @@
               </div>
             </div>
 
-            <label>
+            <label style="margin-top:14px;">
               Other fixed OPEX — MAD/month (optional)
               <input id="otherFixed" type="number" step="1" value="0">
             </label>
 
-            <!-- Consumables (Liters breakdown) -->
-            <div class="consumablesBox" style="grid-column: 1 / -1;">
-              <h4 style="margin:0 0 8px;">Cleaning Consumables (OPEX) — Monthly Quantities (Liters)</h4>
-
-              <label class="toggle" style="margin-bottom:6px;">
-                Use liters breakdown to calculate monthly consumables
-                <input id="useConsumablesBreakdown" type="checkbox" checked>
-                <span class="toggle-ui" aria-hidden="true"></span>
-              </label>
-
-              <table class="schedTable">
-                <thead>
-                  <tr>
-                    <th style="text-align:left;">Product</th>
-                    <th>Qty (L/month)</th>
-                    <th>Unit price (MAD/L)</th>
-                    <th>Total (MAD)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="left">Floor detergent / degreaser</td>
-                    <td><input id="floorDegreaserQtyL" type="number" step="1" value="80"></td>
-                    <td><input id="floorDegreaserPricePerL" type="number" step="0.1" value="15"></td>
-                    <td><strong id="floorDegreaserTotal">—</strong></td>
-                  </tr>
-                  <tr>
-                    <td class="left">Surface disinfectant</td>
-                    <td><input id="disinfectantQtyL" type="number" step="1" value="40"></td>
-                    <td><input id="disinfectantPricePerL" type="number" step="0.1" value="18"></td>
-                    <td><strong id="disinfectantTotal">—</strong></td>
-                  </tr>
-                  <tr>
-                    <td class="left">Toilet cleaner / descaler</td>
-                    <td><input id="toiletCleanerQtyL" type="number" step="1" value="30"></td>
-                    <td><input id="toiletCleanerPricePerL" type="number" step="0.1" value="18"></td>
-                    <td><strong id="toiletCleanerTotal">—</strong></td>
-                  </tr>
-                  <tr>
-                    <td class="left">Glass cleaner</td>
-                    <td><input id="glassCleanerQtyL" type="number" step="1" value="10"></td>
-                    <td><input id="glassCleanerPricePerL" type="number" step="0.1" value="20"></td>
-                    <td><strong id="glassCleanerTotal">—</strong></td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td class="left" colspan="3">Total consumables (MAD/month)</td>
-                    <td><strong id="consumablesTotalOut">—</strong></td>
-                  </tr>
-                </tfoot>
-              </table>
-
-              <div class="hint" style="margin-top:8px;">
-                Non-liquid items (bags, paper, wipes) are not in liters; you can include them in "Other fixed OPEX" or add another line later.
-              </div>
-            </div>
-
-            <!-- Manual fallback (only used if liters breakdown is OFF) -->
-            <label style="grid-column: 1 / -1;">
-              Manual consumables total (MAD/month) — used only if liters breakdown is OFF
-              <input id="clnProducts" type="number" step="1" value="3040">
-            </label>
-
-            <label class="toggle">
+            <label class="toggle" style="margin-top:12px;">
               Include CAPEX in Month 1 Total
               <input id="includeCapex" type="checkbox" checked>
               <span class="toggle-ui" aria-hidden="true"></span>
@@ -891,7 +655,7 @@
 
           <div class="note subtle" style="margin-top:12px;">
             <strong>OPEX</strong> = recurring operating expenses (labor, consumables, transport, recurring fixed costs).<br/>
-            <strong>CAPEX</strong> = one-time investment purchases (PPE, equipment).
+            <strong>CAPEX</strong> = one-time investment purchases (PPE, equipment, initial stock, dispensers, uniforms).
           </div>
         </div>
       </section>
@@ -920,13 +684,13 @@
             <div class="summary-box">
               <div class="summary-label">Cleaning Consumables (Monthly)</div>
               <div class="summary-value" id="clnConsumablesMonthly">—</div>
-              <div class="summary-sub">Calculated from liters breakdown (or manual total if disabled)</div>
+              <div class="summary-sub">Minimum essential items (Option 1/2)</div>
             </div>
 
             <div class="summary-box">
               <div class="summary-label">Transport (Monthly)</div>
               <div class="summary-value" id="transportMonthlySummary">—</div>
-              <div class="summary-sub">buses × trips/day × cost/trip × days/month</div>
+              <div class="summary-sub">buses × trips/day × cost/trip × 23 days</div>
             </div>
 
             <div class="summary-box accent-box">
@@ -942,11 +706,14 @@
 
           <!-- CAPEX (hidden by default) -->
           <div id="capexPanel" class="capex-box hidden" style="margin-top:12px;">
-            <h4>PPE & Equipment (CAPEX — One-time purchases)</h4>
+            <h4>CAPEX Breakdown (One-time)</h4>
 
-            <div class="capex-line"><span>Security PPE (one-time)</span><strong id="capexSec">—</strong></div>
-            <div class="capex-line"><span>Cleaning PPE (one-time)</span><strong id="capexCln">—</strong></div>
-            <div class="capex-line"><span>Cleaning Equipment (one-time)</span><strong id="capexEq">—</strong></div>
+            <div class="capex-line"><span>Security PPE</span><strong id="capexSec">—</strong></div>
+            <div class="capex-line"><span>Cleaning PPE</span><strong id="capexClnPpe">—</strong></div>
+            <div class="capex-line"><span>Cleaning Equipment</span><strong id="capexEquip">—</strong></div>
+            <div class="capex-line"><span>Cleaning Products (Initial Stock)</span><strong id="capexProducts">—</strong></div>
+            <div class="capex-line"><span>Washroom Dispensers</span><strong id="capexDispensers">—</strong></div>
+            <div class="capex-line"><span>Uniforms & Workwear</span><strong id="capexUniforms">—</strong></div>
             <div class="capex-line total"><span>Total CAPEX</span><strong id="capexTotal">—</strong></div>
 
             <div class="capex-first">
@@ -993,14 +760,14 @@
           <ul>
             <li><strong>Security Team</strong> = (Standard hours × Chargeable) + (OT hours × OT hourly) <span class="hint">(OT only above 48h/week)</span></li>
             <li><strong>Cleaning Team</strong> = Cleaning agents × monthly hours/agent × Chargeable hourly</li>
-            <li><strong>Transport</strong> = buses × trips/day × cost/trip × days/month</li>
+            <li><strong>Transport</strong> = buses × trips/day × cost/trip × 23 days/month</li>
             <li><strong>OPEX Total / Month</strong> = Security + Cleaning + Consumables + Transport + Other fixed</li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- MARKET PRICE SOURCES (UPDATED) -->
+    <!-- MARKET PRICE SOURCES -->
     <section class="wide card" id="sources">
       <h2>Market Price Sources (Morocco — Direct Links)</h2>
       <p class="muted">
@@ -1069,6 +836,38 @@
           <span class="src-title">Avito.ma — Aspirateur professionnel</span>
           <span class="src-url">https://www.avito.ma/fr/maroc?q=aspirateur%20professionnel</span>
         </a>
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://alhorria.ma/produit/talkie-walkie-motorola-t50%C2%96-sans-licence/">
+          <span class="src-title">Alhorria.ma — Motorola T50 Walkie-Talkie (no license required)</span>
+          <span class="src-url">https://alhorria.ma/produit/talkie-walkie-motorola-t50%C2%96-sans-licence/</span>
+        </a>
+      </div>
+
+      <h3 style="margin-top:14px;">C) Additional Tool & Material Links (from Prices.txt)</h3>
+      <div class="sources">
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://mrbricolage.ma/produit/spatule-rigide-avec-manche-en-plastique-100-mm/">
+          <span class="src-title">MrBricolage — Spatule rigide avec manche en plastique 100 mm</span>
+          <span class="src-url">https://mrbricolage.ma/produit/spatule-rigide-avec-manche-en-plastique-100-mm/</span>
+        </a>
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://mrbricolage.ma/produit/brosse-professionnelle-avec-manche-en-plastique-127-mm/">
+          <span class="src-title">MrBricolage — Brosse professionnelle avec manche en plastique 127 mm</span>
+          <span class="src-url">https://mrbricolage.ma/produit/brosse-professionnelle-avec-manche-en-plastique-127-mm/</span>
+        </a>
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://mrbricolage.ma/produit/bac-a-peinture-320x350mm/">
+          <span class="src-title">MrBricolage — Bac à peinture 320 x 350 mm</span>
+          <span class="src-url">https://mrbricolage.ma/produit/bac-a-peinture-320x350mm/</span>
+        </a>
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://mrbricolage.ma/produit/rouleau-de-peinture-duocolour-23-cmpoignee/">
+          <span class="src-title">MrBricolage — Rouleau de peinture duocolour avec poignée 23 cm</span>
+          <span class="src-url">https://mrbricolage.ma/produit/rouleau-de-peinture-duocolour-23-cmpoignee/</span>
+        </a>
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://mrbricolage.ma/produit/astraflex-blanc-20kg/">
+          <span class="src-title">MrBricolage — Astraflex étanchéité bouclier climatique blanc 20kg</span>
+          <span class="src-url">https://mrbricolage.ma/produit/astraflex-blanc-20kg/</span>
+        </a>
+        <a class="source" target="_blank" rel="noopener noreferrer" href="https://mrbricolage.ma/produit/cellaqua-blanc-30kg/">
+          <span class="src-title">MrBricolage — Cellaqua blanc 30kg</span>
+          <span class="src-url">https://mrbricolage.ma/produit/cellaqua-blanc-30kg/</span>
+        </a>
       </div>
     </section>
 
@@ -1103,379 +902,11 @@
       </div>
     </section>
 
-    <!-- HYPROCOL PROCUREMENT SECTION (NEW from PPT) -->
-    <section class="wide card" id="procurement">
-      <h2>HYPROCOL Procurement Proposal — Cleaning Products, Uniforms & Protective Workwear</h2>
-      <p class="muted">
-        Complete equipment and consumables specification from HYPROCOL (www.hyprocol.com | contact@hyprocol.com).
-        Exclusive ZAMBU Distributor in Morocco. All taxes included | VAT recoverable.
-      </p>
-
-      <div class="note" style="margin-bottom:14px;">
-        <strong>Total Investment Required: 16,808 MAD</strong> — Equipment (2,030 MAD) + Cleaning Products (2,416.90 MAD) + 
-        Equipment/Tools (10,023.75 MAD) + Uniforms/PPE (2,337.50 MAD)
-      </div>
-
-      <!-- Equipment Specifications -->
-      <details class="note subtle" open style="margin-top:12px;">
-        <summary style="cursor:pointer; font-weight:900; color:#111;">
-          A) Equipment Specifications — Dispensers & Bins (2,030 MAD)
-        </summary>
-
-        <div class="scheduleWrap">
-          <table class="schedTable capexItemsTable">
-            <thead>
-              <tr>
-                <th style="text-align:left;">Product</th>
-                <th>Reference</th>
-                <th>Location / Notes</th>
-                <th>Qty</th>
-                <th>Unit (MAD)</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="left">Manual Soap Dispenser 1L capacity, wall-mounted</td>
-                <td>ZAMBU-857</td>
-                <td>Replacement of broken units — Strategic locations</td>
-                <td>6</td>
-                <td>245.00</td>
-                <td><strong>1,470.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Standard Toilet Paper Dispenser Double roll, plastic</td>
-                <td>ZAMBU-4717</td>
-                <td>Medical Room Toilet Only</td>
-                <td>1</td>
-                <td>265.00</td>
-                <td><strong>265.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Economic Paper Towel Dispenser Basic model, wall-mounted</td>
-                <td>ZAMBU-4401</td>
-                <td>Boardroom Only</td>
-                <td>1</td>
-                <td>295.00</td>
-                <td><strong>295.00</strong></td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td class="left" colspan="5"><strong>Subtotal Equipment (incl. sanitary bins in progress)</strong></td>
-                <td><strong>2,030.00</strong></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </details>
-
-      <!-- Cleaning Products & Chemicals -->
-      <details class="note subtle" open style="margin-top:12px;">
-        <summary style="cursor:pointer; font-weight:900; color:#111;">
-          B) Cleaning Products & Chemicals — Initial Stock (2,416.90 MAD)
-        </summary>
-
-        <div class="scheduleWrap">
-          <table class="schedTable capexItemsTable">
-            <thead>
-              <tr>
-                <th style="text-align:left;">Product</th>
-                <th>Reference</th>
-                <th>Packaging</th>
-                <th>Qty</th>
-                <th>Unit (MAD)</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="left">FLOORNET — Lemon Freshness Floor and Surface Cleaner and Degreaser</td>
-                <td>HY8242</td>
-                <td>5L unit</td>
-                <td>5</td>
-                <td>45.00</td>
-                <td><strong>225.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">GRASNET — Liquid degreaser for all types of surfaces</td>
-                <td>HY8256</td>
-                <td>5L unit</td>
-                <td>3</td>
-                <td>90.00</td>
-                <td><strong>270.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">HANDSOFT — Liquid hand soap</td>
-                <td>HY625</td>
-                <td>5L unit</td>
-                <td>15</td>
-                <td>15.00</td>
-                <td><strong>862.50</strong></td>
-              </tr>
-              <tr>
-                <td class="left">BACTINET — Multi-purpose liquid disinfectant detergent (quaternary ammonium)</td>
-                <td>HY8239</td>
-                <td>5L unit</td>
-                <td>4</td>
-                <td>115.00</td>
-                <td><strong>460.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">ASEPNET — Liquid disinfectant (alcohol + quaternary ammonium)</td>
-                <td>HY015</td>
-                <td>5L unit</td>
-                <td>1</td>
-                <td>225.00</td>
-                <td><strong>225.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">SELPAK Household Toilet Paper — EXTRA SOFT, 3-Ply (72 rolls/pack)</td>
-                <td>HY783</td>
-                <td>Pack of 72</td>
-                <td>2</td>
-                <td>187.20</td>
-                <td><strong>374.40</strong></td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td class="left" colspan="5"><strong>Subtotal Cleaning Products</strong></td>
-                <td><strong>2,416.90</strong></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </details>
-
-      <!-- Cleaning Equipment -->
-      <details class="note subtle" open style="margin-top:12px;">
-        <summary style="cursor:pointer; font-weight:900; color:#111;">
-          C) Cleaning Equipment — Tools & Maintenance (10,023.75 MAD)
-        </summary>
-
-        <div class="scheduleWrap">
-          <table class="schedTable capexItemsTable">
-            <thead>
-              <tr>
-                <th style="text-align:left;">Equipment</th>
-                <th>Reference</th>
-                <th>Specifications</th>
-                <th>Qty</th>
-                <th>Unit (MAD)</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="left">Complete professional stainless steel washing trolley</td>
-                <td>1339</td>
-                <td>108×70×104cm complete professional washing trolley</td>
-                <td>1</td>
-                <td>4,975.00</td>
-                <td><strong>4,975.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">DUO Wash Trolley, 2 Buckets with Wringer, Stainless Steel Frame</td>
-                <td>512081</td>
-                <td>DUO Wash Trolley (2 Buckets) with Wringer</td>
-                <td>2</td>
-                <td>1,250.00</td>
-                <td><strong>2,500.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Professional Window Squeegee</td>
-                <td>400845</td>
-                <td>45cm professional window squeegee</td>
-                <td>5</td>
-                <td>82.50</td>
-                <td><strong>412.50</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Ultra Absorbent Blue Cloths</td>
-                <td>1278</td>
-                <td>12 Ultra Absorbent 23×50cm</td>
-                <td>5</td>
-                <td>74.00</td>
-                <td><strong>370.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Trash bags PROBAG BLEU (Sacs Poubelle)</td>
-                <td>HY6704</td>
-                <td>40 bags, 55×60cm, 30L (pack of 26)</td>
-                <td>16</td>
-                <td>20.00</td>
-                <td><strong>320.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Green wastepaper basket</td>
-                <td>962113</td>
-                <td>Inside Women's Toilets — prevents pump blockage</td>
-                <td>12</td>
-                <td>20.00</td>
-                <td><strong>240.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">PRO multi-surface abrasive sponges</td>
-                <td>712184</td>
-                <td>3 sponges, 14×7×4.4cm</td>
-                <td>5</td>
-                <td>15.00</td>
-                <td><strong>75.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Absorbent cloth</td>
-                <td>HY091</td>
-                <td>Absorbent 36×40 (pack of 24)</td>
-                <td>5</td>
-                <td>10.00</td>
-                <td><strong>50.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">120mm steel handle</td>
-                <td>514917</td>
-                <td>120mm steel handle</td>
-                <td>5</td>
-                <td>12.50</td>
-                <td><strong>62.50</strong></td>
-              </tr>
-              <tr>
-                <td class="left">100cm Industrial Broom Base (Replacement)</td>
-                <td>400654</td>
-                <td>100cm Industrial Broom Base + Replacement (SM)</td>
-                <td>5</td>
-                <td>162.50</td>
-                <td><strong>812.50</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Soft broom, 6 bristles, LAVENDER/RED</td>
-                <td>500743</td>
-                <td>Soft broom, 6 bristles</td>
-                <td>3</td>
-                <td>18.75</td>
-                <td><strong>56.25</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Galvanized metal shovel with handle</td>
-                <td>410639</td>
-                <td>Galvanized metal shovel with handle</td>
-                <td>2</td>
-                <td>75.00</td>
-                <td><strong>150.00</strong></td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td class="left" colspan="5"><strong>Subtotal Cleaning Equipment</strong></td>
-                <td><strong>10,023.75</strong></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </details>
-
-      <!-- Uniforms & Protective Workwear -->
-      <details class="note subtle" open style="margin-top:12px;">
-        <summary style="cursor:pointer; font-weight:900; color:#111;">
-          D) Uniforms & Protective Workwear / PPE (2,337.50 MAD)
-        </summary>
-
-        <div class="scheduleWrap">
-          <table class="schedTable capexItemsTable">
-            <thead>
-              <tr>
-                <th style="text-align:left;">Equipment</th>
-                <th>Reference</th>
-                <th>Specifications</th>
-                <th>Qty</th>
-                <th>Unit (MAD)</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="left">Grey/Navy work overalls with reflective strips</td>
-                <td>EP4105</td>
-                <td>Cotton/poly with reflective strips</td>
-                <td>5</td>
-                <td>225.00</td>
-                <td><strong>1,125.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Falcon High Safety Shoes (cleaning staff)</td>
-                <td>VETE-000017</td>
-                <td>High-top leather S3 SRC — Water-repellent, steel toe, anti-perforation sole</td>
-                <td>5</td>
-                <td>215.00</td>
-                <td><strong>1,075.00</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Surgical Respiratory Protection Masks (3-Ply)</td>
-                <td>3905</td>
-                <td>10 masks/pack — for big cleaning operations</td>
-                <td>5</td>
-                <td>12.50</td>
-                <td><strong>62.50</strong></td>
-              </tr>
-              <tr>
-                <td class="left">Ultra-resistant protective gloves (100% Latex)</td>
-                <td>HY030</td>
-                <td>Ultra-resistant 100% Latex gloves</td>
-                <td>5</td>
-                <td>15.00</td>
-                <td><strong>75.00</strong></td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td class="left" colspan="5"><strong>Subtotal Uniforms & PPE</strong></td>
-                <td><strong>2,337.50</strong></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </details>
-
-      <!-- Investment Summary -->
-      <div class="capex-box" style="margin-top:14px;">
-        <h4 style="margin:0 0 10px;">Investment Summary — Total Procurement Cost</h4>
-        <div class="capex-line">
-          <span>Equipment (Dispensers & Bins)</span>
-          <strong>2,030.00 MAD</strong>
-        </div>
-        <div class="capex-line">
-          <span>Cleaning Products & Chemicals</span>
-          <strong>2,416.90 MAD</strong>
-        </div>
-        <div class="capex-line">
-          <span>Cleaning Equipment & Tools</span>
-          <strong>10,023.75 MAD</strong>
-        </div>
-        <div class="capex-line">
-          <span>Uniforms & Protective Workwear</span>
-          <strong>2,337.50 MAD</strong>
-        </div>
-        <div class="capex-line total">
-          <span>TOTAL INVESTMENT REQUIRED</span>
-          <strong>16,808.15 MAD</strong>
-        </div>
-        <div class="note subtle" style="margin-top:10px;">
-          <strong>Supplier:</strong> HYPROCOL — Exclusive ZAMBU Distributor in Morocco<br>
-          <strong>Website:</strong> <a target="_blank" rel="noopener noreferrer" href="https://www.hyprocol.com">www.hyprocol.com</a> | 
-          <strong>Email:</strong> <a href="mailto:contact@hyprocol.com">contact@hyprocol.com</a><br>
-          All taxes included | VAT recoverable
-        </div>
-      </div>
-    </section>
-
     <footer class="footer">
-      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 5.6 (HYPROCOL Procurement + CAPEX itemized + Transport)</small>
+      <small>© DSM Project — Quotation Model (Tangier Free Zone | NET). Version 6.0 (Complete CAPEX/OPEX Overhaul)</small>
     </footer>
   </main>
 
-  <!-- IMPORTANT: app.js must compute CAPEX totals from the item tables (Qty × Unit) and update:
-       secPpeCapex, clnPpeCapex, equipCapex + display fields + CAPEX panel.
-  -->
-  <script src="app.js?v=5.6"></script>
+  <script src="app.js?v=6.0"></script>
 </body>
 </html>
