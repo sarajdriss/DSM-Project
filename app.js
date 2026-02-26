@@ -1,5 +1,5 @@
-/* DSM Project — app.js (v5.5)
-   UPDATED per latest index.html (CAPEX itemized tables + display fields)
+/* DSM Project — app.js (v5.6)
+   UPDATED per latest index.html (HYPROCOL Procurement + CAPEX itemized tables + display fields)
 
    SECURITY
    - Day + Night headcount (night priced same as day; no night premium)
@@ -31,6 +31,13 @@
        secPpeCapexDisplay, clnPpeCapexDisplay, equipCapexDisplay,
        capexPpeEquipmentSubtotalDisplay
 
+   HYPROCOL PROCUREMENT (from PPT)
+   - Equipment Specifications: 2,030 MAD
+   - Cleaning Products & Chemicals: 2,416.90 MAD
+   - Cleaning Equipment: 10,023.75 MAD
+   - Uniforms & Protective Workwear: 2,337.50 MAD
+   - Total: 16,808.15 MAD
+
    SUMMARY
    - Security Team monthly
    - Cleaning Team monthly
@@ -38,6 +45,20 @@
    - Transport monthly
    - OPEX total + annual
    - CAPEX toggle panel
+
+   UNMATCHED LINKS (from Prices.txt - no matching items in PPT):
+   - Spatule rigide avec manche en plastique 100 mm:
+     https://mrbricolage.ma/produit/spatule-rigide-avec-manche-en-plastique-100-mm/
+   - Brosse professionnelle avec manche en plastique 127 mm:
+     https://mrbricolage.ma/produit/brosse-professionnelle-avec-manche-en-plastique-127-mm/
+   - Bac à peinture 320 x 350 mm:
+     https://mrbricolage.ma/produit/bac-a-peinture-320x350mm/
+   - Rouleau de peinture duocolour avec poignée 23 cm:
+     https://mrbricolage.ma/produit/rouleau-de-peinture-duocolour-23-cmpoignee/
+   - Astraflex étanchéité bouclier climatique blanc 20kg:
+     https://mrbricolage.ma/produit/astraflex-blanc-20kg/
+   - Cellaqua blanc 30kg:
+     https://mrbricolage.ma/produit/cellaqua-blanc-30kg/
 */
 
 const DEFAULTS = {
@@ -46,7 +67,7 @@ const DEFAULTS = {
   empDedRate: 6.74,
   employerRate: 21.09,
 
-  // Capacity/planning reference (used for cleaning cost + “1 agent/month cost” display)
+  // Capacity/planning reference (used for cleaning cost + "1 agent/month cost" display)
   legalMonthlyHours: 191,
 
   // Replacement coefficient
@@ -85,6 +106,7 @@ const DEFAULTS = {
   equipCapex: 29000,
 
   // CAPEX — Security PPE items (default total = 6,090)
+  // NOTE: Walkie-talkie link updated to Motorola T50 from alhorria.ma per Prices.txt
   sec_qty_shoes: 3,
   sec_price_shoes: 550,
   sec_qty_vest: 3,
@@ -301,7 +323,7 @@ function resetDefaults() {
     const e = $(id);
     if (!e) return;
 
-    // reset derived totals too (they’ll be recomputed on calc)
+    // reset derived totals too (they'll be recomputed on calc)
     if (e.type === "checkbox") e.checked = !!DEFAULTS[id];
     else e.value = DEFAULTS[id];
 
